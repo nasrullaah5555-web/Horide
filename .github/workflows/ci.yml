@@ -7,6 +7,7 @@ on:
 
 permissions:
   contents: read
+  pull-requests: read # gitleaks lists a pull request's commits to scan them
 
 concurrency:
   group: ci-${{ github.ref }}

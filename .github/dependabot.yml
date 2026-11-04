@@ -1,11 +1,28 @@
+# Dependabot proposes dependency updates as pull requests.
+# Minor and patch updates are grouped into one weekly PR. Major versions are ignored here:
+# they often break things (e.g. TypeScript 7, ESM-only Kysely 0.29) and are upgraded deliberately,
+# with a recorded decision. Security updates still arrive regardless of these rules.
 version: 2
 updates:
   - package-ecosystem: npm
     directory: /
     schedule:
       interval: weekly
-    open-pull-requests-limit: 5
+    open-pull-requests-limit: 3
+    groups:
+      npm-minor-and-patch:
+        update-types: [minor, patch]
+    ignore:
+      - dependency-name: '*'
+        update-types: ['version-update:semver-major']
+      # Kysely 0.29+ is ESM-only and breaks the CommonJS backend (see TEST_REPORT 2026-11-04).
+      - dependency-name: kysely
+        versions: ['>=0.29.0']
+
   - package-ecosystem: github-actions
     directory: /
     schedule:
       interval: monthly
+    groups:
+      github-actions:
+        patterns: ['*']

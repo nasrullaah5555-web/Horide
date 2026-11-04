@@ -16,3 +16,5 @@ Only results that were actually run. Format: date · task · command · result.
 
 Defects found by tests and fixed: oversized JSON returned 500 instead of 413; malformed JSON returned the parser's raw message (could echo request fragments) — now a fixed `INVALID_JSON` error.
 Not yet verified: CI on GitHub (first run happens after this push).
+| 2026-11-04 | T-004 | First GitHub Actions run on `main` (run 41909539260) | Passed: backend job (lint, typecheck, 34 tests against PostGIS, build) and security job |
+| 2026-11-04 | T-004 | Dependabot PR runs | Failed: gitleaks needed `pull-requests: read`. Fixed; Dependabot now groups minor/patch and skips majors |

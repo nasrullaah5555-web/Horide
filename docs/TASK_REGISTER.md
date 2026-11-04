@@ -15,7 +15,7 @@ Objective: Git repo, pnpm workspace, folder layout, `.gitignore`, `.editorconfig
 **T-003 Local infrastructure** — DONE
 Objective: `infra/docker-compose.yml` (PostGIS), non-Docker setup script, `.env.example` per app. · Depends: T-002 · Acceptance: database starts and `CREATE EXTENSION postgis` works. · Tests: script smoke run.
 
-**T-004 CI pipeline** — IMPLEMENTED (awaiting first GitHub run)
+**T-004 CI pipeline** — DONE
 Objective: GitHub Actions: install, lint, typecheck, backend tests against PostGIS service container, admin/website build, Flutter analyze + test, gitleaks, dependency audit. · Depends: T-002, OA-01 to run · Acceptance: workflow valid; green run on GitHub (verified only after OA-01).
 
 ## Phase 1 — Backend foundation

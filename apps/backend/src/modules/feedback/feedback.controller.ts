@@ -1,3 +1,4 @@
+import { RateLimit } from '../../common/rate-limit';
 import {
   Body,
   Controller,
@@ -132,6 +133,7 @@ export class FeedbackController {
     });
   }
 
+  @RateLimit({ name: 'complaints', limit: 5, windowSeconds: 60 })
   @Post('complaints')
   @HttpCode(201)
   @UseGuards(UserAuthGuard)

@@ -1,3 +1,4 @@
+import { RateLimit } from '../../common/rate-limit';
 import {
   Body,
   Controller,
@@ -79,6 +80,7 @@ export class PricingController {
   ) {}
 
   /** Passenger asks for prices before booking. Fares are only ever computed here, on the server. */
+  @RateLimit({ name: 'quotes', limit: 20, windowSeconds: 60 })
   @Post('quotes')
   @HttpCode(200)
   @UseGuards(UserAuthGuard)

@@ -1,3 +1,4 @@
+import { RateLimit } from '../../common/rate-limit';
 import {
   Body,
   Controller,
@@ -44,6 +45,7 @@ export class TripsController {
   ) {}
 
   /** Book a ride. 201 when created, 200 when the same quote was already used (safe retry). */
+  @RateLimit({ name: 'trip-request', limit: 10, windowSeconds: 60 })
   @Post('trips')
   @Roles('passenger')
   async request(

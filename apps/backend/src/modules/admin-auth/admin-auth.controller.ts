@@ -1,3 +1,4 @@
+import { RateLimit } from '../../common/rate-limit';
 import {
   Body,
   Controller,
@@ -70,6 +71,7 @@ export class AdminAuthController {
     @Inject(APP_CONFIG) private readonly config: AppConfig,
   ) {}
 
+  @RateLimit({ name: 'admin-login', limit: 10, windowSeconds: 60 })
   @Post('auth/login')
   @HttpCode(200)
   async login(

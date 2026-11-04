@@ -15,6 +15,7 @@ export const DEV_ONLY_ADAPTERS = {
   SMS_PROVIDER: ['console', 'fake'],
   ROUTING_PROVIDER: ['dev_estimate', 'fake'],
   STORAGE_PROVIDER: ['local'],
+  PUSH_PROVIDER: ['log'],
 } as const;
 
 /** The example secrets shipped in .env.example. Production must never run with them. */
@@ -45,6 +46,12 @@ export const envSchema = z
     ROUTING_PROVIDER: z.enum(['dev_estimate', 'fake', 'google', 'osrm']).default('dev_estimate'),
     STORAGE_PROVIDER: z.enum(['local', 's3']).default('local'),
     STORAGE_LOCAL_DIR: z.string().min(1).default('./storage'),
+    PUSH_PROVIDER: z.enum(['log', 'fcm']).default('log'),
+    // Rate limiting is always on in production; tests switch it off except in the rate-limit tests.
+    RATE_LIMIT_ENABLED: z
+      .enum(['true', 'false'])
+      .default('true')
+      .transform((v) => v === 'true'),
 
     // Secrets. No defaults: they must be provided. Generate with `openssl rand -base64 48`.
     JWT_ACCESS_SECRET: z.string().min(32, 'must be at least 32 characters'),
@@ -98,6 +105,13 @@ export const envSchema = z
           message: `"${value}" is a development-only adapter and is not allowed in production`,
         });
       }
+    }
+    if (!env.RATE_LIMIT_ENABLED) {
+      ctx.addIssue({
+        code: 'custom',
+        path: ['RATE_LIMIT_ENABLED'],
+        message: 'Rate limiting cannot be disabled in production',
+      });
     }
     if (!env.DATABASE_SSL) {
       ctx.addIssue({

@@ -18,9 +18,9 @@ export const CSRF_HEADER = 'x-csrf-token';
 
 type AdminRequest = Request & { admin?: AdminPrincipal };
 
-const PERMISSION_KEY = 'horide:admin-permission';
+export const PERMISSION_KEY = 'horide:admin-permission';
 
-const ANY_ADMIN_KEY = 'horide:any-admin';
+export const ANY_ADMIN_KEY = 'horide:any-admin';
 
 /** Every admin endpoint must declare the permission it needs. */
 export const RequirePermission = (permission: Permission) =>

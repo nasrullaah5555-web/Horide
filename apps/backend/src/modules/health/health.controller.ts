@@ -1,3 +1,4 @@
+import { SkipRateLimit } from '../../common/rate-limit';
 import { Controller, Get, HttpCode, Inject, ServiceUnavailableException } from '@nestjs/common';
 import { Kysely, sql } from 'kysely';
 import { DATABASE } from '../../database/database.module';
@@ -11,6 +12,7 @@ import type { DB } from '../../database/types';
 export class HealthController {
   constructor(@Inject(DATABASE) private readonly db: Kysely<DB>) {}
 
+  @SkipRateLimit()
   @Get()
   @HttpCode(200)
   async check(): Promise<{ status: 'ok'; database: 'up' }> {

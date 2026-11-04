@@ -24,6 +24,7 @@ import type { AdminPrincipal } from '../admin-auth/admin-auth.service';
 import { AdminGuard, CurrentAdmin, RequirePermission } from '../admin-auth/admin.guard';
 import { AuditService } from '../audit/audit.service';
 import { STORAGE_PROVIDER, type StorageProvider } from '../storage/storage.provider';
+import { AccountService } from '../users/account.service';
 import { DriverEligibilityService } from './driver-eligibility.service';
 import { REQUIRED_DRIVER_DOCUMENTS } from './driver-requirements';
 
@@ -45,6 +46,7 @@ export class AdminDriversController {
     @Inject(STORAGE_PROVIDER) private readonly storage: StorageProvider,
     private readonly audit: AuditService,
     private readonly eligibility: DriverEligibilityService,
+    private readonly accounts: AccountService,
   ) {}
 
   @Get('drivers')
@@ -295,7 +297,13 @@ export class AdminDriversController {
     @Body(new ZodValidationPipe(reasonSchema)) body: z.infer<typeof reasonSchema>,
     @Req() req: Request,
   ) {
-    await this.setUserStatus(admin, id, 'driver', 'suspended', body.reason, req.ip ?? null);
+    await this.accounts.setStatus(
+      { id: admin.id, ip: req.ip ?? null },
+      id,
+      'driver',
+      'suspended',
+      body.reason,
+    );
   }
 
   @Post('drivers/:id/reinstate')
@@ -307,51 +315,13 @@ export class AdminDriversController {
     @Body(new ZodValidationPipe(optionalNoteSchema)) body: z.infer<typeof optionalNoteSchema>,
     @Req() req: Request,
   ) {
-    await this.setUserStatus(admin, id, 'driver', 'active', body.note ?? null, req.ip ?? null);
-  }
-
-  private async setUserStatus(
-    admin: AdminPrincipal,
-    userId: string,
-    role: 'driver' | 'passenger',
-    status: 'active' | 'suspended',
-    reason: string | null,
-    ip: string | null,
-  ) {
-    await this.db.transaction().execute(async (trx) => {
-      const before = await trx
-        .selectFrom('users')
-        .select(['status', 'suspended_reason'])
-        .where('id', '=', userId)
-        .where('role', '=', role)
-        .forUpdate()
-        .executeTakeFirst();
-      if (!before || before.status === 'deleted')
-        throw new AppError(HttpStatus.NOT_FOUND, 'NOT_FOUND', 'Account not found.');
-      await trx
-        .updateTable('users')
-        .set({ status, suspended_reason: status === 'suspended' ? reason : null })
-        .where('id', '=', userId)
-        .execute();
-      if (status === 'suspended' && role === 'driver') {
-        // Take the driver offline so they stop appearing in matching straight away.
-        await trx
-          .updateTable('driver_locations')
-          .set({ is_online: false })
-          .where('driver_id', '=', userId)
-          .execute();
-      }
-      await this.audit.record(trx, {
-        actorType: 'admin',
-        actorId: admin.id,
-        action: status === 'suspended' ? `${role}.suspended` : `${role}.reinstated`,
-        entityType: role,
-        entityId: userId,
-        before,
-        after: { status, reason },
-        ip,
-      });
-    });
+    await this.accounts.setStatus(
+      { id: admin.id, ip: req.ip ?? null },
+      id,
+      'driver',
+      'active',
+      body.note ?? null,
+    );
   }
 
   private async reviewDocument(

@@ -1,3 +1,4 @@
+import { RateLimit } from '../../common/rate-limit';
 import {
   Body,
   Controller,
@@ -220,6 +221,7 @@ export class DriverController {
    * Upload one document (multipart/form-data: file + type [+ vehicleId] [+ expiresOn]).
    * The file type is identified from its content; only JPEG, PNG and PDF up to 8 MB are accepted.
    */
+  @RateLimit({ name: 'documents', limit: 10, windowSeconds: 60 })
   @Post('documents')
   @HttpCode(201)
   @UseInterceptors(

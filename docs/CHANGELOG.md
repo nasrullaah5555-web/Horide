@@ -18,6 +18,9 @@
 - Driver subscriptions: plans, payment recording, early renewal, eligibility rules.
 - Core ride flow: driver availability and GPS ingestion with plausibility checks, trip booking from signed quotes, wave-based matching, single-winner acceptance, trip lifecycle with event history, payment record on completion.
 - Destination change with server re-pricing and passenger approval; live updates over Socket.IO; ride payment records with confirmation, disputes and finance resolution; ratings, complaints and emergency alerts with admin handling.
+- In-app notifications with push adapter, device registration and admin broadcasts; admin dashboard counts, daily reports, live driver map, passenger and trip management.
 
 ### Security
+- Per-user/IP rate limits with stricter limits on OTP, quotes, bookings, location, uploads and admin login; production refuses to disable them.
+- Automated route audit fails the build if any endpoint lacks its login guard or permission.
 - Forced `multer` ≥ 2.5.0 to fix a denial-of-service advisory in a transitive dependency.

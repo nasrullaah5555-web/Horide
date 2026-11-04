@@ -1,3 +1,4 @@
+import { RateLimit } from '../../common/rate-limit';
 import { Body, Controller, Get, HttpCode, Inject, Post, Req, UseGuards } from '@nestjs/common';
 import type { Request } from 'express';
 import { Kysely } from 'kysely';
@@ -27,6 +28,7 @@ export class AuthController {
   ) {}
 
   /** Step 1: send a login code by SMS. */
+  @RateLimit({ name: 'otp-request', limit: 5, windowSeconds: 60 })
   @Post('otp/request')
   @HttpCode(200)
   async requestOtp(
@@ -37,6 +39,7 @@ export class AuthController {
   }
 
   /** Step 2: exchange the code for tokens. Creates the account on first login. */
+  @RateLimit({ name: 'otp-verify', limit: 10, windowSeconds: 60 })
   @Post('otp/verify')
   @HttpCode(200)
   async verifyOtp(

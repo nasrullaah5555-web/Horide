@@ -18,3 +18,5 @@ process.env.OTP_PEPPER = 'test-otp-pepper-0123456789abcdef0123456789abcd';
 process.env.QUOTE_SIGNING_SECRET = 'test-quote-secret-0123456789abcdef012345678';
 process.env.ADMIN_TOTP_ENCRYPTION_KEY = Buffer.alloc(32, 7).toString('base64');
 process.env.STORAGE_LOCAL_DIR = join(tmpdir(), `horide-test-storage-${process.pid}`);
+process.env.RATE_LIMIT_ENABLED = 'false';
+process.env.PUSH_PROVIDER = 'log';

@@ -59,9 +59,9 @@ Jijiga service zone (approximate polygon, marked DEV), illustrative fares, test 
 **T-026 Realtime gateway** — DONE · Socket.IO auth, rooms, resync endpoint.
 **T-027 Ride payment records** — DONE (eBirr references recorded, not verified – OA-10) · Record, confirm, dispute, admin resolve. Tests: non-party cannot confirm; no confirm before completion.
 **T-028 Ratings, complaints, emergency** — DONE
-**T-029 Notifications** — TODO · FCM adapter (live test blocked by OA-11), in-app list.
-**T-030 Admin APIs & reports** — TODO · Real aggregates only.
-**T-031 API-wide rate limiting & authz test suite** — TODO
+**T-029 Notifications** — DONE (in-app + dev push); FCM BLOCKED – OA-11 · FCM adapter (live test blocked by OA-11), in-app list.
+**T-030 Admin APIs & reports** — DONE · Real aggregates only.
+**T-031 API-wide rate limiting & authz test suite** — DONE
 
 ## Phase 4 — Admin dashboard
 

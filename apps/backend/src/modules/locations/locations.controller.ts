@@ -1,3 +1,4 @@
+import { RateLimit } from '../../common/rate-limit';
 import { Body, Controller, HttpCode, HttpStatus, Inject, Post, UseGuards } from '@nestjs/common';
 import { Kysely, sql } from 'kysely';
 import { z } from 'zod';
@@ -79,6 +80,7 @@ export class LocationsController {
    * Location updates. Each point is checked; implausible points are dropped (and counted),
    * never stored as the driver's position. During a trip, accepted points are also kept as trip history.
    */
+  @RateLimit({ name: 'location', limit: 30, windowSeconds: 60 })
   @Post('location')
   @HttpCode(200)
   async updateLocation(

@@ -49,3 +49,7 @@ Known limits: matching sweeper runs in-process every 5 s (single instance, ADR-0
 ## T-025–T-028 Destination change, realtime, payments, feedback — 2026-11-05
 Evidence: `src/modules/trips/destination-change.service.ts`, `src/modules/realtime`, `src/modules/payments`, `src/modules/feedback`; `test/ride-extras.e2e-spec.ts`, `test/realtime.e2e-spec.ts`.
 Emergency numbers (Police 991, Ambulance 907, Fire 939, Traffic 945) from Wikipedia's list; local confirmation is owner action OA-19.
+
+## T-029–T-031 Notifications, admin operations, rate limiting — 2026-11-05
+Evidence: `src/modules/notifications`, `src/modules/admin-ops`, `src/common/rate-limit.ts`; `test/ops.e2e-spec.ts`, `test/route-security.e2e-spec.ts`.
+Backend v1 scope complete. Remaining backend items are blocked on owner actions: SMS (OA-08), routing (OA-09), storage bucket (OA-12), push (OA-11), eBirr API (OA-10).

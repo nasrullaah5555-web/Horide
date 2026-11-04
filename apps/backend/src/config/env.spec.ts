@@ -16,6 +16,7 @@ const productionOk = {
   SMS_PROVIDER: 'afromessage',
   ROUTING_PROVIDER: 'google',
   STORAGE_PROVIDER: 's3',
+  PUSH_PROVIDER: 'fcm',
 };
 
 describe('loadConfig', () => {

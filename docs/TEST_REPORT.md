@@ -39,6 +39,12 @@ Only results that were actually run. Format: date · task · command · result.
 | 2026-11-05 | T-026 | Built server started; `/health` and `/realtime` polling handshake | Both responded |
 | 2026-11-05 | all | Full backend suite | 230/230 passed |
 
+| 2026-11-05 | T-029 | Notifications e2e | Passed: accepted/arrived notifications stored and pushed to the registered device, read/read-all, IDOR on read refused, device token moves to latest account, broadcast audited and operations-only |
+| 2026-11-05 | T-030 | Admin ops e2e | Passed: dashboard counts change with real trips, daily report covers empty days, live map freshness, trip detail with event trail, admin cancel of in-progress trip audited (finance refused), passenger suspend/reinstate blocks and restores quotes |
+| 2026-11-05 | T-031 | Rate limit e2e + unit | Passed: 21st quote in a minute → 429 with Retry-After, other users unaffected, health never limited, window reset |
+| 2026-11-05 | T-031 | Route security audit (all controllers) | Passed. Verified it detects problems by removing one admin permission and one user guard: both reported, then restored |
+| 2026-11-05 | all | Full backend suite | 247/247 passed; production build OK |
+
 Defects found by tests and fixed: oversized JSON returned 500 instead of 413; malformed JSON returned the parser's raw message (could echo request fragments) — now a fixed `INVALID_JSON` error.
 Not yet verified: CI on GitHub (first run happens after this push).
 | 2026-11-04 | T-004 | First GitHub Actions run on `main` (run 41909539260) | Passed: backend job (lint, typecheck, 34 tests against PostGIS, build) and security job |

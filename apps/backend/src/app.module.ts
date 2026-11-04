@@ -4,6 +4,7 @@ import { LoggerModule } from 'nestjs-pino';
 import { ConfigModule } from './config/config.module';
 import type { AppConfig } from './config/env';
 import { DatabaseModule } from './database/database.module';
+import { AdminAuthModule } from './modules/admin-auth/admin-auth.module';
 import { AuthModule } from './modules/auth/auth.module';
 import { HealthController } from './modules/health/health.controller';
 
@@ -43,6 +44,7 @@ export class AppModule {
         }),
         DatabaseModule,
         AuthModule,
+        AdminAuthModule,
       ],
       controllers: [HealthController],
     };

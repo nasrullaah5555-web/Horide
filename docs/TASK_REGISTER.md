@@ -26,21 +26,21 @@ Objective: app bootstrap, config validation (zod), `/health`, pino logging with 
 **T-006 Database layer & identity migrations** — DONE
 Objective: Kysely, migrator, migration 001 (extensions, enums, users, profiles, otp_challenges, auth_sessions, admin_users, admin_roles, audit_logs). · Depends: T-005 · Acceptance: migrate up/down/up clean. · Tests: migration test.
 
-**T-007 Fleet, geo, pricing migrations** — TODO
+**T-007 Fleet, geo, pricing migrations** — DONE
 vehicles, driver_documents, service_zones, driver_locations, saved_locations, fare_settings, fare_versions. Acceptance: GiST indexes present; constraints tested.
 
-**T-008 Trip, payment, subscription, feedback migrations** — TODO
+**T-008 Trip, payment, subscription, feedback migrations** — DONE
 trips (partial unique indexes), trip_offers, trip_events, trip_destination_changes, trip_locations, payments, payment_confirmations, subscription_plans, subscriptions (exclusion constraint), subscription_payments, ratings, complaints, emergency_events, notifications, device_tokens. Acceptance: constraint tests prove one active trip per driver and no overlapping subscriptions.
 
-**T-009 Development seed** — TODO
+**T-009 Development seed** — DONE
 Jijiga service zone (approximate polygon, marked DEV), illustrative fares, test plan. Refuses to run in production.
 
 ## Phase 2 — Authentication
 
-**T-010 SMS adapter** — TODO · Console + fake providers; AfroMessage adapter written, untested until OA-08.
-**T-011 OTP flow** — TODO · Request/verify with limits, expiry, replay protection. Tests: brute force, replay, expiry, rate limits.
-**T-012 Sessions** — TODO · Access/refresh, rotation, reuse detection, logout, role guards. Tests: rotation, reuse revokes family.
-**T-013 Admin auth & RBAC** — TODO · Argon2id, TOTP, permission decorator, audit service. Tests: role matrix, MFA required.
+**T-010 SMS adapter** — DONE (dev/test); production adapter BLOCKED – OA-08 · Console + fake providers; AfroMessage adapter written, untested until OA-08.
+**T-011 OTP flow** — DONE · Request/verify with limits, expiry, replay protection. Tests: brute force, replay, expiry, rate limits.
+**T-012 Sessions** — DONE · Access/refresh, rotation, reuse detection, logout, role guards. Tests: rotation, reuse revokes family.
+**T-013 Admin auth & RBAC** — DONE · scrypt (ADR-015), TOTP, permission decorator, audit service. Tests: role matrix, MFA required.
 
 ## Phase 3 — Domain backend
 

@@ -67,6 +67,12 @@ All amounts are `bigint` santim. Display formatting only at the edge.
 
 Turn-by-turn navigation is handed to the phone's maps app via a deep link instead of being built in. Building navigation is out of scope and unsafe to do badly.
 
+## ADR-015 scrypt and a minimal built-in JWT (no native or ESM-only crypto packages)
+
+**Context:** argon2 needs a native add-on; popular JWT libraries are now ESM-only and clash with the CommonJS NestJS build (the same problem hit Kysely 0.29).
+**Decision:** Admin passwords use Node's built-in scrypt (N=2^17, r=8, p=1, parameters stored in the hash). Access tokens use a ~40-line HS256 implementation on Node's crypto that accepts only HS256. TOTP (RFC 6238) is implemented in-house and verified against the RFC test vector.
+**Consequences:** Nothing to compile on deployment; every security-relevant line is in this repository and covered by tests.
+
 ## ADR-014 Flutter apps cannot be compiled in the cloud workspace
 
 **Context:** The build environment blocks Flutter SDK and pub.dev downloads.

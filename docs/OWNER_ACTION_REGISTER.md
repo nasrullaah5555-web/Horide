@@ -20,6 +20,7 @@ Actions only the owner can perform. Status: OPEN until the owner confirms or the
 | OA-14 | P2 | Buy domain, add to Cloudflare | Registrar, Cloudflare | HTTPS endpoints, store listings | Deployment | Yes — local URLs | OPEN |
 | OA-15 | P1 | Decide prices: base, per-km, minimum fare, rounding, waiting, cancellation fee, subscription price | Business | Illustrative numbers are not market prices | Launch pricing | Yes — dev seed values | OPEN |
 | OA-16 | P1 | Confirm insurance and permit requirements for drivers and Bajaj | Insurers, authorities | Document list in onboarding | Final onboarding rules | Yes — configurable document types | OPEN |
+| OA-18 | P2 | At deployment: generate production secrets (`openssl rand -base64 48`, and `openssl rand -base64 32` for ADMIN_TOTP_ENCRYPTION_KEY) and run `pnpm admin:create` once to create your super admin | Render shell | Secrets must never come from the repo; the first admin can only be created from the server | Admin dashboard access in production | Yes | OPEN |
 | OA-17 | P0 (business) | Recruit pilot drivers and test subscription willingness to pay | Field | The business fails without paying drivers regardless of software | Pilot | Yes | OPEN |
 
 Notes:

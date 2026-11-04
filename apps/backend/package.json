@@ -12,7 +12,8 @@
     "test": "jest --runInBand",
     "migrate": "ts-node --transpile-only src/database/migrate-cli.ts latest",
     "migrate:down": "ts-node --transpile-only src/database/migrate-cli.ts down",
-    "seed:dev": "ts-node --transpile-only src/database/seed-dev.ts"
+    "seed:dev": "ts-node --transpile-only src/database/seed-dev.ts",
+    "admin:create": "ts-node --transpile-only src/modules/admin-auth/create-admin-cli.ts"
   },
   "dependencies": {
     "@nestjs/common": "^11.2.8",

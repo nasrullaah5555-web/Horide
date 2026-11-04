@@ -22,6 +22,7 @@ const PLACEHOLDER_SECRETS = new Set([
   'dev-only-access-secret-change-me-0000000000',
   'dev-only-otp-pepper-change-me-00000000000000',
   'dev-only-quote-secret-change-me-00000000000',
+  'ZGV2LW9ubHktdG90cC1rZXktY2hhbmdlLW1lLTAwMDA=',
 ]);
 
 export const envSchema = z
@@ -48,6 +49,12 @@ export const envSchema = z
     JWT_ACCESS_SECRET: z.string().min(32, 'must be at least 32 characters'),
     OTP_PEPPER: z.string().min(32, 'must be at least 32 characters'),
     QUOTE_SIGNING_SECRET: z.string().min(32, 'must be at least 32 characters'),
+    // 32 random bytes, base64-encoded. Encrypts admin TOTP secrets at rest (AES-256-GCM).
+    ADMIN_TOTP_ENCRYPTION_KEY: z
+      .string()
+      .refine((v) => Buffer.from(v, 'base64').length === 32, 'must be 32 bytes encoded as base64'),
+    ADMIN_SESSION_HOURS: z.coerce.number().int().min(1).max(24).default(12),
+    ADMIN_IDLE_MINUTES: z.coerce.number().int().min(5).max(240).default(30),
 
     ACCESS_TOKEN_TTL_SECONDS: z.coerce.number().int().min(60).max(3600).default(900),
     REFRESH_TOKEN_TTL_DAYS: z.coerce.number().int().min(1).max(90).default(30),
@@ -60,7 +67,12 @@ export const envSchema = z
   })
   .superRefine((env, ctx) => {
     if (env.NODE_ENV !== 'production') return;
-    for (const key of ['JWT_ACCESS_SECRET', 'OTP_PEPPER', 'QUOTE_SIGNING_SECRET'] as const) {
+    for (const key of [
+      'JWT_ACCESS_SECRET',
+      'OTP_PEPPER',
+      'QUOTE_SIGNING_SECRET',
+      'ADMIN_TOTP_ENCRYPTION_KEY',
+    ] as const) {
       if (PLACEHOLDER_SECRETS.has(env[key])) {
         ctx.addIssue({
           code: 'custom',

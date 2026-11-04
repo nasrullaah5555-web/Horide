@@ -81,6 +81,7 @@ export interface AdminUsersTable {
   failed_login_count: Generated<number>;
   locked_until: Timestamp | null;
   last_login_at: Timestamp | null;
+  totp_last_step: ColumnType<string | null, number | null | undefined, number | null>;
   created_at: CreatedAt;
   updated_at: Generated<Date>;
 }
@@ -408,6 +409,19 @@ export interface DeviceTokensTable {
   last_seen_at: Generated<Date>;
 }
 
+export interface AdminSessionsTable {
+  id: Generated<string>;
+  admin_user_id: string;
+  token_hash: string;
+  csrf_token_hash: string;
+  ip: string | null;
+  user_agent: string | null;
+  created_at: CreatedAt;
+  last_seen_at: Generated<Date>;
+  expires_at: Timestamp;
+  revoked_at: Timestamp | null;
+}
+
 export interface DB {
   users: UsersTable;
   passenger_profiles: PassengerProfilesTable;
@@ -439,4 +453,5 @@ export interface DB {
   emergency_events: EmergencyEventsTable;
   notifications: NotificationsTable;
   device_tokens: DeviceTokensTable;
+  admin_sessions: AdminSessionsTable;
 }

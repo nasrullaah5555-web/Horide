@@ -14,6 +14,13 @@ Only results that were actually run. Format: date · task · command · result.
 | 2026-11-04 | T-006 | `pnpm migrate` run twice on development database | First applied 0001, second "up to date" |
 | 2026-11-04 | T-004 | `pnpm audit --prod --audit-level high` | First run: 1 high (multer < 2.5.0 DoS, via Nest). Fixed with override to 2.5.0; re-run: no known vulnerabilities |
 
+| 2026-11-05 | T-007/T-008 | Constraint tests for migrations 0002–0003 | Passed (plates, one active vehicle, private document keys, immutable fares, category-matched pricing, one active trip per driver/passenger, no overlapping subscriptions, single payment confirmation per party) |
+| 2026-11-05 | T-009 | Seed run twice on dev DB; production refusal | Idempotent; production refused |
+| 2026-11-05 | T-010–T-012 | OTP + session e2e tests | Passed: brute force lock, replay, expiry, cooldown, per-phone/IP limits, enumeration, SMS failure, rotation, reuse detection, logout, forged and alg=none tokens |
+| 2026-11-05 | T-013 | Admin e2e + unit tests | Passed: RFC 6238 vector, MFA required, TOTP replay, lockout, CSRF, idle timeout, permission matrix, audit of admin actions |
+| 2026-11-05 | T-013 | `pnpm admin:create` on dev DB | Created admin; duplicate refused |
+| 2026-11-05 | all | Full backend suite | 128/128 passed |
+
 Defects found by tests and fixed: oversized JSON returned 500 instead of 413; malformed JSON returned the parser's raw message (could echo request fragments) — now a fixed `INVALID_JSON` error.
 Not yet verified: CI on GitHub (first run happens after this push).
 | 2026-11-04 | T-004 | First GitHub Actions run on `main` (run 41909539260) | Passed: backend job (lint, typecheck, 34 tests against PostGIS, build) and security job |

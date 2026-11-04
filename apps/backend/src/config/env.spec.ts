@@ -5,6 +5,7 @@ const base = {
   JWT_ACCESS_SECRET: 'a'.repeat(40),
   OTP_PEPPER: 'b'.repeat(40),
   QUOTE_SIGNING_SECRET: 'c'.repeat(40),
+  ADMIN_TOTP_ENCRYPTION_KEY: Buffer.alloc(32, 1).toString('base64'),
 };
 
 const productionOk = {

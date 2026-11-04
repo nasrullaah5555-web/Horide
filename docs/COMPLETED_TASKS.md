@@ -17,3 +17,15 @@ Evidence: `apps/backend/src`. Config validation refuses development adapters, no
 
 ## T-006 Database layer & identity migrations — 2026-11-04
 Evidence: `apps/backend/src/database`. Migration 0001 with Ethiopian phone format check, one account per phone per role, suspension reason required, approval must record approver, append-only audit log enforced by trigger. Tests: `test/migrations.int-spec.ts` (up/down/up and every constraint).
+
+## T-007/T-008 Remaining migrations — 2026-11-05
+Evidence: migrations 0002 and 0003; `test/migrations-domain.int-spec.ts`.
+
+## T-009 Development seed — 2026-11-05
+Evidence: `src/database/seed-dev.ts`; `test/seed.int-spec.ts`. Zone and fares are explicitly marked DEV/illustrative.
+
+## T-010–T-012 Passenger and driver authentication — 2026-11-05
+Evidence: `src/modules/auth`; `test/auth.e2e-spec.ts`, `src/modules/auth/auth-units.spec.ts`. Production SMS adapter intentionally not implemented (OA-08).
+
+## T-013 Admin authentication, RBAC and audit — 2026-11-05
+Evidence: `src/modules/admin-auth`, `src/modules/audit`; `test/admin-auth.e2e-spec.ts`, `src/modules/admin-auth/admin-units.spec.ts`.

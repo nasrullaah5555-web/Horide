@@ -13,3 +13,4 @@ process.env.STORAGE_PROVIDER = 'local';
 process.env.JWT_ACCESS_SECRET = 'test-access-secret-0123456789abcdef0123456789';
 process.env.OTP_PEPPER = 'test-otp-pepper-0123456789abcdef0123456789abcd';
 process.env.QUOTE_SIGNING_SECRET = 'test-quote-secret-0123456789abcdef012345678';
+process.env.ADMIN_TOTP_ENCRYPTION_KEY = Buffer.alloc(32, 7).toString('base64');

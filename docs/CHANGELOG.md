@@ -10,5 +10,9 @@
 - Database migration 0001: users, profiles, OTP challenges, sessions, admins, roles, append-only audit log.
 - CI: lint, typecheck, tests against PostGIS, build, secret scanning, dependency audit. Dependabot.
 
+- Migrations 0002–0004: vehicles, documents, zones, locations, versioned fares, trips, offers, payments, subscriptions, ratings, complaints, emergencies, notifications, admin sessions.
+- Development seed (approximate Jijiga zone, illustrative fares).
+- Phone OTP login with rotating sessions; admin login with password + TOTP, role-based permissions, CSRF protection, audit log; `admin:create` CLI.
+
 ### Security
 - Forced `multer` ≥ 2.5.0 to fix a denial-of-service advisory in a transitive dependency.

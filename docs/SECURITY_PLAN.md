@@ -28,7 +28,7 @@ Baselines: OWASP ASVS (backend/web), OWASP MASVS (mobile), OWASP API Security To
 ## 2. Authentication
 
 - Users: phone OTP → access JWT (15 min, EdDSA or HS256 with 256-bit secret) + refresh token (30 days, rotating).
-- Admins: email + argon2id password + TOTP (mandatory), 12 h absolute session, 30 min idle timeout, lockout after 10 failures.
+- Admins: email + scrypt password (N=2^17) + TOTP (mandatory, replay-protected, secret encrypted with AES-256-GCM), 12 h absolute session, 30 min idle timeout, lockout after 10 failures.
 - Logout revokes the session family.
 
 ## 3. Authorization

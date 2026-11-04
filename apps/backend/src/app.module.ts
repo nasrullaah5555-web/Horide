@@ -7,6 +7,7 @@ import { DatabaseModule } from './database/database.module';
 import { AdminAuthModule } from './modules/admin-auth/admin-auth.module';
 import { AuthModule } from './modules/auth/auth.module';
 import { DriversModule } from './modules/drivers/drivers.module';
+import { PricingModule } from './modules/pricing/pricing.module';
 import { StorageModule } from './modules/storage/storage.module';
 import { UsersModule } from './modules/users/users.module';
 import { HealthController } from './modules/health/health.controller';
@@ -51,6 +52,7 @@ export class AppModule {
         StorageModule,
         UsersModule,
         DriversModule,
+        PricingModule,
       ],
       controllers: [HealthController],
     };

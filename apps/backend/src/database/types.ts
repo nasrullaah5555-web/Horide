@@ -134,6 +134,12 @@ export type TripParty = 'passenger' | 'driver' | 'system' | 'admin';
 /** PostGIS geography values are read and written through SQL functions; Kysely sees them as opaque. */
 type Geography = ColumnType<string, unknown, unknown>;
 type Money = ColumnType<string, number | bigint | string, number | bigint | string>; // bigint -> string
+/** Money column with a database default: optional on insert. */
+type MoneyWithDefault = ColumnType<
+  string,
+  number | bigint | string | undefined,
+  number | bigint | string
+>;
 
 export interface VehiclesTable {
   id: Generated<string>;
@@ -206,9 +212,9 @@ export interface FareVersionsTable {
   per_km: Money;
   minimum_fare: Money;
   rounding_unit: Money;
-  waiting_per_min: Generated<Money>;
+  waiting_per_min: MoneyWithDefault;
   free_waiting_minutes: Generated<number>;
-  cancellation_fee: Generated<Money>;
+  cancellation_fee: MoneyWithDefault;
   note: string | null;
   created_by: string | null;
   created_at: CreatedAt;

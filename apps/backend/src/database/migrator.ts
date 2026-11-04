@@ -1,0 +1,30 @@
+import { Kysely, Migration, MigrationResultSet, Migrator } from 'kysely';
+import * as m0001 from './migrations/0001_identity';
+
+/**
+ * The list of migrations, in order. Listed explicitly (instead of read from disk) so the
+ * same code works from TypeScript source and from compiled JavaScript.
+ * Never edit a migration that has run in production — add a new one instead.
+ */
+export const migrations: Record<string, Migration> = {
+  '0001_identity': m0001,
+};
+
+// Migrations work on any schema, so the database type is intentionally untyped here.
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
+export function createMigrator(db: Kysely<any>): Migrator {
+  return new Migrator({
+    db,
+    provider: { getMigrations: async () => migrations },
+  });
+}
+
+/** Throws if any migration failed, so callers (CLI, tests, deploy) never continue on a broken schema. */
+export function assertMigrationSuccess(result: MigrationResultSet): void {
+  if (result.error) {
+    const failed = result.results?.find((r) => r.status === 'Error');
+    throw new Error(
+      `Migration ${failed?.migrationName ?? '(unknown)'} failed: ${String(result.error)}`,
+    );
+  }
+}

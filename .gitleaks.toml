@@ -1,0 +1,7 @@
+# Local development credentials are intentionally public (see infra/). Everything else is scanned.
+[extend]
+useDefault = true
+
+[allowlist]
+description = "Public local-development database password"
+regexes = ['''horide_local_dev''']

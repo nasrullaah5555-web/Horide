@@ -12,18 +12,18 @@ Objective: PRD, architecture, DB design, security plan, roadmap, ADRs, registers
 **T-002 Monorepo foundation** — DONE
 Objective: Git repo, pnpm workspace, folder layout, `.gitignore`, `.editorconfig`, Prettier, env templates, README, commit convention. · Depends: T-001 · Security: `.env*` ignored except `.example`. · Acceptance: `pnpm install` succeeds; no secrets tracked. · Tests: `git check-ignore .env` passes.
 
-**T-003 Local infrastructure** — TODO
+**T-003 Local infrastructure** — DONE
 Objective: `infra/docker-compose.yml` (PostGIS), non-Docker setup script, `.env.example` per app. · Depends: T-002 · Acceptance: database starts and `CREATE EXTENSION postgis` works. · Tests: script smoke run.
 
-**T-004 CI pipeline** — TODO
+**T-004 CI pipeline** — IMPLEMENTED (awaiting first GitHub run)
 Objective: GitHub Actions: install, lint, typecheck, backend tests against PostGIS service container, admin/website build, Flutter analyze + test, gitleaks, dependency audit. · Depends: T-002, OA-01 to run · Acceptance: workflow valid; green run on GitHub (verified only after OA-01).
 
 ## Phase 1 — Backend foundation
 
-**T-005 NestJS skeleton** — TODO
+**T-005 NestJS skeleton** — DONE
 Objective: app bootstrap, config validation (zod), `/health`, pino logging with redaction, Helmet, CORS allow-list, global validation, uniform error format. · Depends: T-002 · Security: startup refuses dev adapters in production. · Acceptance: `/health` returns DB status; invalid env aborts boot. · Tests: e2e health, config unit tests.
 
-**T-006 Database layer & identity migrations** — TODO
+**T-006 Database layer & identity migrations** — DONE
 Objective: Kysely, migrator, migration 001 (extensions, enums, users, profiles, otp_challenges, auth_sessions, admin_users, admin_roles, audit_logs). · Depends: T-005 · Acceptance: migrate up/down/up clean. · Tests: migration test.
 
 **T-007 Fleet, geo, pricing migrations** — TODO

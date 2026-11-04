@@ -1,0 +1,25 @@
+# Local development database.
+# Start:  docker compose -f infra/docker-compose.yml up -d
+# Stop:   docker compose -f infra/docker-compose.yml down
+# The password below is for local development only. Never reuse it anywhere else.
+services:
+  postgres:
+    image: postgis/postgis:16-3.4
+    container_name: horide-postgres
+    environment:
+      POSTGRES_USER: horide
+      POSTGRES_PASSWORD: horide_local_dev
+      POSTGRES_DB: horide
+    ports:
+      - '127.0.0.1:5432:5432' # bound to localhost only
+    volumes:
+      - horide-pgdata:/var/lib/postgresql/data
+      - ./postgres-init:/docker-entrypoint-initdb.d:ro
+    healthcheck:
+      test: ['CMD-SHELL', 'pg_isready -U horide -d horide']
+      interval: 5s
+      timeout: 3s
+      retries: 20
+
+volumes:
+  horide-pgdata:

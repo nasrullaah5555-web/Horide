@@ -2,7 +2,6 @@
 
 | Task | Blocked by | What is blocked | What continues |
 |---|---|---|---|
-| T-004 (green CI run) | Nothing now (OA-01 done) — verification pending first push | Confirming CI passes on GitHub | Writing the workflow |
 | T-010 (live SMS) | OA-08 | Sending real OTP SMS | Console/fake provider, adapter code |
 | T-018 (live routing) | OA-09 | Real road distances | Flagged development estimate |
 | T-029 (live push) | OA-11 | Real FCM delivery | In-app notifications, WebSocket |

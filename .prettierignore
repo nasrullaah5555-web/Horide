@@ -1,0 +1,7 @@
+pnpm-lock.yaml
+docs/
+mobile/
+packages/
+**/dist/
+**/.next/
+**/coverage/

@@ -1,0 +1,73 @@
+# Architecture Decision Records
+
+Format: context → decision → consequences. Status: Accepted unless marked otherwise.
+
+## ADR-001 Monorepo
+
+**Decision:** One Git repository. `apps/backend` (NestJS), `apps/admin` (Next.js), `apps/website` (Next.js), `mobile/passenger`, `mobile/driver` (Flutter), `packages/horide_core` (shared Dart package). JavaScript workspaces managed with pnpm.
+**Why:** One source of truth, shared CI, atomic changes across API and clients.
+
+## ADR-002 Database access: Kysely + SQL migrations
+
+**Context:** PostGIS types (geography, KNN `<->`) are poorly supported by Prisma. TypeORM's migrations are error-prone for beginners to read.
+**Decision:** Kysely (typed SQL query builder) with its built-in Migrator. Migrations are written as SQL inside TypeScript files so they read like plain SQL.
+**Consequences:** Queries stay close to SQL, parameterised by default (SQL injection protection). PostGIS functions are used via `sql` template tags.
+
+## ADR-003 Own phone-OTP authentication (not Supabase Auth)
+
+**Decision:** NestJS issues sessions. Short-lived JWT access token (15 min) + opaque refresh token (30 days), rotated on every use, stored hashed, with reuse detection that revokes the whole session family.
+**Why:** SMS provider must be Ethiopian-capable and swappable; full control over OTP limits, lockouts and driver/passenger roles. Avoids splitting user identity across two systems.
+
+## ADR-004 Supabase = managed Postgres + private storage only
+
+**Decision:** If Supabase is used, it provides PostgreSQL+PostGIS and a private S3-compatible bucket. The backend connects with a server-side connection string. Supabase's auto-generated public REST API and Auth are not used; Row Level Security is enabled on all tables with no public policies, so the public API exposes nothing.
+**Consequences:** Database is portable to any Postgres host.
+
+## ADR-005 Redis deferred (change from master prompt)
+
+**Context:** Master prompt lists Redis. Pilot scale in Jijiga is estimated at under 500 drivers. At 1 update / 5 s that is ~100 writes/s worst case, which PostgreSQL handles.
+**Decision:** Pilot runs on PostgreSQL only: `driver_locations` (one row per driver, upserted) with a GiST index. Single backend instance, so WebSocket rooms and rate-limit counters are in-process.
+**Trigger to add Redis:** more than one backend instance, or location writes > 300/s, or p95 matching query > 200 ms.
+**Why:** One less paid service and one less system to learn and secure.
+
+## ADR-006 Routing provider behind an adapter
+
+**Decision:** `RoutingProvider` interface. Implementations: `DevStraightLineRouting` (haversine × 1.3, labelled `isEstimate: true`, refused when `NODE_ENV=production`), `GoogleRoutesProvider`, `OsrmProvider`.
+**Open question (OA-09):** Google has better geocoding/search in Ethiopia but costs per request; OSRM on OpenStreetMap is free but Jijiga road coverage must be verified on the ground.
+
+## ADR-007 SMS provider behind an adapter
+
+**Decision:** `SmsProvider` interface. `ConsoleSmsProvider` for development (refused in production), `AfroMessageSmsProvider` for production pending OA-08.
+
+## ADR-008 Payments are records, not transactions
+
+**Decision:** `payments` row per trip with method, amount (= locked fare), status. Driver records receipt; passenger confirms or disputes. eBirr adds a transaction reference typed by the driver. No reference is "verified" until an eBirr commercial API exists (BR-06).
+**Fake-confirmation protection:** confirmation only by the trip's own driver/passenger, only after COMPLETED, once each, with audit trail; disputes go to finance admins.
+
+## ADR-009 Passenger web booking deferred (change from autonomous directive)
+
+**Decision:** Website v1 = public information site + legal pages. Passenger web booking after pilot.
+**Why:** Web booking needs browser geolocation, a second client to secure and maintain, and gives little value when nearly all users in Jijiga will book from a phone.
+
+## ADR-010 Money as integer santim
+
+All amounts are `bigint` santim. Display formatting only at the edge.
+
+## ADR-011 Trip state machine and atomic acceptance
+
+**Decision:** Allowed transitions defined in one module. Every transition is a conditional update: `UPDATE trips SET status=$new WHERE id=$id AND status=$expected RETURNING *`. Acceptance additionally requires `driver_id IS NULL`. A partial unique index allows only one active trip per driver and per passenger.
+**Consequences:** Double acceptance is impossible at the database level, not just in application code.
+
+## ADR-012 Hosting
+
+**Decision (pending owner accounts):** Render paid web service for the API (WebSockets need an always-on instance; the free tier sleeps). Admin and website on Render. Database region Frankfurt (closest common region to Ethiopia).
+**Open (OA-07):** Hosting outside Ethiopia is a cross-border transfer under Proclamation 1321/2024 — needs a legal basis (adequacy, safeguards or consent).
+
+## ADR-013 Navigation hand-off
+
+Turn-by-turn navigation is handed to the phone's maps app via a deep link instead of being built in. Building navigation is out of scope and unsafe to do badly.
+
+## ADR-014 Flutter apps cannot be compiled in the cloud workspace
+
+**Context:** The build environment blocks Flutter SDK and pub.dev downloads.
+**Decision:** Mobile code is written in the repository and checked in CI on GitHub (which can download Flutter) and on the owner's laptop. Mobile tasks are marked "Implemented — not compiled" until CI or the owner confirms a build.

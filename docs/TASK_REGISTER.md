@@ -55,10 +55,10 @@ Jijiga service zone (approximate polygon, marked DEV), illustrative fares, test 
 **T-022 Trip request & matching** — DONE · KNN, waves, offer expiry, trip expiry.
 **T-023 Atomic acceptance** — DONE · Tests: 20 concurrent accepts → exactly 1 winner.
 **T-024 Trip lifecycle & cancellation** — DONE (cancellation fee value pending OA-15) · State machine, events, cancellation rules. Tests: every illegal transition rejected.
-**T-025 Destination change** — TODO · Re-quote + passenger approval.
-**T-026 Realtime gateway** — TODO · Socket.IO auth, rooms, resync endpoint.
-**T-027 Ride payment records** — TODO · Record, confirm, dispute, admin resolve. Tests: non-party cannot confirm; no confirm before completion.
-**T-028 Ratings, complaints, emergency** — TODO
+**T-025 Destination change** — DONE · Re-quote + passenger approval.
+**T-026 Realtime gateway** — DONE · Socket.IO auth, rooms, resync endpoint.
+**T-027 Ride payment records** — DONE (eBirr references recorded, not verified – OA-10) · Record, confirm, dispute, admin resolve. Tests: non-party cannot confirm; no confirm before completion.
+**T-028 Ratings, complaints, emergency** — DONE
 **T-029 Notifications** — TODO · FCM adapter (live test blocked by OA-11), in-app list.
 **T-030 Admin APIs & reports** — TODO · Real aggregates only.
 **T-031 API-wide rate limiting & authz test suite** — TODO

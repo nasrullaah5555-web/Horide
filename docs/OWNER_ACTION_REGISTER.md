@@ -21,6 +21,7 @@ Actions only the owner can perform. Status: OPEN until the owner confirms or the
 | OA-15 | P1 | Decide prices: base, per-km, minimum fare, rounding, waiting, cancellation fee, subscription price | Business | Illustrative numbers are not market prices | Launch pricing | Yes — dev seed values | OPEN |
 | OA-16 | P1 | Confirm insurance and permit requirements for drivers and Bajaj | Insurers, authorities | Document list in onboarding | Final onboarding rules | Yes — configurable document types | OPEN |
 | OA-18 | P2 | At deployment: generate production secrets (`openssl rand -base64 48`, and `openssl rand -base64 32` for ADMIN_TOTP_ENCRYPTION_KEY) and run `pnpm admin:create` once to create your super admin | Render shell | Secrets must never come from the repo; the first admin can only be created from the server | Admin dashboard access in production | Yes | OPEN |
+| OA-19 | P1 | Confirm the emergency numbers shown in the app work in Jijiga (currently Police 991, Ambulance 907, Fire 939, Traffic 945) and decide who at Horide monitors emergency alerts, and when | Local authorities, staffing | A wrong number in an emergency is dangerous; alerts are only useful if someone watches them | Emergency feature | Yes | OPEN |
 | OA-17 | P0 (business) | Recruit pilot drivers and test subscription willingness to pay | Field | The business fails without paying drivers regardless of software | Pilot | Yes | OPEN |
 
 Notes:

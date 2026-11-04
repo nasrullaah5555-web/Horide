@@ -32,6 +32,13 @@ Only results that were actually run. Format: date · task · command · result.
 | 2026-11-05 | T-024 | Lifecycle e2e + state-machine unit tests | Passed: full ride with event trail, payment record for locked fare, out-of-order and wrong-party steps refused, nobody but admin cancels in progress, expiring subscription does not interrupt an accepted trip (BR-05), IDOR, phone hidden after trip, stale location labelled not live |
 | 2026-11-05 | all | Full backend suite | 214/214 passed |
 
+| 2026-11-05 | T-025 | Destination change e2e | Passed: server re-price, fare unchanged until approval, reject keeps fare, expired proposal refused, outside-zone refused, drivers/strangers refused |
+| 2026-11-05 | T-027 | Payment record e2e | Passed: cash confirm flow, eBirr reference rules, not before completion, not by strangers, once per party, dispute → finance resolve (support refused), resolved is final, audited |
+| 2026-11-05 | T-028 | Ratings/complaints/emergency e2e | Passed: one rating per party, driver average recomputed from ratings only, unfinished/stranger trips refused, complaint names other party, audited resolution, finance can't handle complaints, emergency recorded with position and returns numbers, never refused for a bad trip id |
+| 2026-11-05 | T-026 | Socket.IO e2e (real server on a port) | Passed: invalid token disconnected, driver receives offer, passenger receives accepted trip with vehicle, live location delivered, a stranger's socket receives nothing |
+| 2026-11-05 | T-026 | Built server started; `/health` and `/realtime` polling handshake | Both responded |
+| 2026-11-05 | all | Full backend suite | 230/230 passed |
+
 Defects found by tests and fixed: oversized JSON returned 500 instead of 413; malformed JSON returned the parser's raw message (could echo request fragments) — now a fixed `INVALID_JSON` error.
 Not yet verified: CI on GitHub (first run happens after this push).
 | 2026-11-04 | T-004 | First GitHub Actions run on `main` (run 41909539260) | Passed: backend job (lint, typecheck, 34 tests against PostGIS, build) and security job |

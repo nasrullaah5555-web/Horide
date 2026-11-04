@@ -14,13 +14,20 @@ import {
 import type { Response } from 'express';
 import { z } from 'zod';
 import { AppError } from '../../common/errors';
+import { latLngSchema } from '../../common/geo';
 import { ZodValidationPipe } from '../../common/zod-validation.pipe';
 import { type AuthUser, CurrentUser, Roles, UserAuthGuard } from '../auth/auth.guard';
+import { AccountService } from '../users/account.service';
+import { DestinationChangeService } from './destination-change.service';
 import { TripViewsService } from './trip-views.service';
 import { TripsService } from './trips.service';
 
 const requestSchema = z.strictObject({ quoteToken: z.string().min(20).max(4000) });
 const cancelSchema = z.strictObject({ reason: z.string().trim().max(300).optional() });
+const destinationSchema = z.strictObject({
+  destination: latLngSchema,
+  destinationText: z.string().trim().max(200).optional(),
+});
 const historySchema = z.strictObject({
   before: z.coerce.date().optional(),
   limit: z.coerce.number().int().min(1).max(50).default(20),
@@ -32,6 +39,8 @@ export class TripsController {
   constructor(
     private readonly trips: TripsService,
     private readonly views: TripViewsService,
+    private readonly destinations: DestinationChangeService,
+    private readonly accounts: AccountService,
   ) {}
 
   /** Book a ride. 201 when created, 200 when the same quote was already used (safe retry). */
@@ -118,22 +127,77 @@ export class TripsController {
     await this.trips.reject(user.id, id);
   }
 
-  @Post('trips/:id/:action')
+  /** Driver steps: on the way → arrived → started → completed. One explicit route each. */
+  @Post('trips/:id/arriving')
   @HttpCode(200)
   @Roles('driver')
-  async driverStep(
+  async arriving(@CurrentUser() user: AuthUser, @Param('id', ParseUUIDPipe) id: string) {
+    return this.driverStep(user, id, 'arriving');
+  }
+
+  @Post('trips/:id/arrived')
+  @HttpCode(200)
+  @Roles('driver')
+  async arrived(@CurrentUser() user: AuthUser, @Param('id', ParseUUIDPipe) id: string) {
+    return this.driverStep(user, id, 'arrive');
+  }
+
+  @Post('trips/:id/start')
+  @HttpCode(200)
+  @Roles('driver')
+  async start(@CurrentUser() user: AuthUser, @Param('id', ParseUUIDPipe) id: string) {
+    return this.driverStep(user, id, 'start');
+  }
+
+  @Post('trips/:id/complete')
+  @HttpCode(200)
+  @Roles('driver')
+  async complete(@CurrentUser() user: AuthUser, @Param('id', ParseUUIDPipe) id: string) {
+    return this.driverStep(user, id, 'complete');
+  }
+
+  /** Passenger asks for a new destination; the server returns the new price for approval. */
+  @Post('trips/:id/destination-change')
+  @HttpCode(200)
+  @Roles('passenger')
+  async proposeDestination(
     @CurrentUser() user: AuthUser,
     @Param('id', ParseUUIDPipe) id: string,
-    @Param('action') action: string,
+    @Body(new ZodValidationPipe(destinationSchema)) body: z.infer<typeof destinationSchema>,
   ) {
-    const steps = {
-      arriving: 'arriving',
-      arrived: 'arrive',
-      start: 'start',
-      complete: 'complete',
-    } as const;
-    const step = steps[action as keyof typeof steps];
-    if (!step) throw new AppError(HttpStatus.NOT_FOUND, 'NOT_FOUND', 'Unknown action.');
+    await this.accounts.requireActive(user.id);
+    return this.destinations.propose(user.id, id, body.destination, body.destinationText ?? null);
+  }
+
+  @Post('trips/:id/destination-change/:changeId/approve')
+  @HttpCode(200)
+  @Roles('passenger')
+  async approveDestination(
+    @CurrentUser() user: AuthUser,
+    @Param('id', ParseUUIDPipe) id: string,
+    @Param('changeId', ParseUUIDPipe) changeId: string,
+  ) {
+    await this.destinations.decide(user.id, id, changeId, true);
+    return this.views.forUser(id, user);
+  }
+
+  @Post('trips/:id/destination-change/:changeId/reject')
+  @HttpCode(200)
+  @Roles('passenger')
+  async rejectDestination(
+    @CurrentUser() user: AuthUser,
+    @Param('id', ParseUUIDPipe) id: string,
+    @Param('changeId', ParseUUIDPipe) changeId: string,
+  ) {
+    await this.destinations.decide(user.id, id, changeId, false);
+    return this.views.forUser(id, user);
+  }
+
+  private async driverStep(
+    user: AuthUser,
+    id: string,
+    step: 'arriving' | 'arrive' | 'start' | 'complete',
+  ) {
     await this.trips.transition(step, { party: 'driver', id: user.id }, id);
     return this.views.forUser(id, user);
   }

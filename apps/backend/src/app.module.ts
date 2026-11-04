@@ -10,6 +10,9 @@ import { DriversModule } from './modules/drivers/drivers.module';
 import { PricingModule } from './modules/pricing/pricing.module';
 import { SubscriptionsModule } from './modules/subscriptions/subscriptions.module';
 import { TripsModule } from './modules/trips/trips.module';
+import { PaymentsModule } from './modules/payments/payments.module';
+import { FeedbackModule } from './modules/feedback/feedback.module';
+import { RealtimeModule } from './modules/realtime/realtime.module';
 import { StorageModule } from './modules/storage/storage.module';
 import { UsersModule } from './modules/users/users.module';
 import { HealthController } from './modules/health/health.controller';
@@ -57,6 +60,9 @@ export class AppModule {
         PricingModule,
         SubscriptionsModule,
         TripsModule,
+        PaymentsModule,
+        FeedbackModule,
+        RealtimeModule,
       ],
       controllers: [HealthController],
     };

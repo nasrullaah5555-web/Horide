@@ -6,7 +6,7 @@ import { APP_CONFIG } from '../../config/config.module';
 import type { AppConfig } from '../../config/env';
 import { DATABASE } from '../../database/database.module';
 import type { DB, PaymentMethod, VehicleCategory } from '../../database/types';
-import { ROUTING_PROVIDER, type RoutingProvider } from '../geo/routing.provider';
+import { type Route, ROUTING_PROVIDER, type RoutingProvider } from '../geo/routing.provider';
 import { ZonesService } from '../geo/zones.service';
 import { calculateFare, formatEtb } from './fare-engine';
 import { signQuote, type QuotePayload } from './quote-token';
@@ -95,6 +95,51 @@ export class PricingService {
     categories: VehicleCategory[];
     paymentMethod: PaymentMethod;
   }): Promise<Quote[]> {
+    const route = await this.validatedRoute(input.pickup, input.destination);
+
+    const expSeconds = Math.floor(Date.now() / 1000) + QUOTE_TTL_SECONDS;
+    const quotes: Quote[] = [];
+    for (const category of [...new Set(input.categories)]) {
+      const rates = await this.currentRates(category);
+      const fare = calculateFare(route.distanceMetres, rates);
+      const payload: QuotePayload = {
+        v: 1,
+        pid: input.passengerId,
+        cat: category,
+        pay: input.paymentMethod,
+        pu: [input.pickup.lat, input.pickup.lng],
+        de: [input.destination.lat, input.destination.lng],
+        ...(input.pickupText ? { put: input.pickupText } : {}),
+        ...(input.destinationText ? { det: input.destinationText } : {}),
+        dm: route.distanceMetres,
+        ds: route.durationSeconds,
+        est: route.isEstimate,
+        fv: rates.versionId,
+        fare: fare.total.toString(),
+        exp: expSeconds,
+      };
+      quotes.push({
+        category,
+        fare: fare.total.toString(),
+        fareEtb: formatEtb(fare.total),
+        distanceMetres: route.distanceMetres,
+        durationSeconds: route.durationSeconds,
+        isEstimate: route.isEstimate,
+        minimumApplied: fare.minimumApplied,
+        fareVersionId: rates.versionId,
+        expiresAt: new Date(expSeconds * 1000),
+        quoteToken: signQuote(payload, this.config.QUOTE_SIGNING_SECRET),
+      });
+    }
+    return quotes;
+  }
+
+  /**
+   * The checks every priced journey must pass: both ends in an active service zone, not too short,
+   * and a believable road route. Used for new bookings and for destination changes.
+   */
+  async validatedRoute(pickup: LatLng, destination: LatLng): Promise<Route> {
+    const input = { pickup, destination };
     const [pickupZone, destinationZone] = await Promise.all([
       this.zones.zoneFor(input.pickup),
       this.zones.zoneFor(input.destination),
@@ -135,40 +180,21 @@ export class PricingService {
       );
     }
 
-    const expSeconds = Math.floor(Date.now() / 1000) + QUOTE_TTL_SECONDS;
-    const quotes: Quote[] = [];
-    for (const category of [...new Set(input.categories)]) {
-      const rates = await this.currentRates(category);
-      const fare = calculateFare(route.distanceMetres, rates);
-      const payload: QuotePayload = {
-        v: 1,
-        pid: input.passengerId,
-        cat: category,
-        pay: input.paymentMethod,
-        pu: [input.pickup.lat, input.pickup.lng],
-        de: [input.destination.lat, input.destination.lng],
-        ...(input.pickupText ? { put: input.pickupText } : {}),
-        ...(input.destinationText ? { det: input.destinationText } : {}),
-        dm: route.distanceMetres,
-        ds: route.durationSeconds,
-        est: route.isEstimate,
-        fv: rates.versionId,
-        fare: fare.total.toString(),
-        exp: expSeconds,
-      };
-      quotes.push({
-        category,
-        fare: fare.total.toString(),
-        fareEtb: formatEtb(fare.total),
-        distanceMetres: route.distanceMetres,
-        durationSeconds: route.durationSeconds,
-        isEstimate: route.isEstimate,
-        minimumApplied: fare.minimumApplied,
-        fareVersionId: rates.versionId,
-        expiresAt: new Date(expSeconds * 1000),
-        quoteToken: signQuote(payload, this.config.QUOTE_SIGNING_SECRET),
-      });
-    }
-    return quotes;
+    return route;
+  }
+
+  /** Prices a distance with a specific (possibly older) fare version, e.g. the one locked on a trip. */
+  async priceWithVersion(fareVersionId: string, distanceMetres: number): Promise<bigint> {
+    const v = await this.db
+      .selectFrom('fare_versions')
+      .select(['base_fare', 'per_km', 'minimum_fare', 'rounding_unit'])
+      .where('id', '=', fareVersionId)
+      .executeTakeFirstOrThrow();
+    return calculateFare(distanceMetres, {
+      baseFare: BigInt(v.base_fare),
+      perKm: BigInt(v.per_km),
+      minimumFare: BigInt(v.minimum_fare),
+      roundingUnit: BigInt(v.rounding_unit),
+    }).total;
   }
 }

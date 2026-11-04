@@ -45,3 +45,7 @@ Evidence: `src/modules/subscriptions`, `driver-eligibility.service.ts`; `test/su
 ## T-021–T-024 Core ride flow — 2026-11-05
 Evidence: `src/modules/locations`, `src/modules/trips` (state machine, matching, acceptance, lifecycle, views), migration 0005; `test/trips.e2e-spec.ts`, `src/modules/trips/trip-state.spec.ts`.
 Known limits: matching sweeper runs in-process every 5 s (single instance, ADR-005); a driver cancelling after acceptance cancels the trip rather than re-dispatching it (re-dispatch is a candidate improvement).
+
+## T-025–T-028 Destination change, realtime, payments, feedback — 2026-11-05
+Evidence: `src/modules/trips/destination-change.service.ts`, `src/modules/realtime`, `src/modules/payments`, `src/modules/feedback`; `test/ride-extras.e2e-spec.ts`, `test/realtime.e2e-spec.ts`.
+Emergency numbers (Police 991, Ambulance 907, Fire 939, Traffic 945) from Wikipedia's list; local confirmation is owner action OA-19.

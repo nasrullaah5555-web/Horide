@@ -44,6 +44,7 @@ export const envSchema = z
     SMS_PROVIDER: z.enum(['console', 'fake', 'afromessage']).default('console'),
     ROUTING_PROVIDER: z.enum(['dev_estimate', 'fake', 'google', 'osrm']).default('dev_estimate'),
     STORAGE_PROVIDER: z.enum(['local', 's3']).default('local'),
+    STORAGE_LOCAL_DIR: z.string().min(1).default('./storage'),
 
     // Secrets. No defaults: they must be provided. Generate with `openssl rand -base64 48`.
     JWT_ACCESS_SECRET: z.string().min(32, 'must be at least 32 characters'),

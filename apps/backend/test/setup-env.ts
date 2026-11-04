@@ -1,3 +1,6 @@
+import { tmpdir } from 'node:os';
+import { join } from 'node:path';
+
 /**
  * Runs before every test file. Points tests at the dedicated test database,
  * never at development or production data.
@@ -14,3 +17,4 @@ process.env.JWT_ACCESS_SECRET = 'test-access-secret-0123456789abcdef0123456789';
 process.env.OTP_PEPPER = 'test-otp-pepper-0123456789abcdef0123456789abcd';
 process.env.QUOTE_SIGNING_SECRET = 'test-quote-secret-0123456789abcdef012345678';
 process.env.ADMIN_TOTP_ENCRYPTION_KEY = Buffer.alloc(32, 7).toString('base64');
+process.env.STORAGE_LOCAL_DIR = join(tmpdir(), `horide-test-storage-${process.pid}`);

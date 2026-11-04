@@ -13,6 +13,9 @@
 - Migrations 0002–0004: vehicles, documents, zones, locations, versioned fares, trips, offers, payments, subscriptions, ratings, complaints, emergencies, notifications, admin sessions.
 - Development seed (approximate Jijiga zone, illustrative fares).
 - Phone OTP login with rotating sessions; admin login with password + TOTP, role-based permissions, CSRF protection, audit log; `admin:create` CLI.
+- Passenger profile and saved places; driver onboarding with private document uploads; admin verification, suspension and audited document access.
+- Fare engine (integer santim), service zones, signed quotes, versioned admin pricing.
+- Driver subscriptions: plans, payment recording, early renewal, eligibility rules.
 
 ### Security
 - Forced `multer` ≥ 2.5.0 to fix a denial-of-service advisory in a transitive dependency.

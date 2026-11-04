@@ -44,13 +44,13 @@ Jijiga service zone (approximate polygon, marked DEV), illustrative fares, test 
 
 ## Phase 3 — Domain backend
 
-**T-014 Passenger profile & saved locations** — TODO
-**T-015 Storage adapter & secure uploads** — TODO · Local disk + S3-compatible; magic-byte checks; signed URLs.
-**T-016 Driver onboarding** — TODO · Profile, vehicle, documents, status.
-**T-017 Admin verification** — TODO · Approve/reject documents, vehicles, drivers; audited.
-**T-018 Service zones & routing adapter** — TODO · Point-in-zone; dev routing estimate flagged; Google/OSRM adapters (live test blocked by OA-09).
-**T-019 Fare engine & quotes** — TODO · Pure fare function (integer maths), versions, signed quotes. Tests: table-driven fare tests, min fare, rounding, tampered quote rejected.
-**T-020 Subscriptions & eligibility** — TODO · Plans, manual payment recording, eligibility predicate. Tests: expired/suspended/unapproved excluded; active trip unaffected by expiry.
+**T-014 Passenger profile & saved locations** — DONE
+**T-015 Storage adapter & secure uploads** — DONE (local); S3 adapter BLOCKED – OA-12 · Local disk + S3-compatible; magic-byte checks; signed URLs.
+**T-016 Driver onboarding** — DONE · Profile, vehicle, documents, status.
+**T-017 Admin verification** — DONE · Approve/reject documents, vehicles, drivers; audited.
+**T-018 Service zones & routing adapter** — DONE (dev estimate); real provider BLOCKED – OA-09 · Point-in-zone; dev routing estimate flagged; Google/OSRM adapters (live test blocked by OA-09).
+**T-019 Fare engine & quotes** — DONE · Pure fare function (integer maths), versions, signed quotes. Tests: table-driven fare tests, min fare, rounding, tampered quote rejected.
+**T-020 Subscriptions & eligibility** — DONE · Plans, manual payment recording, eligibility predicate. Tests: expired/suspended/unapproved excluded; active trip unaffected by expiry.
 **T-021 Availability & location ingestion** — TODO · Online/offline, plausibility checks, staleness.
 **T-022 Trip request & matching** — TODO · KNN, waves, offer expiry, trip expiry.
 **T-023 Atomic acceptance** — TODO · Tests: 20 concurrent accepts → exactly 1 winner.

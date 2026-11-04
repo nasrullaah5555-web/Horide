@@ -29,3 +29,15 @@ Evidence: `src/modules/auth`; `test/auth.e2e-spec.ts`, `src/modules/auth/auth-un
 
 ## T-013 Admin authentication, RBAC and audit — 2026-11-05
 Evidence: `src/modules/admin-auth`, `src/modules/audit`; `test/admin-auth.e2e-spec.ts`, `src/modules/admin-auth/admin-units.spec.ts`.
+
+## T-014 Passenger profile & saved places — 2026-11-05
+Evidence: `src/modules/users`; `test/onboarding.e2e-spec.ts`.
+
+## T-015–T-017 Uploads, driver onboarding, admin verification — 2026-11-05
+Evidence: `src/modules/storage`, `src/modules/drivers`; `test/onboarding.e2e-spec.ts`, `src/modules/storage/storage.spec.ts`. Required documents list in `driver-requirements.ts` (insurance/permits pending OA-16).
+
+## T-018–T-019 Zones, routing, fare engine, quotes — 2026-11-05
+Evidence: `src/modules/pricing`, `src/modules/geo`; `src/modules/pricing/pricing-units.spec.ts`, `test/pricing.e2e-spec.ts`.
+
+## T-020 Subscriptions & eligibility — 2026-11-05
+Evidence: `src/modules/subscriptions`, `driver-eligibility.service.ts`; `test/subscriptions.e2e-spec.ts`.

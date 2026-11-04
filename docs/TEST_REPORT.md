@@ -21,6 +21,11 @@ Only results that were actually run. Format: date · task · command · result.
 | 2026-11-05 | T-013 | `pnpm admin:create` on dev DB | Created admin; duplicate refused |
 | 2026-11-05 | all | Full backend suite | 128/128 passed |
 
+| 2026-11-05 | T-014–T-017 | Profile, upload, onboarding and verification e2e tests | Passed: IDOR on saved places, content-sniffed uploads (disguised HTML rejected), 8 MB limit, path traversal, storage keys never exposed, approval only when complete, audited downloads, role separation, suspension takes driver offline, SQL/wildcard-safe search |
+| 2026-11-05 | T-018–T-019 | Fare engine worked examples + quote/pricing e2e | Passed: 7 hand-calculated fares, exact integer maths, tampered/expired quotes rejected, zone checks, short-trip check, client-sent price rejected, versioned prices audited, invalid zone shape rejected |
+| 2026-11-05 | T-020 | Subscription e2e tests | Passed: payment makes driver eligible, early renewal extends without overlap, 3 concurrent renewals never overlap, amount/date/reference validation, expiry and cancellation remove eligibility, finance-only |
+| 2026-11-05 | all | Full backend suite | 187/187 passed |
+
 Defects found by tests and fixed: oversized JSON returned 500 instead of 413; malformed JSON returned the parser's raw message (could echo request fragments) — now a fixed `INVALID_JSON` error.
 Not yet verified: CI on GitHub (first run happens after this push).
 | 2026-11-04 | T-004 | First GitHub Actions run on `main` (run 41909539260) | Passed: backend job (lint, typecheck, 34 tests against PostGIS, build) and security job |

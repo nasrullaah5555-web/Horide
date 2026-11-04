@@ -17,6 +17,13 @@ export const DEV_ONLY_ADAPTERS = {
   STORAGE_PROVIDER: ['local'],
 } as const;
 
+/** The example secrets shipped in .env.example. Production must never run with them. */
+const PLACEHOLDER_SECRETS = new Set([
+  'dev-only-access-secret-change-me-0000000000',
+  'dev-only-otp-pepper-change-me-00000000000000',
+  'dev-only-quote-secret-change-me-00000000000',
+]);
+
 export const envSchema = z
   .object({
     NODE_ENV: z.enum(['development', 'test', 'production']).default('development'),
@@ -36,9 +43,39 @@ export const envSchema = z
     SMS_PROVIDER: z.enum(['console', 'fake', 'afromessage']).default('console'),
     ROUTING_PROVIDER: z.enum(['dev_estimate', 'fake', 'google', 'osrm']).default('dev_estimate'),
     STORAGE_PROVIDER: z.enum(['local', 's3']).default('local'),
+
+    // Secrets. No defaults: they must be provided. Generate with `openssl rand -base64 48`.
+    JWT_ACCESS_SECRET: z.string().min(32, 'must be at least 32 characters'),
+    OTP_PEPPER: z.string().min(32, 'must be at least 32 characters'),
+    QUOTE_SIGNING_SECRET: z.string().min(32, 'must be at least 32 characters'),
+
+    ACCESS_TOKEN_TTL_SECONDS: z.coerce.number().int().min(60).max(3600).default(900),
+    REFRESH_TOKEN_TTL_DAYS: z.coerce.number().int().min(1).max(90).default(30),
+    OTP_TTL_SECONDS: z.coerce.number().int().min(60).max(900).default(300),
+    OTP_MAX_ATTEMPTS: z.coerce.number().int().min(1).max(10).default(5),
+    OTP_PER_PHONE_PER_15_MIN: z.coerce.number().int().min(1).max(20).default(3),
+    OTP_PER_IP_PER_HOUR: z.coerce.number().int().min(1).max(1000).default(10),
+    // Caps total SMS cost if someone abuses the endpoint with many phones and IPs.
+    OTP_GLOBAL_PER_HOUR: z.coerce.number().int().min(1).default(500),
   })
   .superRefine((env, ctx) => {
     if (env.NODE_ENV !== 'production') return;
+    for (const key of ['JWT_ACCESS_SECRET', 'OTP_PEPPER', 'QUOTE_SIGNING_SECRET'] as const) {
+      if (PLACEHOLDER_SECRETS.has(env[key])) {
+        ctx.addIssue({
+          code: 'custom',
+          path: [key],
+          message: 'looks like a placeholder; use a randomly generated secret in production',
+        });
+      }
+    }
+    if (new Set([env.JWT_ACCESS_SECRET, env.OTP_PEPPER, env.QUOTE_SIGNING_SECRET]).size < 3) {
+      ctx.addIssue({
+        code: 'custom',
+        path: ['OTP_PEPPER'],
+        message: 'each secret must be different',
+      });
+    }
     for (const [key, banned] of Object.entries(DEV_ONLY_ADAPTERS)) {
       const value = env[key as keyof typeof DEV_ONLY_ADAPTERS];
       if ((banned as readonly string[]).includes(value)) {

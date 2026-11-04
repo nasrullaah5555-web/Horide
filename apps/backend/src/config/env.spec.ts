@@ -2,6 +2,9 @@ import { ConfigError, loadConfig } from './env';
 
 const base = {
   DATABASE_URL: 'postgres://u:p@localhost:5432/db',
+  JWT_ACCESS_SECRET: 'a'.repeat(40),
+  OTP_PEPPER: 'b'.repeat(40),
+  QUOTE_SIGNING_SECRET: 'c'.repeat(40),
 };
 
 const productionOk = {
@@ -57,6 +60,24 @@ describe('loadConfig', () => {
     expect(() => loadConfig({ ...productionOk, CORS_ORIGINS: 'http://admin.example.com' })).toThrow(
       /CORS_ORIGINS/,
     );
+  });
+
+  it('requires secrets of at least 32 characters', () => {
+    expect(() => loadConfig({ ...base, JWT_ACCESS_SECRET: 'short' })).toThrow(/JWT_ACCESS_SECRET/);
+    expect(() => loadConfig({ ...base, OTP_PEPPER: undefined })).toThrow(/OTP_PEPPER/);
+  });
+
+  it('refuses placeholder secrets in production', () => {
+    expect(() =>
+      loadConfig({
+        ...productionOk,
+        JWT_ACCESS_SECRET: 'dev-only-access-secret-change-me-0000000000',
+      }),
+    ).toThrow(/JWT_ACCESS_SECRET/);
+  });
+
+  it('refuses reusing one secret for several purposes in production', () => {
+    expect(() => loadConfig({ ...productionOk, OTP_PEPPER: 'a'.repeat(40) })).toThrow(/different/);
   });
 
   it('lists every problem at once', () => {

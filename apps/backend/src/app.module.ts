@@ -4,6 +4,7 @@ import { LoggerModule } from 'nestjs-pino';
 import { ConfigModule } from './config/config.module';
 import type { AppConfig } from './config/env';
 import { DatabaseModule } from './database/database.module';
+import { AuthModule } from './modules/auth/auth.module';
 import { HealthController } from './modules/health/health.controller';
 
 /** Fields that must never appear in logs. */
@@ -41,6 +42,7 @@ export class AppModule {
           },
         }),
         DatabaseModule,
+        AuthModule,
       ],
       controllers: [HealthController],
     };

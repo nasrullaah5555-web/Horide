@@ -1,7 +1,19 @@
-# Local development credentials are intentionally public (see infra/). Everything else is scanned.
+# Secret scanning configuration.
+# Only these exact, intentionally public values are allowed. Files are NOT allowlisted by path,
+# so a real secret accidentally added to a test or example file is still detected.
 [extend]
 useDefault = true
 
 [allowlist]
-description = "Public local-development database password"
-regexes = ['''horide_local_dev''']
+description = "Public development/test placeholders and published test vectors"
+regexes = [
+  # Local development database password (infra/, CI service container)
+  '''horide_local_dev''',
+  # .env.example placeholders, refused by the API in production
+  '''dev-only-[a-z-]+-change-me-0+''',
+  '''ZGV2LW9ubHktdG90cC1rZXktY2hhbmdlLW1lLTAwMDA=''',
+  # Fake secrets used only by automated tests
+  '''test-[a-z-]+-0123456789abcdef[0-9a-f]*''',
+  # RFC 6238 Appendix B published TOTP test vector secret
+  '''GEZDGNBVGY3TQOJQGEZDGNBVGY3TQOJQ''',
+]

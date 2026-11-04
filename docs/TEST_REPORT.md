@@ -25,3 +25,4 @@ Defects found by tests and fixed: oversized JSON returned 500 instead of 413; ma
 Not yet verified: CI on GitHub (first run happens after this push).
 | 2026-11-04 | T-004 | First GitHub Actions run on `main` (run 41909539260) | Passed: backend job (lint, typecheck, 34 tests against PostGIS, build) and security job |
 | 2026-11-04 | T-004 | Dependabot PR runs | Failed: gitleaks needed `pull-requests: read`. Fixed; Dependabot now groups minor/patch and skips majors |
+| 2026-11-05 | T-004 | CI secret scan after T-013 | Failed: 3 findings, all intentional public values (dev placeholder key, fake test secret, RFC 6238 test vector). Allowlisted by exact value, not by file. Local gitleaks: history clean; a planted fake key in `test/` is still detected |

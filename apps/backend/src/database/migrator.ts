@@ -1,5 +1,7 @@
 import { Kysely, Migration, MigrationResultSet, Migrator } from 'kysely';
 import * as m0001 from './migrations/0001_identity';
+import * as m0002 from './migrations/0002_fleet_geo_pricing';
+import * as m0003 from './migrations/0003_trips_payments_subscriptions';
 
 /**
  * The list of migrations, in order. Listed explicitly (instead of read from disk) so the
@@ -8,6 +10,8 @@ import * as m0001 from './migrations/0001_identity';
  */
 export const migrations: Record<string, Migration> = {
   '0001_identity': m0001,
+  '0002_fleet_geo_pricing': m0002,
+  '0003_trips_payments_subscriptions': m0003,
 };
 
 // Migrations work on any schema, so the database type is intentionally untyped here.

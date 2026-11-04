@@ -11,7 +11,8 @@
     "lint": "eslint \"src/**/*.ts\" \"test/**/*.ts\"",
     "test": "jest --runInBand",
     "migrate": "ts-node --transpile-only src/database/migrate-cli.ts latest",
-    "migrate:down": "ts-node --transpile-only src/database/migrate-cli.ts down"
+    "migrate:down": "ts-node --transpile-only src/database/migrate-cli.ts down",
+    "seed:dev": "ts-node --transpile-only src/database/seed-dev.ts"
   },
   "dependencies": {
     "@nestjs/common": "^11.2.8",

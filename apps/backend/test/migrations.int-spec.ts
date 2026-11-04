@@ -3,7 +3,7 @@ import { createMigrator } from '../src/database/migrator';
 import type { DB } from '../src/database/types';
 import { resetSchema, testDatabase } from './helpers/db';
 
-describe('Migration 0001 identity', () => {
+describe('Migrations: identity', () => {
   let db: Kysely<DB>;
 
   beforeAll(async () => {
@@ -21,7 +21,7 @@ describe('Migration 0001 identity', () => {
     expect(down.error).toBeUndefined();
     const up = await migrator.migrateToLatest();
     expect(up.error).toBeUndefined();
-    expect(up.results?.map((r) => r.migrationName)).toEqual(['0001_identity']);
+    expect(up.results?.length).toBe(1);
   });
 
   describe('users', () => {

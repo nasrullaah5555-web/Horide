@@ -27,7 +27,7 @@ for db in horide horide_test; do
     sudo -u postgres createdb -O horide "${db}"
   fi
   # PostGIS must be created by a superuser the first time.
-  sudo -u postgres psql -d "${db}" -c "CREATE EXTENSION IF NOT EXISTS postgis; CREATE EXTENSION IF NOT EXISTS pgcrypto; CREATE EXTENSION IF NOT EXISTS citext;"
+  sudo -u postgres psql -d "${db}" -c "CREATE EXTENSION IF NOT EXISTS postgis; CREATE EXTENSION IF NOT EXISTS pgcrypto; CREATE EXTENSION IF NOT EXISTS citext; CREATE EXTENSION IF NOT EXISTS btree_gist;"
 done
 
 echo "Done. Connection string: postgres://horide:horide_local_dev@localhost:5432/horide"

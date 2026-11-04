@@ -255,6 +255,8 @@ export interface TripsTable {
   cancelled_at: Timestamp | null;
   cancelled_by: TripParty | null;
   cancel_reason: string | null;
+  quote_hash: string | null;
+  cancellation_fee: Money | null;
   updated_at: Generated<Date>;
 }
 

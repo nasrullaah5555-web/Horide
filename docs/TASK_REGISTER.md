@@ -51,10 +51,10 @@ Jijiga service zone (approximate polygon, marked DEV), illustrative fares, test 
 **T-018 Service zones & routing adapter** — DONE (dev estimate); real provider BLOCKED – OA-09 · Point-in-zone; dev routing estimate flagged; Google/OSRM adapters (live test blocked by OA-09).
 **T-019 Fare engine & quotes** — DONE · Pure fare function (integer maths), versions, signed quotes. Tests: table-driven fare tests, min fare, rounding, tampered quote rejected.
 **T-020 Subscriptions & eligibility** — DONE · Plans, manual payment recording, eligibility predicate. Tests: expired/suspended/unapproved excluded; active trip unaffected by expiry.
-**T-021 Availability & location ingestion** — TODO · Online/offline, plausibility checks, staleness.
-**T-022 Trip request & matching** — TODO · KNN, waves, offer expiry, trip expiry.
-**T-023 Atomic acceptance** — TODO · Tests: 20 concurrent accepts → exactly 1 winner.
-**T-024 Trip lifecycle & cancellation** — TODO · State machine, events, cancellation rules. Tests: every illegal transition rejected.
+**T-021 Availability & location ingestion** — DONE · Online/offline, plausibility checks, staleness.
+**T-022 Trip request & matching** — DONE · KNN, waves, offer expiry, trip expiry.
+**T-023 Atomic acceptance** — DONE · Tests: 20 concurrent accepts → exactly 1 winner.
+**T-024 Trip lifecycle & cancellation** — DONE (cancellation fee value pending OA-15) · State machine, events, cancellation rules. Tests: every illegal transition rejected.
 **T-025 Destination change** — TODO · Re-quote + passenger approval.
 **T-026 Realtime gateway** — TODO · Socket.IO auth, rooms, resync endpoint.
 **T-027 Ride payment records** — TODO · Record, confirm, dispute, admin resolve. Tests: non-party cannot confirm; no confirm before completion.

@@ -16,6 +16,7 @@
 - Passenger profile and saved places; driver onboarding with private document uploads; admin verification, suspension and audited document access.
 - Fare engine (integer santim), service zones, signed quotes, versioned admin pricing.
 - Driver subscriptions: plans, payment recording, early renewal, eligibility rules.
+- Core ride flow: driver availability and GPS ingestion with plausibility checks, trip booking from signed quotes, wave-based matching, single-winner acceptance, trip lifecycle with event history, payment record on completion.
 
 ### Security
 - Forced `multer` ≥ 2.5.0 to fix a denial-of-service advisory in a transitive dependency.

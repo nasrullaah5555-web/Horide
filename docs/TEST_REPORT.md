@@ -26,6 +26,12 @@ Only results that were actually run. Format: date · task · command · result.
 | 2026-11-05 | T-020 | Subscription e2e tests | Passed: payment makes driver eligible, early renewal extends without overlap, 3 concurrent renewals never overlap, amount/date/reference validation, expiry and cancellation remove eligibility, finance-only |
 | 2026-11-05 | all | Full backend suite | 187/187 passed |
 
+| 2026-11-05 | T-021 | Availability/location e2e + unit tests | Passed: ineligible driver can't go online (reasons shown), inaccurate/future fixes refused, teleport dropped, out-of-order point can't overwrite newer one |
+| 2026-11-05 | T-022 | Matching e2e | Passed: only nearby eligible drivers of the right category get offers (excluded: wrong category, far, stale fix, expired subscription, suspended); reject → next driver; wave 2 reaches further; trip expires after search limit; same quote books once; no second open trip; another passenger's quote refused |
+| 2026-11-05 | T-023 | 20 concurrent accepts on one trip | Passed: exactly 1 winner, 19 × 409, one `accepted` event, fare locked. Repeated 5× in isolation: 5/5 passed |
+| 2026-11-05 | T-024 | Lifecycle e2e + state-machine unit tests | Passed: full ride with event trail, payment record for locked fare, out-of-order and wrong-party steps refused, nobody but admin cancels in progress, expiring subscription does not interrupt an accepted trip (BR-05), IDOR, phone hidden after trip, stale location labelled not live |
+| 2026-11-05 | all | Full backend suite | 214/214 passed |
+
 Defects found by tests and fixed: oversized JSON returned 500 instead of 413; malformed JSON returned the parser's raw message (could echo request fragments) — now a fixed `INVALID_JSON` error.
 Not yet verified: CI on GitHub (first run happens after this push).
 | 2026-11-04 | T-004 | First GitHub Actions run on `main` (run 41909539260) | Passed: backend job (lint, typecheck, 34 tests against PostGIS, build) and security job |

@@ -41,3 +41,7 @@ Evidence: `src/modules/pricing`, `src/modules/geo`; `src/modules/pricing/pricing
 
 ## T-020 Subscriptions & eligibility — 2026-11-05
 Evidence: `src/modules/subscriptions`, `driver-eligibility.service.ts`; `test/subscriptions.e2e-spec.ts`.
+
+## T-021–T-024 Core ride flow — 2026-11-05
+Evidence: `src/modules/locations`, `src/modules/trips` (state machine, matching, acceptance, lifecycle, views), migration 0005; `test/trips.e2e-spec.ts`, `src/modules/trips/trip-state.spec.ts`.
+Known limits: matching sweeper runs in-process every 5 s (single instance, ADR-005); a driver cancelling after acceptance cancels the trip rather than re-dispatching it (re-dispatch is a candidate improvement).

@@ -33,26 +33,26 @@ class HorideTheme {
   const HorideTheme._();
 
   static ThemeData light() => _build(
-        brightness: Brightness.light,
-        background: HorideColors.ground,
-        surface: HorideColors.white,
-        onSurface: HorideColors.navy,
-        muted: HorideColors.muted,
-        line: HorideColors.line,
-        primary: HorideColors.navy,
-        onPrimary: HorideColors.white,
-      );
+    brightness: Brightness.light,
+    background: HorideColors.ground,
+    surface: HorideColors.white,
+    onSurface: HorideColors.navy,
+    muted: HorideColors.muted,
+    line: HorideColors.line,
+    primary: HorideColors.navy,
+    onPrimary: HorideColors.white,
+  );
 
   static ThemeData dark() => _build(
-        brightness: Brightness.dark,
-        background: HorideColors.night,
-        surface: HorideColors.nightSurface,
-        onSurface: HorideColors.white,
-        muted: const Color(0xFFA9B6C4),
-        line: HorideColors.nightLine,
-        primary: HorideColors.sign,
-        onPrimary: HorideColors.white,
-      );
+    brightness: Brightness.dark,
+    background: HorideColors.night,
+    surface: HorideColors.nightSurface,
+    onSurface: HorideColors.white,
+    muted: const Color(0xFFA9B6C4),
+    line: HorideColors.nightLine,
+    primary: HorideColors.sign,
+    onPrimary: HorideColors.white,
+  );
 
   static ThemeData _build({
     required Brightness brightness,
@@ -116,11 +116,7 @@ class HorideTheme {
           minimumSize: const Size.fromHeight(kLargeTouchTarget),
           backgroundColor: primary,
           foregroundColor: onPrimary,
-          textStyle: const TextStyle(
-            fontFamily: _font,
-            fontSize: 17,
-            fontWeight: FontWeight.w700,
-          ),
+          textStyle: const TextStyle(fontFamily: _font, fontSize: 17, fontWeight: FontWeight.w700),
           shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
         ),
       ),
@@ -129,11 +125,7 @@ class HorideTheme {
           minimumSize: const Size.fromHeight(kLargeTouchTarget),
           foregroundColor: onSurface,
           side: BorderSide(color: line, width: 1.5),
-          textStyle: const TextStyle(
-            fontFamily: _font,
-            fontSize: 17,
-            fontWeight: FontWeight.w700,
-          ),
+          textStyle: const TextStyle(fontFamily: _font, fontSize: 17, fontWeight: FontWeight.w700),
           shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
         ),
       ),

@@ -89,23 +89,30 @@ class Quote {
       );
 }
 
+/// The driver's last known position. Age is counted on the phone from when the server said the
+/// position was taken (using the server-reported age avoids errors from a wrong phone clock),
+/// so a position that stops updating turns stale on screen by itself.
 class DriverLocation {
-  const DriverLocation({
-    required this.point,
-    required this.ageSeconds,
-    required this.isLive,
-    this.heading,
-  });
+  DriverLocation({required this.point, required int ageSeconds, this.heading, DateTime? now})
+      : observedAt = (now ?? DateTime.now()).subtract(Duration(seconds: ageSeconds));
+
+  /// Positions older than this are never presented as live (master prompt §9).
+  static const liveThreshold = Duration(seconds: 30);
+
   final LatLngPoint point;
-  final int ageSeconds;
-  final bool isLive;
+  final DateTime observedAt;
   final int? heading;
 
-  static DriverLocation fromJson(Map<String, dynamic> j) => DriverLocation(
+  Duration ageAt(DateTime now) => now.difference(observedAt);
+  bool isLiveAt(DateTime now) => ageAt(now) <= liveThreshold;
+  bool get isLive => isLiveAt(DateTime.now());
+  int get ageSeconds => ageAt(DateTime.now()).inSeconds;
+
+  static DriverLocation fromJson(Map<String, dynamic> j, {DateTime? now}) => DriverLocation(
         point: LatLngPoint.fromJson(j),
         ageSeconds: (j['ageSeconds'] as num).toInt(),
-        isLive: j['isLive'] as bool,
         heading: (j['heading'] as num?)?.toInt(),
+        now: now,
       );
 }
 

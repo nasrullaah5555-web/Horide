@@ -8,10 +8,7 @@ String formatEtb(String? santim) {
   final abs = value.abs();
   final whole = (abs ~/ BigInt.from(100)).toString();
   final cents = (abs % BigInt.from(100)).toString().padLeft(2, '0');
-  final grouped = whole.replaceAllMapped(
-    RegExp(r'\B(?=(\d{3})+(?!\d))'),
-    (_) => ',',
-  );
+  final grouped = whole.replaceAllMapped(RegExp(r'\B(?=(\d{3})+(?!\d))'), (_) => ',');
   return '${negative ? '-' : ''}$grouped.$cents ETB';
 }
 

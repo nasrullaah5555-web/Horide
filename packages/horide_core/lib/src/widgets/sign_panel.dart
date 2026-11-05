@@ -7,7 +7,13 @@ enum SignTone { go, calm, alert }
 /// The road-sign panel used for the one most important status on a screen
 /// (e.g. "Driver arriving, 3 min"). Same visual language as the staff console.
 class SignPanel extends StatelessWidget {
-  const SignPanel({super.key, required this.title, this.subtitle, this.tone = SignTone.go, this.trailing});
+  const SignPanel({
+    super.key,
+    required this.title,
+    this.subtitle,
+    this.tone = SignTone.go,
+    this.trailing,
+  });
 
   final String title;
   final String? subtitle;
@@ -41,13 +47,22 @@ class SignPanel extends StatelessWidget {
                   children: [
                     Text(
                       title,
-                      style: const TextStyle(color: Colors.white, fontSize: 24, fontWeight: FontWeight.w800, height: 1.1),
+                      style: const TextStyle(
+                        color: Colors.white,
+                        fontSize: 24,
+                        fontWeight: FontWeight.w800,
+                        height: 1.1,
+                      ),
                     ),
                     if (subtitle != null) ...[
                       const SizedBox(height: 4),
                       Text(
                         subtitle!,
-                        style: TextStyle(color: Colors.white.withValues(alpha: 0.9), fontSize: 15, fontWeight: FontWeight.w600),
+                        style: TextStyle(
+                          color: Colors.white.withValues(alpha: 0.9),
+                          fontSize: 15,
+                          fontWeight: FontWeight.w600,
+                        ),
                       ),
                     ],
                   ],

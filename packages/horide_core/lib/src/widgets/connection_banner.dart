@@ -25,8 +25,10 @@ class _ConnectionBannerState extends State<ConnectionBanner> {
   @override
   void initState() {
     super.initState();
-    _connectivity.checkConnectivity().then(_update);
-    _sub = _connectivity.onConnectivityChanged.listen(_update);
+    // If the platform can't report connectivity (e.g. in tests), assume online: the API calls
+    // themselves still report network errors.
+    _connectivity.checkConnectivity().then(_update, onError: (Object _) {});
+    _sub = _connectivity.onConnectivityChanged.listen(_update, onError: (Object _) {});
   }
 
   void _update(List<ConnectivityResult> results) {
@@ -46,32 +48,36 @@ class _ConnectionBannerState extends State<ConnectionBanner> {
       children: [
         AnimatedSize(
           duration: const Duration(milliseconds: 200),
-          child: _offline
-              ? Material(
-                  color: HorideColors.amber,
-                  child: SafeArea(
-                    bottom: false,
-                    child: Semantics(
-                      liveRegion: true,
-                      child: const Padding(
-                        padding: EdgeInsets.symmetric(horizontal: 16, vertical: 10),
-                        child: Row(
-                          children: [
-                            Icon(Icons.wifi_off, color: Colors.white, size: 20),
-                            SizedBox(width: 10),
-                            Expanded(
-                              child: Text(
-                                'No internet. We will update when you are back online.',
-                                style: TextStyle(color: Colors.white, fontWeight: FontWeight.w600),
+          child:
+              _offline
+                  ? Material(
+                    color: HorideColors.amber,
+                    child: SafeArea(
+                      bottom: false,
+                      child: Semantics(
+                        liveRegion: true,
+                        child: const Padding(
+                          padding: EdgeInsets.symmetric(horizontal: 16, vertical: 10),
+                          child: Row(
+                            children: [
+                              Icon(Icons.wifi_off, color: Colors.white, size: 20),
+                              SizedBox(width: 10),
+                              Expanded(
+                                child: Text(
+                                  'No internet. We will update when you are back online.',
+                                  style: TextStyle(
+                                    color: Colors.white,
+                                    fontWeight: FontWeight.w600,
+                                  ),
+                                ),
                               ),
-                            ),
-                          ],
+                            ],
+                          ),
                         ),
                       ),
                     ),
-                  ),
-                )
-              : const SizedBox(width: double.infinity),
+                  )
+                  : const SizedBox(width: double.infinity),
         ),
         Expanded(child: widget.child),
       ],

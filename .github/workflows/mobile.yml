@@ -43,26 +43,47 @@ jobs:
         run: flutter --version
       - if: steps.exists.outputs.yes == 'true'
         run: flutter pub get
-      # The development workspace has no Dart SDK, so formatting is applied here. If anything
-      # changes, the job fails and uploads a patch that is applied in the repository.
-      - name: Format
-        id: format
-        if: steps.exists.outputs.yes == 'true'
-        continue-on-error: true
-        run: |
-          dart format lib test
-          if ! git diff --quiet -- .; then
-            # Printed into the log (artifact downloads aren't reachable from the dev workspace).
-            echo "FORMAT_PATCH_BASE64:$(git diff -- . | gzip -9 | base64 -w0)"
-            echo "::error::Code is not formatted. Apply the patch printed above."
-            exit 1
-          fi
+      # Format locally so analysis sees the same code the format job will commit.
+      - if: steps.exists.outputs.yes == 'true'
+        run: dart format lib test
       - name: Analyze
         if: steps.exists.outputs.yes == 'true' && !cancelled()
         run: flutter analyze --fatal-infos
       - name: Test
         if: steps.exists.outputs.yes == 'true' && !cancelled()
         run: flutter test
-      - name: Fail if code was not formatted
-        if: steps.format.outcome == 'failure'
-        run: exit 1
+
+  # The development workspace has no Dart SDK (ADR-014), so formatting is applied by CI: on a
+  # push to main, unformatted code is formatted and committed back as a separate commit (pushes
+  # made with GITHUB_TOKEN do not start new workflow runs, so this cannot loop). On a pull
+  # request, unformatted code fails the check instead.
+  format:
+    name: dart format
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+    steps:
+      - uses: actions/checkout@v4
+      - uses: subosito/flutter-action@v2
+        with:
+          channel: stable
+          cache: true
+      - name: Format all Dart packages
+        run: |
+          for pkg in packages/horide_core mobile/passenger mobile/driver; do
+            if [ -f "$pkg/pubspec.yaml" ]; then
+              (cd "$pkg" && flutter pub get >/dev/null && dart format lib test)
+            fi
+          done
+      - name: Commit formatting (push to main) or fail (pull request)
+        run: |
+          if git diff --quiet; then echo "Already formatted."; exit 0; fi
+          git diff --stat
+          if [ "${{ github.event_name }}" != "push" ]; then
+            echo "::error::Dart code is not formatted. Run dart format lib test."
+            exit 1
+          fi
+          git config user.name "horide-ci"
+          git config user.email "horide-ci@users.noreply.github.com"
+          git commit -am "style(mobile): dart format (automatic)"
+          git push origin HEAD:${{ github.ref_name }}

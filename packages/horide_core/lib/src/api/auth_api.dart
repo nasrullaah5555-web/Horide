@@ -4,7 +4,11 @@ import 'token_store.dart';
 enum UserRole { passenger, driver }
 
 class OtpChallenge {
-  const OtpChallenge({required this.challengeId, required this.expiresAt, required this.resendAfter});
+  const OtpChallenge({
+    required this.challengeId,
+    required this.expiresAt,
+    required this.resendAfter,
+  });
   final String challengeId;
   final DateTime expiresAt;
   final Duration resendAfter;
@@ -43,10 +47,12 @@ class AuthApi {
       'role': role.name,
       if (deviceInfo != null) 'deviceInfo': deviceInfo,
     });
-    await client.tokens.write(Tokens(
-      accessToken: data['accessToken'] as String,
-      refreshToken: data['refreshToken'] as String,
-    ));
+    await client.tokens.write(
+      Tokens(
+        accessToken: data['accessToken'] as String,
+        refreshToken: data['refreshToken'] as String,
+      ),
+    );
     final user = data['user'] as Map<String, dynamic>;
     return SignedInUser(
       id: user['id'] as String,

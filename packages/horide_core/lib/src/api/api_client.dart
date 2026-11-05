@@ -64,9 +64,10 @@ class ApiClient {
     required String filename,
   }) async {
     Future<http.Response> build() async {
-      final req = http.MultipartRequest('POST', Uri.parse('$baseUrl$path'))
-        ..fields.addAll(fields)
-        ..files.add(http.MultipartFile.fromBytes(fileField, bytes, filename: filename));
+      final req =
+          http.MultipartRequest('POST', Uri.parse('$baseUrl$path'))
+            ..fields.addAll(fields)
+            ..files.add(http.MultipartFile.fromBytes(fileField, bytes, filename: filename));
       final t = await tokens.read();
       if (t != null) req.headers['Authorization'] = 'Bearer ${t.accessToken}';
       return http.Response.fromStream(await _http.send(req).timeout(const Duration(seconds: 90)));
@@ -137,14 +138,20 @@ class ApiClient {
     final current = await tokens.read();
     if (current == null) return false;
     try {
-      final res = await _raw('POST', '/auth/refresh',
-          body: {'refreshToken': current.refreshToken}, accessToken: null);
+      final res = await _raw(
+        'POST',
+        '/auth/refresh',
+        body: {'refreshToken': current.refreshToken},
+        accessToken: null,
+      );
       if (res.statusCode != 200) return false;
       final data = jsonDecode(res.body) as Map<String, dynamic>;
-      await tokens.write(Tokens(
-        accessToken: data['accessToken'] as String,
-        refreshToken: data['refreshToken'] as String,
-      ));
+      await tokens.write(
+        Tokens(
+          accessToken: data['accessToken'] as String,
+          refreshToken: data['refreshToken'] as String,
+        ),
+      );
       return true;
     } on Exception {
       // Network trouble while refreshing: keep the tokens, the next request will try again.

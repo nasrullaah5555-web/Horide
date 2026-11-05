@@ -57,7 +57,15 @@ void main() {
     expect(trip.driver?.vehicle.description, 'White Toyota Vitz');
     // A stale position must be recognisable as stale.
     expect(trip.driverLocation?.isLive, isFalse);
-    expect(trip.driverLocation?.ageSeconds, 45);
+    expect(trip.driverLocation?.ageSeconds, inInclusiveRange(45, 47));
+  });
+
+  test('a live position turns stale by itself after 30 seconds', () {
+    final now = DateTime(2026, 11, 5, 8);
+    final loc = DriverLocation(point: const LatLngPoint(9.35, 42.8), ageSeconds: 5, now: now);
+    expect(loc.isLiveAt(now), isTrue);
+    expect(loc.isLiveAt(now.add(const Duration(seconds: 25))), isTrue);
+    expect(loc.isLiveAt(now.add(const Duration(seconds: 26))), isFalse);
   });
 
   test('a finished trip hides the driver phone (field absent)', () {

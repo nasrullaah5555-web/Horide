@@ -61,8 +61,8 @@ void main() {
           return req.headers['Authorization'] == 'Bearer new'
               ? json(200, {'ok': true})
               : json(401, {
-                  'error': {'code': 'UNAUTHENTICATED', 'message': 'Please log in.'},
-                });
+                'error': {'code': 'UNAUTHENTICATED', 'message': 'Please log in.'},
+              });
         }),
       );
       expect(await client.get('/auth/me'), {'ok': true});
@@ -87,15 +87,11 @@ void main() {
           return req.headers['Authorization'] == 'Bearer new'
               ? json(200, {'ok': true})
               : json(401, {
-                  'error': {'code': 'UNAUTHENTICATED', 'message': 'x'},
-                });
+                'error': {'code': 'UNAUTHENTICATED', 'message': 'x'},
+              });
         }),
       );
-      final results = await Future.wait([
-        client.get('/a'),
-        client.get('/b'),
-        client.get('/c'),
-      ]);
+      final results = await Future.wait([client.get('/a'), client.get('/b'), client.get('/c')]);
       expect(results, everyElement({'ok': true}));
       expect(refreshes, 1);
     });
@@ -146,11 +142,9 @@ void main() {
           });
         }),
       );
-      final user = await AuthApi(client).verifyCode(
-        challengeId: 'c1',
-        code: '123456',
-        role: UserRole.passenger,
-      );
+      final user = await AuthApi(
+        client,
+      ).verifyCode(challengeId: 'c1', code: '123456', role: UserRole.passenger);
       expect(user.isNew, isTrue);
       expect((await store.read())?.refreshToken, 'r');
     });

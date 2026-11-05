@@ -17,8 +17,8 @@ abstract class TokenStore {
 /// Never in shared preferences or plain files.
 class SecureTokenStore implements TokenStore {
   SecureTokenStore({String keyPrefix = 'horide'})
-      : _access = '$keyPrefix.access',
-        _refresh = '$keyPrefix.refresh';
+    : _access = '$keyPrefix.access',
+      _refresh = '$keyPrefix.refresh';
 
   final String _access;
   final String _refresh;

@@ -407,19 +407,23 @@ class _SavedPlacesRow extends ConsumerWidget {
     final label = TextEditingController(text: place.text ?? '');
     final name = await showDialog<String>(
       context: context,
-      builder: (d) => AlertDialog(
-        title: const Text('Save this place'),
-        content: TextField(
-          controller: label,
-          maxLength: 40,
-          autofocus: true,
-          decoration: const InputDecoration(hintText: 'Name, e.g. Home or Work'),
-        ),
-        actions: [
-          TextButton(onPressed: () => Navigator.pop(d), child: const Text('Cancel')),
-          FilledButton(onPressed: () => Navigator.pop(d, label.text.trim()), child: const Text('Save')),
-        ],
-      ),
+      builder:
+          (d) => AlertDialog(
+            title: const Text('Save this place'),
+            content: TextField(
+              controller: label,
+              maxLength: 40,
+              autofocus: true,
+              decoration: const InputDecoration(hintText: 'Name, e.g. Home or Work'),
+            ),
+            actions: [
+              TextButton(onPressed: () => Navigator.pop(d), child: const Text('Cancel')),
+              FilledButton(
+                onPressed: () => Navigator.pop(d, label.text.trim()),
+                child: const Text('Save'),
+              ),
+            ],
+          ),
     );
     label.dispose();
     if (name == null || name.isEmpty) return;
@@ -434,13 +438,14 @@ class _SavedPlacesRow extends ConsumerWidget {
   Future<void> _delete(BuildContext context, WidgetRef ref, SavedPlace p) async {
     final ok = await showDialog<bool>(
       context: context,
-      builder: (d) => AlertDialog(
-        title: Text('Remove "${p.label}"?'),
-        actions: [
-          TextButton(onPressed: () => Navigator.pop(d, false), child: const Text('Keep')),
-          FilledButton(onPressed: () => Navigator.pop(d, true), child: const Text('Remove')),
-        ],
-      ),
+      builder:
+          (d) => AlertDialog(
+            title: Text('Remove "${p.label}"?'),
+            actions: [
+              TextButton(onPressed: () => Navigator.pop(d, false), child: const Text('Keep')),
+              FilledButton(onPressed: () => Navigator.pop(d, true), child: const Text('Remove')),
+            ],
+          ),
     );
     if (ok != true) return;
     try {

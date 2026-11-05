@@ -6,7 +6,7 @@ import type { DB } from '../../src/database/types';
 
 export function testDatabase(): Kysely<DB> {
   const config = loadConfig();
-  if (!/horide_test|_test\b/.test(config.DATABASE_URL)) {
+  if (!/musride_test|_test\b/.test(config.DATABASE_URL)) {
     // Safety net: tests drop tables, so refuse to run against anything that isn't a test database.
     throw new Error('Tests must use a database whose name ends with _test');
   }

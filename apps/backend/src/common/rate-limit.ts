@@ -21,8 +21,8 @@ export interface RateLimitRule {
   windowSeconds: number;
 }
 
-export const RATE_LIMIT_KEY = 'horide:rate-limit';
-export const SKIP_RATE_LIMIT_KEY = 'horide:skip-rate-limit';
+export const RATE_LIMIT_KEY = 'musride:rate-limit';
+export const SKIP_RATE_LIMIT_KEY = 'musride:skip-rate-limit';
 
 /** Applies to every request unless a route sets its own (stricter) rule as well. */
 export const DEFAULT_RATE_LIMIT: RateLimitRule = { name: 'default', limit: 120, windowSeconds: 60 };
@@ -126,7 +126,7 @@ export class RateLimitGuard implements CanActivate, OnModuleDestroy {
       const claims = verifyAccessToken(auth.slice(7), this.config.JWT_ACCESS_SECRET);
       if (claims) return `user:${claims.sub}`;
     }
-    const cookie = req.headers.cookie?.match(/(?:^|;\s*)horide_admin=([^;]+)/)?.[1];
+    const cookie = req.headers.cookie?.match(/(?:^|;\s*)musride_admin=([^;]+)/)?.[1];
     if (cookie) return `admin:${createHash('sha256').update(cookie).digest('hex').slice(0, 32)}`;
     return `ip:${req.ip ?? 'unknown'}`;
   }

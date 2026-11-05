@@ -23,7 +23,7 @@ export interface AuthUser {
 
 type AuthedRequest = Request & { user?: AuthUser };
 
-export const ROLES_KEY = 'horide:roles';
+export const ROLES_KEY = 'musride:roles';
 
 /** Restricts an endpoint to passengers, drivers, or both. Use together with UserAuthGuard. */
 export const Roles = (...roles: UserRole[]) => SetMetadata(ROLES_KEY, roles);

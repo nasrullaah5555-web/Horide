@@ -1,4 +1,4 @@
-# Horide — System Architecture
+# Musride — System Architecture
 
 ## 1. Overview
 
@@ -15,7 +15,7 @@ One backend process owns all business rules. Clients never compute fares, eligib
 ## 2. Repository layout
 
 ```
-horide/
+musride/
 ├─ apps/
 │  ├─ backend/        NestJS API (TypeScript)
 │  ├─ admin/          Next.js admin dashboard
@@ -24,7 +24,7 @@ horide/
 │  ├─ passenger/      Flutter passenger app
 │  └─ driver/         Flutter driver app
 ├─ packages/
-│  └─ horide_core/    Shared Dart: API client, models, design system
+│  └─ musride_core/    Shared Dart: API client, models, design system
 ├─ infra/             docker-compose, Render blueprint, scripts
 └─ docs/              Plans, registers, reports
 ```

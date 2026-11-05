@@ -7,7 +7,7 @@ import { join } from 'node:path';
  */
 process.env.NODE_ENV = 'test';
 process.env.DATABASE_URL =
-  process.env.TEST_DATABASE_URL ?? 'postgres://horide:horide_local_dev@localhost:5432/horide_test';
+  process.env.TEST_DATABASE_URL ?? 'postgres://musride:musride_local_dev@localhost:5432/musride_test';
 process.env.DATABASE_SSL = 'false';
 process.env.CORS_ORIGINS = 'http://localhost:3001';
 process.env.SMS_PROVIDER = 'fake';
@@ -17,6 +17,6 @@ process.env.JWT_ACCESS_SECRET = 'test-access-secret-0123456789abcdef0123456789';
 process.env.OTP_PEPPER = 'test-otp-pepper-0123456789abcdef0123456789abcd';
 process.env.QUOTE_SIGNING_SECRET = 'test-quote-secret-0123456789abcdef012345678';
 process.env.ADMIN_TOTP_ENCRYPTION_KEY = Buffer.alloc(32, 7).toString('base64');
-process.env.STORAGE_LOCAL_DIR = join(tmpdir(), `horide-test-storage-${process.pid}`);
+process.env.STORAGE_LOCAL_DIR = join(tmpdir(), `musride-test-storage-${process.pid}`);
 process.env.RATE_LIMIT_ENABLED = 'false';
 process.env.PUSH_PROVIDER = 'log';

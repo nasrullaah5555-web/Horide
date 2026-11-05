@@ -1,5 +1,5 @@
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:horide_core/horide_core.dart';
+import 'package:musride_core/musride_core.dart';
 
 import 'providers.dart';
 

@@ -1,4 +1,4 @@
-# Horide — Task Register
+# Musride — Task Register
 
 Status values: TODO · IN PROGRESS · DONE (acceptance met, tests pass) · IMPLEMENTED – NOT COMPILED (mobile, awaiting CI/owner build) · BLOCKED – OWNER ACTION REQUIRED.
 
@@ -73,7 +73,7 @@ Jijiga service zone (approximate polygon, marked DEV), illustrative fares, test 
 
 ## Phase 5 — Mobile (compiled only in CI / on owner laptop — ADR-014)
 
-**T-037 horide_core package** — IMPLEMENTED – COMPILED IN CI, NOT RUN ON A DEVICE — API client, models, secure token storage, design system, connectivity handling.
+**T-037 musride_core package** — IMPLEMENTED – COMPILED IN CI, NOT RUN ON A DEVICE — API client, models, secure token storage, design system, connectivity handling.
 **T-038 Passenger: auth, map home, quote, booking** — IMPLEMENTED – COMPILED IN CI, NOT RUN ON A DEVICE
 **T-039 Passenger: tracking, payment, rating, history, complaints, SOS** — IMPLEMENTED – COMPILED IN CI, NOT RUN ON A DEVICE
 **T-040 Driver: auth, onboarding, documents, subscription status** — IMPLEMENTED – COMPILED IN CI, NOT RUN ON A DEVICE

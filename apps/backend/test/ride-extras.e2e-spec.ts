@@ -154,7 +154,7 @@ describe('Destination change, payments, ratings, complaints, emergencies (e2e)',
   });
 
   describe('ride payment records', () => {
-    it('driver records cash, passenger confirms → confirmed; receipt says Horide did not collect it', async () => {
+    it('driver records cash, passenger confirms → confirmed; receipt says Musride did not collect it', async () => {
       const { id, p, d, fare } = await trip('completed');
       await t
         .http()

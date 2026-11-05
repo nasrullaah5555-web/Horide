@@ -1,8 +1,8 @@
 #!/usr/bin/env bash
-# Restore an encrypted Horide backup into an EMPTY database (restore drill or disaster recovery).
+# Restore an encrypted Musride backup into an EMPTY database (restore drill or disaster recovery).
 #
-#   TARGET_DATABASE_URL=postgres://.../horide_restore AGE_IDENTITY=~/horide-backup.key \
-#     infra/backup/restore.sh horide-YYYYMMDD-HHMMSS.dump.age
+#   TARGET_DATABASE_URL=postgres://.../musride_restore AGE_IDENTITY=~/musride-backup.key \
+#     infra/backup/restore.sh musride-YYYYMMDD-HHMMSS.dump.age
 #
 # The target database needs the extensions created first by a superuser:
 #   CREATE EXTENSION postgis; CREATE EXTENSION pgcrypto; CREATE EXTENSION citext; CREATE EXTENSION btree_gist;

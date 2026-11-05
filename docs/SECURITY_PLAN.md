@@ -1,8 +1,8 @@
-# Horide — Security Plan
+# Musride — Security Plan
 
 Baselines: OWASP ASVS (backend/web), OWASP MASVS (mobile), OWASP API Security Top 10.
 
-## 1. Threats specific to Horide
+## 1. Threats specific to Musride
 
 | Threat | Control | Test |
 |---|---|---|

@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
-import 'package:horide_core/horide_core.dart';
+import 'package:musride_core/musride_core.dart';
 
 import '../../core/passenger_api.dart';
 import '../../core/ui.dart';
@@ -73,12 +73,12 @@ class _TripFinishedScreenState extends ConsumerState<TripFinishedScreen> {
               ),
             ),
             actions: [
-              HorideButton(
-                kind: HorideButtonKind.quiet,
+              MusrideButton(
+                kind: MusrideButtonKind.quiet,
                 label: 'Back',
                 onPressed: () => Navigator.pop(d),
               ),
-              HorideButton(label: 'Send', onPressed: () => Navigator.pop(d, note.text.trim())),
+              MusrideButton(label: 'Send', onPressed: () => Navigator.pop(d, note.text.trim())),
             ],
           ),
     );
@@ -107,23 +107,23 @@ class _TripFinishedScreenState extends ConsumerState<TripFinishedScreen> {
     return Scaffold(
       appBar: AppBar(title: const Text('Trip finished'), automaticallyImplyLeading: false),
       body: ListView(
-        padding: const EdgeInsets.all(HorideSpace.lg),
+        padding: const EdgeInsets.all(MusrideSpace.lg),
         children: [
           SignPanel(
             title: formatEtb(trip.fare),
             subtitle: 'Pay your driver by ${paymentLabel(trip.paymentMethod)}',
           ),
-          const Gap(HorideSpace.sm),
+          const Gap(MusrideSpace.sm),
           Text(
-            'Horide does not take ride payments. Pay the driver directly, then confirm here.',
+            'Musride does not take ride payments. Pay the driver directly, then confirm here.',
             style: TextStyle(color: theme.colorScheme.onSurfaceVariant),
           ),
-          const Gap(HorideSpace.lg),
+          const Gap(MusrideSpace.lg),
           Text('Payment', style: theme.textTheme.titleMedium),
-          const Gap(HorideSpace.sm),
+          const Gap(MusrideSpace.sm),
           if (receipt == null)
-            HorideButton(
-              kind: HorideButtonKind.secondary,
+            MusrideButton(
+              kind: MusrideButtonKind.secondary,
               label: 'Load payment details',
               onPressed: _loadReceipt,
             )
@@ -135,9 +135,9 @@ class _TripFinishedScreenState extends ConsumerState<TripFinishedScreen> {
                   : _statusText(receipt.paymentStatus),
             ),
             if (receipt.ebirrReference != null) InfoRow('eBirr reference', receipt.ebirrReference!),
-            const Gap(HorideSpace.sm),
+            const Gap(MusrideSpace.sm),
             if (!passengerAnswered) ...[
-              HorideButton(
+              MusrideButton(
                 label: 'I have paid the driver',
                 onPressed:
                     _busy
@@ -152,20 +152,20 @@ class _TripFinishedScreenState extends ConsumerState<TripFinishedScreen> {
                           }
                         }),
               ),
-              const Gap(HorideSpace.sm),
+              const Gap(MusrideSpace.sm),
             ],
             if (status != 'disputed' && status != 'resolved')
-              HorideButton(
-                kind: HorideButtonKind.secondary,
+              MusrideButton(
+                kind: MusrideButtonKind.secondary,
                 label: 'Report a payment problem',
                 onPressed: _busy ? null : _dispute,
               ),
           ],
-          const Gap(HorideSpace.xl),
+          const Gap(MusrideSpace.xl),
           Text('Rate your driver', style: theme.textTheme.titleMedium),
           if (_rated)
             const Padding(
-              padding: EdgeInsets.symmetric(vertical: HorideSpace.md),
+              padding: EdgeInsets.symmetric(vertical: MusrideSpace.md),
               child: Text('Thank you for rating your driver.'),
             )
           else ...[
@@ -186,8 +186,8 @@ class _TripFinishedScreenState extends ConsumerState<TripFinishedScreen> {
               child: const Text('Send rating'),
             ),
           ],
-          const Gap(HorideSpace.xl),
-          HorideButton(label: 'Done', onPressed: _close),
+          const Gap(MusrideSpace.xl),
+          MusrideButton(label: 'Done', onPressed: _close),
         ],
       ),
     );
@@ -197,8 +197,8 @@ class _TripFinishedScreenState extends ConsumerState<TripFinishedScreen> {
     'pending' => 'Not confirmed yet',
     'driver_recorded' => 'Driver says payment received. Please confirm.',
     'confirmed' => 'Confirmed',
-    'disputed' => 'Problem reported. Horide staff will contact you.',
-    'resolved' => 'Resolved by Horide staff',
+    'disputed' => 'Problem reported. Musride staff will contact you.',
+    'resolved' => 'Resolved by Musride staff',
     _ => s,
   };
 }

@@ -106,7 +106,7 @@ export class AdminOpsController {
     return { generatedAt: new Date(), counts };
   }
 
-  /** Daily trip outcomes for charts. Fares are the amounts recorded on trips, not money Horide holds. */
+  /** Daily trip outcomes for charts. Fares are the amounts recorded on trips, not money Musride holds. */
   @Get('reports/trips')
   @RequirePermission('reports.read')
   async tripReport(@Query(new ZodValidationPipe(reportSchema)) q: z.infer<typeof reportSchema>) {

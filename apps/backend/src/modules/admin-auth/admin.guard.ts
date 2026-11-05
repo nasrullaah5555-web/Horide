@@ -13,14 +13,14 @@ import { safeEqualHex, sha256Hex } from '../auth/tokens';
 import { AdminAuthService, type AdminPrincipal } from './admin-auth.service';
 import type { Permission } from './permissions';
 
-export const ADMIN_COOKIE = 'horide_admin';
+export const ADMIN_COOKIE = 'musride_admin';
 export const CSRF_HEADER = 'x-csrf-token';
 
 type AdminRequest = Request & { admin?: AdminPrincipal };
 
-export const PERMISSION_KEY = 'horide:admin-permission';
+export const PERMISSION_KEY = 'musride:admin-permission';
 
-export const ANY_ADMIN_KEY = 'horide:any-admin';
+export const ANY_ADMIN_KEY = 'musride:any-admin';
 
 /** Every admin endpoint must declare the permission it needs. */
 export const RequirePermission = (permission: Permission) =>

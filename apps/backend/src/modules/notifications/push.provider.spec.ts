@@ -3,8 +3,8 @@ import { FcmPushProvider, parseServiceAccount } from './push.provider';
 
 const { privateKey, publicKey } = generateKeyPairSync('rsa', { modulusLength: 2048 });
 const account = {
-  project_id: 'horide-test',
-  client_email: 'push@horide-test.iam.gserviceaccount.com',
+  project_id: 'musride-test',
+  client_email: 'push@musride-test.iam.gserviceaccount.com',
   private_key: privateKey.export({ type: 'pkcs8', format: 'pem' }).toString(),
 };
 const message = {
@@ -59,7 +59,7 @@ describe('FcmPushProvider (fake Google endpoints)', () => {
     const sends = g.calls.filter((c) => c.url.includes('fcm.googleapis.com'));
     expect(tokenCalls).toHaveLength(1);
     expect(sends).toHaveLength(3);
-    expect(sends[0]!.url).toBe('https://fcm.googleapis.com/v1/projects/horide-test/messages:send');
+    expect(sends[0]!.url).toBe('https://fcm.googleapis.com/v1/projects/musride-test/messages:send');
     expect((sends[0]!.init.headers as Record<string, string>).Authorization).toBe(
       'Bearer ya29.fake',
     );

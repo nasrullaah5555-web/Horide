@@ -8,7 +8,7 @@ useDefault = true
 description = "Public development/test placeholders and published test vectors"
 regexes = [
   # Local development database password (infra/, CI service container)
-  '''horide_local_dev''',
+  '''musride_local_dev''',
   # .env.example placeholders, refused by the API in production
   '''dev-only-[a-z-]+-change-me-0+''',
   '''ZGV2LW9ubHktdG90cC1rZXktY2hhbmdlLW1lLTAwMDA=''',

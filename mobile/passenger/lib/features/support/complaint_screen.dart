@@ -1,11 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:horide_core/horide_core.dart';
+import 'package:musride_core/musride_core.dart';
 
 import '../../core/passenger_api.dart';
 import '../../core/ui.dart';
 
-/// Complaints go to Horide support staff (admin dashboard, Complaints).
+/// Complaints go to Musride support staff (admin dashboard, Complaints).
 class ComplaintScreen extends ConsumerStatefulWidget {
   const ComplaintScreen({super.key, this.tripId});
   final String? tripId;
@@ -64,20 +64,20 @@ class _ComplaintScreenState extends ConsumerState<ComplaintScreen> {
           _sent
               ? const Center(
                 child: Padding(
-                  padding: EdgeInsets.all(HorideSpace.xl),
+                  padding: EdgeInsets.all(MusrideSpace.xl),
                   child: Text(
-                    'Thank you. Horide support will review your report.\n\n'
+                    'Thank you. Musride support will review your report.\n\n'
                     'If you are in danger, use the Emergency button or call 991.',
                     textAlign: TextAlign.center,
                   ),
                 ),
               )
               : ListView(
-                padding: const EdgeInsets.all(HorideSpace.lg),
+                padding: const EdgeInsets.all(MusrideSpace.lg),
                 children: [
                   if (widget.tripId != null)
                     const Padding(
-                      padding: EdgeInsets.only(bottom: HorideSpace.md),
+                      padding: EdgeInsets.only(bottom: MusrideSpace.md),
                       child: Text('This report will be linked to your trip.'),
                     ),
                   Wrap(
@@ -92,7 +92,7 @@ class _ComplaintScreenState extends ConsumerState<ComplaintScreen> {
                         ),
                     ],
                   ),
-                  const Gap(HorideSpace.lg),
+                  const Gap(MusrideSpace.lg),
                   TextField(
                     controller: _text,
                     maxLength: 2000,
@@ -100,8 +100,8 @@ class _ComplaintScreenState extends ConsumerState<ComplaintScreen> {
                     maxLines: 8,
                     decoration: const InputDecoration(hintText: 'Tell us what happened'),
                   ),
-                  const Gap(HorideSpace.sm),
-                  HorideButton(label: 'Send report', onPressed: _busy ? null : _send),
+                  const Gap(MusrideSpace.sm),
+                  MusrideButton(label: 'Send report', onPressed: _busy ? null : _send),
                 ],
               ),
     );

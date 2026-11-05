@@ -5,9 +5,9 @@ name: Mobile
 on:
   push:
     branches: [main]
-    paths: ['mobile/**', 'packages/horide_core/**', '.github/workflows/mobile.yml']
+    paths: ['mobile/**', 'packages/musride_core/**', '.github/workflows/mobile.yml']
   pull_request:
-    paths: ['mobile/**', 'packages/horide_core/**', '.github/workflows/mobile.yml']
+    paths: ['mobile/**', 'packages/musride_core/**', '.github/workflows/mobile.yml']
   workflow_dispatch:
 
 permissions:
@@ -24,7 +24,7 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        package: [packages/horide_core, mobile/passenger, mobile/driver]
+        package: [packages/musride_core, mobile/passenger, mobile/driver]
     defaults:
       run:
         working-directory: ${{ matrix.package }}
@@ -71,7 +71,7 @@ jobs:
           cache: true
       - name: Format all Dart packages
         run: |
-          for pkg in packages/horide_core mobile/passenger mobile/driver; do
+          for pkg in packages/musride_core mobile/passenger mobile/driver; do
             if [ -f "$pkg/pubspec.yaml" ]; then
               (cd "$pkg" && flutter pub get >/dev/null && dart fix --apply && dart format lib test)
             fi
@@ -84,7 +84,7 @@ jobs:
             echo "::error::Dart code is not formatted. Run dart format lib test."
             exit 1
           fi
-          git config user.name "horide-ci"
-          git config user.email "horide-ci@users.noreply.github.com"
+          git config user.name "musride-ci"
+          git config user.email "musride-ci@users.noreply.github.com"
           git commit -am "style(mobile): dart format (automatic)"
           git push origin HEAD:${{ github.ref_name }}

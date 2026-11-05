@@ -42,7 +42,7 @@ function Payments() {
     <>
       <PageHeader
         title="Ride payments"
-        description="Passengers pay drivers directly in cash or eBirr. Horide only records what each side reports. eBirr references are as typed by the driver and are not checked with eBirr."
+        description="Passengers pay drivers directly in cash or eBirr. Musride only records what each side reports. eBirr references are as typed by the driver and are not checked with eBirr."
       />
       <div className="mb-4">
         <select
@@ -56,7 +56,7 @@ function Payments() {
           <option value="pending">Not recorded yet</option>
           <option value="driver_recorded">Driver recorded, passenger not yet</option>
           <option value="confirmed">Confirmed by both</option>
-          <option value="resolved">Resolved by Horide</option>
+          <option value="resolved">Resolved by Musride</option>
         </select>
       </div>
       <ErrorNotice error={error} />

@@ -1,4 +1,4 @@
-# Render Blueprint for a FREE, PRIVATE test deployment of Horide (DEPLOYMENT_GUIDE §11).
+# Render Blueprint for a FREE, PRIVATE test deployment of Musride (DEPLOYMENT_GUIDE §11).
 # Not for real users: sign-in codes appear in the API's log instead of being sent by SMS,
 # distances are estimates, uploaded files are lost when the free server restarts, and free
 # servers sleep after 15 minutes without visitors (the first request then takes about a minute).
@@ -6,12 +6,12 @@
 # Database: a free Supabase project (connection string and CA certificate entered as secrets).
 services:
   - type: web
-    name: horide-staging-api
+    name: musride-staging-api
     runtime: node
     region: frankfurt
     plan: free
     branch: main
-    buildCommand: corepack enable && pnpm install --frozen-lockfile && pnpm --filter @horide/backend build
+    buildCommand: corepack enable && pnpm install --frozen-lockfile && pnpm --filter @musride/backend build
     # Free plans have no pre-deploy step or shell: migrate and load the test zone and prices at start.
     startCommand: >-
       node apps/backend/dist/database/migrate-cli.js latest &&
@@ -54,31 +54,31 @@ services:
       - key: STORAGE_PROVIDER
         value: local
       - key: STORAGE_LOCAL_DIR
-        value: /tmp/horide-documents
+        value: /tmp/musride-documents
       - key: PUSH_PROVIDER
         value: log
 
   - type: web
-    name: horide-staging-admin
+    name: musride-staging-admin
     runtime: node
     region: frankfurt
     plan: free
     branch: main
-    buildCommand: corepack enable && pnpm install --frozen-lockfile && pnpm --filter @horide/admin build
-    startCommand: pnpm --filter @horide/admin exec next start -p $PORT
+    buildCommand: corepack enable && pnpm install --frozen-lockfile && pnpm --filter @musride/admin build
+    startCommand: pnpm --filter @musride/admin exec next start -p $PORT
     envVars:
       - key: NODE_VERSION
         value: '22'
       - key: NEXT_TELEMETRY_DISABLED
         value: '1'
-      - key: HORIDE_API_URL
+      - key: MUSRIDE_API_URL
         sync: false # https://<api>.onrender.com — read at BUILD time: redeploy after changing
 
   - type: web
-    name: horide-staging-web
+    name: musride-staging-web
     runtime: static
     branch: main
-    buildCommand: corepack enable && pnpm install --frozen-lockfile && pnpm --filter @horide/web build
+    buildCommand: corepack enable && pnpm install --frozen-lockfile && pnpm --filter @musride/web build
     staticPublishPath: apps/web/out
     envVars:
       - key: NODE_VERSION

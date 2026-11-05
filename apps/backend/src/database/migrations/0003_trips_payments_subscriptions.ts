@@ -129,7 +129,7 @@ export async function up(db: Kysely<unknown>): Promise<void> {
     );
     CREATE INDEX trip_locations_trip ON trip_locations (trip_id, recorded_at);
 
-    -- Ride payment RECORDS. Horide never holds this money; it records what driver and passenger report.
+    -- Ride payment RECORDS. Musride never holds this money; it records what driver and passenger report.
     CREATE TABLE payments (
       id                 uuid PRIMARY KEY DEFAULT gen_random_uuid(),
       trip_id            uuid NOT NULL UNIQUE REFERENCES trips(id),

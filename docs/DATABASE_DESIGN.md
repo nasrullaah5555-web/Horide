@@ -1,4 +1,4 @@
-# Horide — Database Design
+# Musride — Database Design
 
 PostgreSQL 16 + PostGIS. Extensions: `postgis`, `pgcrypto` (UUIDs), `citext` (admin emails).
 Conventions: `uuid` primary keys (`gen_random_uuid()`), `created_at`/`updated_at timestamptz`, money in `bigint` santim, geometry as `geography(Point,4326)`, enums as Postgres enums.

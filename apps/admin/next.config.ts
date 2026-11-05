@@ -6,7 +6,7 @@ import type { NextConfig } from 'next';
  * The API's session cookie (path=/admin, SameSite=Strict, httpOnly) therefore works unchanged,
  * and no CORS is needed for the dashboard.
  */
-const apiUrl = process.env.HORIDE_API_URL ?? 'http://localhost:3000';
+const apiUrl = process.env.MUSRIDE_API_URL ?? 'http://localhost:3000';
 
 const securityHeaders = [
   { key: 'X-Frame-Options', value: 'DENY' },

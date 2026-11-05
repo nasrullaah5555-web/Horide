@@ -1,8 +1,8 @@
 {
-  "name": "@horide/web",
+  "name": "@musride/web",
   "version": "0.1.0",
   "private": true,
-  "description": "Horide public website (static)",
+  "description": "Musride public website (static)",
   "scripts": {
     "dev": "next dev -p 3002",
     "build": "next build",

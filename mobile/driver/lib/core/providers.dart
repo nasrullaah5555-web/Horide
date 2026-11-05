@@ -1,13 +1,13 @@
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:horide_core/horide_core.dart';
+import 'package:musride_core/musride_core.dart';
 
 /// Shared services. Overridden in tests with fakes.
 final tokenStoreProvider = Provider<TokenStore>(
-  (ref) => SecureTokenStore(keyPrefix: 'horide.driver'),
+  (ref) => SecureTokenStore(keyPrefix: 'musride.driver'),
 );
 
 final apiClientProvider = Provider<ApiClient>((ref) {
-  final client = ApiClient(baseUrl: HorideConfig.apiUrl, tokens: ref.watch(tokenStoreProvider));
+  final client = ApiClient(baseUrl: MusrideConfig.apiUrl, tokens: ref.watch(tokenStoreProvider));
   ref.onDispose(client.close);
   return client;
 });
@@ -15,7 +15,7 @@ final apiClientProvider = Provider<ApiClient>((ref) {
 final authApiProvider = Provider<AuthApi>((ref) => AuthApi(ref.watch(apiClientProvider)));
 
 final realtimeProvider = Provider<RealtimeClient>((ref) {
-  final rt = RealtimeClient(baseUrl: HorideConfig.apiUrl, tokens: ref.watch(tokenStoreProvider));
+  final rt = RealtimeClient(baseUrl: MusrideConfig.apiUrl, tokens: ref.watch(tokenStoreProvider));
   ref.onDispose(rt.disconnect);
   return rt;
 });

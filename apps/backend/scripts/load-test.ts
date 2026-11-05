@@ -1,9 +1,9 @@
 /**
  * DEVELOPMENT ONLY — load test for location ingestion and matching (T-044).
  *
- *   pnpm --filter @horide/backend build
- *   pnpm --filter @horide/backend load-test            # 200 drivers, 60 passengers, 60 s
- *   LOAD_DRIVERS=400 LOAD_PASSENGERS=120 LOAD_SECONDS=120 pnpm --filter @horide/backend load-test
+ *   pnpm --filter @musride/backend build
+ *   pnpm --filter @musride/backend load-test            # 200 drivers, 60 passengers, 60 s
+ *   LOAD_DRIVERS=400 LOAD_PASSENGERS=120 LOAD_SECONDS=120 pnpm --filter @musride/backend load-test
  *
  * 1. Prepares accounts directly in a LOCAL database (refuses anything else): eligible drivers
  *    spread over Jijiga, and passengers. Names start with "Load"; plates with "LOAD-".
@@ -214,7 +214,7 @@ async function startServer(): Promise<ChildProcess> {
     await sleep(500);
   }
   child.kill();
-  throw new Error('API did not start (run `pnpm --filter @horide/backend build` first).');
+  throw new Error('API did not start (run `pnpm --filter @musride/backend build` first).');
 }
 
 // ---------------------------------------------------------------- behaviour

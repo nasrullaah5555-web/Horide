@@ -1,10 +1,10 @@
 /**
- * Calls the Horide admin API through the same-origin proxy (/admin/* → API).
+ * Calls the Musride admin API through the same-origin proxy (/admin/* → API).
  * The session lives in an httpOnly cookie the page can't read; state-changing requests also send
  * the CSRF token returned at sign-in.
  */
 
-const CSRF_KEY = 'horide_admin_csrf';
+const CSRF_KEY = 'musride_admin_csrf';
 
 export class ApiError extends Error {
   constructor(
@@ -58,7 +58,7 @@ export async function api<T>(
     throw new ApiError(
       0,
       'NETWORK',
-      'Cannot reach the Horide server. Check your connection and try again.',
+      'Cannot reach the Musride server. Check your connection and try again.',
     );
   }
   if (res.status === 204) return undefined as T;

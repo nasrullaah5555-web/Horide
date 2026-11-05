@@ -4,7 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
-import 'package:horide_core/horide_core.dart';
+import 'package:musride_core/musride_core.dart';
 
 import '../../core/providers.dart';
 import '../../core/ui.dart';
@@ -88,19 +88,19 @@ class _CodeScreenState extends ConsumerState<CodeScreen> {
       body: SafeArea(
         child: ListView(
           padding: const EdgeInsets.fromLTRB(
-            HorideSpace.xl,
-            HorideSpace.sm,
-            HorideSpace.xl,
-            HorideSpace.xl,
+            MusrideSpace.xl,
+            MusrideSpace.sm,
+            MusrideSpace.xl,
+            MusrideSpace.xl,
           ),
           children: [
             Text('Enter the code', style: theme.textTheme.headlineMedium),
-            const Gap(HorideSpace.sm),
+            const Gap(MusrideSpace.sm),
             Text(
               'Sent by SMS to ${widget.args.phone}.',
               style: TextStyle(color: theme.colorScheme.onSurfaceVariant),
             ),
-            const Gap(HorideSpace.xl),
+            const Gap(MusrideSpace.xl),
             TextField(
               controller: _code,
               autofocus: true,
@@ -110,23 +110,23 @@ class _CodeScreenState extends ConsumerState<CodeScreen> {
               inputFormatters: [FilteringTextInputFormatter.digitsOnly],
               textAlign: TextAlign.center,
               style: const TextStyle(
-                fontSize: HorideFontSize.code,
-                fontWeight: HorideFontWeight.heavy,
-                letterSpacing: HorideLetterSpacing.code,
+                fontSize: MusrideFontSize.code,
+                fontWeight: MusrideFontWeight.heavy,
+                letterSpacing: MusrideLetterSpacing.code,
               ),
               decoration: const InputDecoration(counterText: ''),
               onChanged: (v) {
                 if (v.length == 6) _verify();
               },
             ),
-            const Gap(HorideSpace.xl),
-            HorideButton(
+            const Gap(MusrideSpace.xl),
+            MusrideButton(
               label: _busy ? 'Checking…' : 'Continue',
               onPressed: _busy ? null : _verify,
             ),
-            const Gap(HorideSpace.md),
-            HorideButton(
-              kind: HorideButtonKind.quiet,
+            const Gap(MusrideSpace.md),
+            MusrideButton(
+              kind: MusrideButtonKind.quiet,
               label: _resendIn > 0 ? 'Send a new code in $_resendIn s' : 'Send a new code',
               onPressed: _resendIn > 0 ? null : _resend,
             ),

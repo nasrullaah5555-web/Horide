@@ -5,7 +5,7 @@ import 'package:flutter/services.dart';
 import 'package:flutter_map/flutter_map.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
-import 'package:horide_core/horide_core.dart';
+import 'package:musride_core/musride_core.dart';
 import 'package:url_launcher/url_launcher.dart';
 
 import '../../core/passenger_api.dart';
@@ -64,12 +64,12 @@ class _TripScreenState extends ConsumerState<TripScreen> {
                   : 'We will stop looking for a driver.',
             ),
             actions: [
-              HorideButton(
-                kind: HorideButtonKind.quiet,
+              MusrideButton(
+                kind: MusrideButtonKind.quiet,
                 label: 'Keep ride',
                 onPressed: () => Navigator.pop(d, false),
               ),
-              HorideButton(label: 'Cancel ride', onPressed: () => Navigator.pop(d, true)),
+              MusrideButton(label: 'Cancel ride', onPressed: () => Navigator.pop(d, true)),
             ],
           ),
     );
@@ -102,12 +102,12 @@ class _TripScreenState extends ConsumerState<TripScreen> {
                 'Your driver continues to the old destination unless you approve.',
               ),
               actions: [
-                HorideButton(
-                  kind: HorideButtonKind.quiet,
+                MusrideButton(
+                  kind: MusrideButtonKind.quiet,
                   label: 'Keep old',
                   onPressed: () => Navigator.pop(d, false),
                 ),
-                HorideButton(label: 'Approve', onPressed: () => Navigator.pop(d, true)),
+                MusrideButton(label: 'Approve', onPressed: () => Navigator.pop(d, true)),
               ],
             ),
       );
@@ -123,7 +123,7 @@ class _TripScreenState extends ConsumerState<TripScreen> {
   void _emergency(Trip? trip) {
     showEmergencySheet(
       context,
-      alertHoride: () async {
+      alertMusride: () async {
         final p = await currentPosition();
         await ref
             .read(passengerApiProvider)
@@ -157,8 +157,8 @@ class _TripScreenState extends ConsumerState<TripScreen> {
                     mainAxisSize: MainAxisSize.min,
                     children: [
                       const Text('Could not load your trip.'),
-                      HorideButton(
-                        kind: HorideButtonKind.quiet,
+                      MusrideButton(
+                        kind: MusrideButtonKind.quiet,
                         label: 'Try again',
                         onPressed: () => ref.invalidate(activeTripProvider),
                       ),
@@ -181,10 +181,10 @@ class _TripScreenState extends ConsumerState<TripScreen> {
               initialCameraFit: CameraFit.coordinates(
                 coordinates: [toLatLng(trip.pickup.point), toLatLng(trip.destination.point)],
                 padding: const EdgeInsets.fromLTRB(
-                  HorideSpace.xxxl,
-                  HorideSpace.xxxl,
-                  HorideSpace.xxxl,
-                  HorideSpace.xxxl,
+                  MusrideSpace.xxxl,
+                  MusrideSpace.xxxl,
+                  MusrideSpace.xxxl,
+                  MusrideSpace.xxxl,
                 ),
               ),
             ),
@@ -192,8 +192,8 @@ class _TripScreenState extends ConsumerState<TripScreen> {
               ...baseMapLayers(),
               MarkerLayer(
                 markers: [
-                  pinMarker(trip.pickup.point, HorideColors.sign, 'Pickup'),
-                  pinMarker(trip.destination.point, HorideColors.navy, 'Destination'),
+                  pinMarker(trip.pickup.point, MusrideColors.sign, 'Pickup'),
+                  pinMarker(trip.destination.point, MusrideColors.navy, 'Destination'),
                   if (loc != null)
                     Marker(
                       point: toLatLng(loc.point),
@@ -212,11 +212,11 @@ class _TripScreenState extends ConsumerState<TripScreen> {
           ),
           SafeArea(
             child: Padding(
-              padding: const EdgeInsets.all(HorideSpace.md),
+              padding: const EdgeInsets.all(MusrideSpace.md),
               child: Align(
                 alignment: Alignment.topRight,
-                child: HorideButton(
-                  kind: HorideButtonKind.emergency,
+                child: MusrideButton(
+                  kind: MusrideButtonKind.emergency,
                   icon: Icons.sos,
                   label: 'Emergency',
                   onPressed: () => _emergency(trip),
@@ -255,7 +255,7 @@ class _TripScreenState extends ConsumerState<TripScreen> {
       TripStatus.completed => ('Arrived', null, SignTone.go),
     };
 
-    return HorideBottomPanel(
+    return MusrideBottomPanel(
       children: [
         SignPanel(
           title: title,
@@ -267,9 +267,9 @@ class _TripScreenState extends ConsumerState<TripScreen> {
                   : null,
         ),
         if (driver != null && trip.status.hasDriver) ...[
-          const Gap(HorideSpace.md),
+          const Gap(MusrideSpace.md),
           _DriverCard(driver: driver),
-          const Gap(HorideSpace.sm),
+          const Gap(MusrideSpace.sm),
           StatusText(
             loc == null
                 ? 'Driver location not available yet.'
@@ -279,15 +279,15 @@ class _TripScreenState extends ConsumerState<TripScreen> {
             ok: live,
           ),
         ],
-        const Gap(HorideSpace.md),
+        const Gap(MusrideSpace.md),
         InfoRow(
           trip.lockedFare != null ? 'Fixed price' : 'Price',
           '${formatEtb(trip.fare)}  (${paymentLabel(trip.paymentMethod)}, pay the driver)',
           bold: true,
         ),
-        const Gap(HorideSpace.sm),
+        const Gap(MusrideSpace.sm),
         if (trip.status.isFinal)
-          HorideButton(
+          MusrideButton(
             label: 'Back to map',
             onPressed: () {
               ref.read(activeTripProvider.notifier).clear();
@@ -299,18 +299,18 @@ class _TripScreenState extends ConsumerState<TripScreen> {
             children: [
               if (trip.status.hasDriver)
                 Expanded(
-                  child: HorideButton(
-                    kind: HorideButtonKind.secondary,
+                  child: MusrideButton(
+                    kind: MusrideButtonKind.secondary,
                     label: 'Change destination',
                     onPressed: _busy ? null : () => _changeDestination(trip),
                   ),
                 ),
               if (trip.status.hasDriver && trip.status != TripStatus.inProgress)
-                const Gap(HorideSpace.md),
+                const Gap(MusrideSpace.md),
               if (trip.status != TripStatus.inProgress)
                 Expanded(
-                  child: HorideButton(
-                    kind: HorideButtonKind.danger,
+                  child: MusrideButton(
+                    kind: MusrideButtonKind.danger,
                     label: 'Cancel ride',
                     onPressed: _busy ? null : () => _cancel(trip),
                   ),
@@ -336,7 +336,7 @@ class _DriverCard extends StatelessWidget {
     return Row(
       children: [
         InitialAvatar(driver.name),
-        const Gap(HorideSpace.md),
+        const Gap(MusrideSpace.md),
         Expanded(
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
@@ -346,14 +346,14 @@ class _DriverCard extends StatelessWidget {
                 '${driver.vehicle.description}  •  ${driver.ratingCount == 0 ? 'New driver' : '${driver.rating} ★ (${driver.ratingCount})'}',
                 style: TextStyle(color: theme.colorScheme.onSurfaceVariant),
               ),
-              const Gap(HorideSpace.xs),
+              const Gap(MusrideSpace.xs),
               // The plate is the passenger's check that this is the right car.
               PlateBadge(driver.vehicle.plate),
             ],
           ),
         ),
         if (phone != null)
-          HorideRoundButton(
+          MusrideRoundButton(
             icon: Icons.call,
             label: 'Call driver',
             onPressed: () => launchUrl(Uri(scheme: 'tel', path: phone)),

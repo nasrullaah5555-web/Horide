@@ -42,7 +42,7 @@ beforeAll(async () => {
       forcePathStyle: true,
       credentials: { accessKeyId: 'test', secretAccessKey: 'test' },
     });
-    await admin.send(new CreateBucketCommand({ Bucket: 'horide-docs' }));
+    await admin.send(new CreateBucketCommand({ Bucket: 'musride-docs' }));
   }
 }, 45_000);
 
@@ -52,7 +52,7 @@ afterAll(() => {
 
 function storage(serverSideEncryption = false) {
   return new S3Storage({
-    bucket: 'horide-docs',
+    bucket: 'musride-docs',
     region: 'us-east-1',
     endpoint: ENDPOINT,
     forcePathStyle: true,

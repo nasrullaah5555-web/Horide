@@ -2,6 +2,9 @@
 
 ## Unreleased
 
+### Changed
+- Product renamed from Horide to Musride everywhere in the repository (ADR-019). Launcher icons are temporary until the owner's logo is added.
+
 ### Added
 - Planning documents: requirements, architecture, database design, security plan, ADRs, roadmap, task and owner action registers.
 - Monorepo foundation: pnpm workspace, folder structure, editor and formatting config, environment templates.
@@ -21,16 +24,16 @@
 - In-app notifications with push adapter, device registration and admin broadcasts; admin dashboard counts, daily reports, live driver map, passenger and trip management.
 - Admin dashboard (apps/admin) covering every staff workflow, with menus and actions limited to each person's roles; dev demo data script and screenshot check.
 - Mobile apps (Flutter, Android + iOS from one codebase), compiled and tested in CI only, not yet run on a device:
-  - Shared `horide_core` package: API client with single-flight token refresh, secure token storage, models matching the backend, design system, offline banner, emergency sheet.
+  - Shared `musride_core` package: API client with single-flight token refresh, secure token storage, models matching the backend, design system, offline banner, emergency sheet.
   - Passenger app: phone login, map-pin pickup, destination picker, server prices for car and Bajaj, cash/eBirr, booking, live trip with driver details and plate, stale-location warning, destination change with price approval, cancel, emergency, payment confirmation or dispute, driver rating, history, receipts, complaints, profile.
   - Driver app: phone login, onboarding (name, vehicle, document photos, review status), subscription status, online/offline through the server, battery-aware location reporting with offline buffering, ride offers with countdown, trip steps, navigation via the phone's maps app, payment recording, passenger rating, earnings summary.
 - CI: Flutter format/analyze/test for all three packages, automatic `dart format` commits, unsigned Android build on every mobile change, iOS build on demand.
 - Account deletion from both apps and the API; hourly purge of old trip GPS history, OTP challenges and ended sessions (migration 0006).
-- Public website (`apps/web`, static): home, how it works, drive with Horide, safety, privacy policy (draft), terms (draft), contact, account deletion instructions.
+- Public website (`apps/web`, static): home, how it works, drive with Musride, safety, privacy policy (draft), terms (draft), contact, account deletion instructions.
 - Load test script for location ingestion and matching; configurable database pool size (`DATABASE_POOL_MAX`).
 - Production adapters (unverified against the real services): S3-compatible private storage, Google Routes / OSRM routing, Firebase Cloud Messaging push, AfroMessage SMS.
 - Deployment: Render blueprint, deployment guide, encrypted backup and tested restore scripts.
-- Mobile release setup: final app IDs, release signing from a git-ignored key file or CI secrets, obfuscated release bundles in CI, Horide launcher icons; release builds refuse a non-https server address.
+- Mobile release setup: final app IDs, release signing from a git-ignored key file or CI secrets, obfuscated release bundles in CI, Musride launcher icons; release builds refuse a non-https server address.
 - Pilot runbook: go/no-go checklist, daily operations, incident and breach procedures, support process.
 - Passenger app: saved places as one-tap destinations (save, use, hold to remove).
 - One design-token file (`design/tokens.json`) drives the apps, console and website; shared button and panel components; CI rejects hardcoded colours, sizes and button styles.

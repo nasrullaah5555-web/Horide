@@ -2,7 +2,7 @@ import Link from 'next/link';
 
 const nav = [
   { href: '/how-it-works/', label: 'How it works' },
-  { href: '/drive/', label: 'Drive with Horide' },
+  { href: '/drive/', label: 'Drive with Musride' },
   { href: '/safety/', label: 'Safety' },
   { href: '/contact/', label: 'Contact' },
 ];
@@ -15,7 +15,7 @@ export function Header() {
           href="/"
           className="sign rounded-control px-3 py-1 text-title-large font-extrabold tracking-tight"
         >
-          Horide
+          Musride
         </Link>
         <nav aria-label="Main">
           <ul className="flex flex-wrap gap-x-5 gap-y-1 text-body font-semibold">
@@ -38,7 +38,7 @@ export function Footer() {
     <footer className="mt-16 bg-navy text-white">
       <div className="mx-auto grid max-w-5xl gap-6 px-4 py-10 sm:grid-cols-3">
         <div>
-          <p className="text-title font-extrabold">Horide</p>
+          <p className="text-title font-extrabold">Musride</p>
           <p className="text-white/75">Rides by car and Bajaj in Jijiga.</p>
         </div>
         <ul className="space-y-1 text-white/85">
@@ -90,7 +90,7 @@ export function DraftNotice() {
       role="note"
       className="mb-6 rounded-control border border-amber bg-amber-soft px-4 py-3 font-semibold text-navy"
     >
-      Draft. This document has not yet been reviewed by a lawyer and will be finalised before Horide
+      Draft. This document has not yet been reviewed by a lawyer and will be finalised before Musride
       launches.
     </p>
   );

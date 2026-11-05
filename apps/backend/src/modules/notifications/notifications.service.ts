@@ -84,7 +84,7 @@ export class NotificationsService implements OnModuleInit, OnModuleDestroy {
       this.events.on('offer.created', (e) => {
         void this.pushOnly(e.driverId, {
           title: 'New ride request',
-          body: 'Open Horide to accept.',
+          body: 'Open Musride to accept.',
           data: { type: 'offer.created', tripId: e.tripId, expiresAt: e.expiresAt.toISOString() },
         });
       }),

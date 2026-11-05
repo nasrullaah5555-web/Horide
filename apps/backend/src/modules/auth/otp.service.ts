@@ -140,7 +140,7 @@ export class OtpService {
     try {
       await this.sms.send(
         phone,
-        `Your Horide code is ${code}. It expires in ${minutes} minutes. Never share this code.`,
+        `Your Musride code is ${code}. It expires in ${minutes} minutes. Never share this code.`,
       );
     } catch (err) {
       // Don't leave a usable code behind if the user never received it.

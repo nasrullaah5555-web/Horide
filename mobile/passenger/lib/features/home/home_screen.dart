@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_map/flutter_map.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
-import 'package:horide_core/horide_core.dart';
+import 'package:musride_core/musride_core.dart';
 
 import '../../core/passenger_api.dart';
 import '../../core/ui.dart';
@@ -125,24 +125,24 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
               ...baseMapLayers(),
               if (_destination != null)
                 MarkerLayer(
-                  markers: [pinMarker(_destination!.point, HorideColors.navy, 'Destination')],
+                  markers: [pinMarker(_destination!.point, MusrideColors.navy, 'Destination')],
                 ),
               mapAttribution(),
             ],
           ),
-          const Center(child: CentrePin(colour: HorideColors.sign, label: 'Pickup point')),
+          const Center(child: CentrePin(colour: MusrideColors.sign, label: 'Pickup point')),
           SafeArea(
             child: Padding(
-              padding: const EdgeInsets.all(HorideSpace.md),
+              padding: const EdgeInsets.all(MusrideSpace.md),
               child: Row(
                 children: [
-                  HorideRoundButton(
+                  MusrideRoundButton(
                     icon: Icons.menu,
                     label: 'Menu',
                     onPressed: () => _openMenu(context),
                   ),
                   const Spacer(),
-                  HorideRoundButton(
+                  MusrideRoundButton(
                     icon: Icons.my_location,
                     label: 'Go to my location',
                     onPressed: () async {
@@ -162,20 +162,20 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
 
   Widget _bottomPanel(BuildContext context) {
     final quotes = _quotes;
-    return HorideBottomPanel(
+    return MusrideBottomPanel(
       children: [
         TextField(
           controller: _pickupText,
           maxLength: 200,
           decoration: const InputDecoration(
-            prefixIcon: Icon(Icons.trip_origin, color: HorideColors.sign),
+            prefixIcon: Icon(Icons.trip_origin, color: MusrideColors.sign),
             hintText: 'Pickup landmark (helps the driver find you)',
             counterText: '',
           ),
         ),
-        const Gap(HorideSpace.md),
-        HorideButton(
-          kind: HorideButtonKind.secondary,
+        const Gap(MusrideSpace.md),
+        MusrideButton(
+          kind: MusrideButtonKind.secondary,
           icon: Icons.place,
           label:
               _destination == null
@@ -191,14 +191,14 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
           current: _destination,
         ),
         if (_busy && quotes == null) ...[
-          const Gap(HorideSpace.lg),
+          const Gap(MusrideSpace.lg),
           const Center(child: CircularProgressIndicator()),
         ],
         if (quotes != null) ...[
-          const Gap(HorideSpace.lg),
+          const Gap(MusrideSpace.lg),
           for (final q in quotes)
             Padding(
-              padding: const EdgeInsets.only(bottom: HorideSpace.sm),
+              padding: const EdgeInsets.only(bottom: MusrideSpace.sm),
               child: OptionTile(
                 selected: q.category == _category,
                 onTap: () => setState(() => _category = q.category),
@@ -213,7 +213,7 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
                 trailing: formatEtbShort(q.fare),
               ),
             ),
-          const Gap(HorideSpace.sm),
+          const Gap(MusrideSpace.sm),
           SegmentedButton<PaymentMethod>(
             segments: const [
               ButtonSegment(
@@ -233,17 +233,17 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
               _loadQuotes(); // the price is tied to the payment method in the quote
             },
           ),
-          const Gap(HorideSpace.sm),
+          const Gap(MusrideSpace.sm),
           const HintText(
-            'You pay the driver directly. Horide does not take payment in the app.',
+            'You pay the driver directly. Musride does not take payment in the app.',
             center: true,
           ),
-          const Gap(HorideSpace.md),
+          const Gap(MusrideSpace.md),
           Builder(
             builder: (context) {
               final selected = quotes.where((q) => q.category == _category).firstOrNull;
               if (selected == null) return const SizedBox.shrink();
-              return HorideButton(
+              return MusrideButton(
                 label:
                     'Book ${vehicleLabel(selected.category).toLowerCase()} for ${formatEtbShort(selected.fare)}',
                 onPressed: _busy ? null : () => _book(selected),
@@ -315,12 +315,12 @@ class _SavedPlacesRow extends ConsumerWidget {
               decoration: const InputDecoration(hintText: 'Name, e.g. Home or Work'),
             ),
             actions: [
-              HorideButton(
-                kind: HorideButtonKind.quiet,
+              MusrideButton(
+                kind: MusrideButtonKind.quiet,
                 label: 'Cancel',
                 onPressed: () => Navigator.pop(d),
               ),
-              HorideButton(label: 'Save', onPressed: () => Navigator.pop(d, label.text.trim())),
+              MusrideButton(label: 'Save', onPressed: () => Navigator.pop(d, label.text.trim())),
             ],
           ),
     );
@@ -341,12 +341,12 @@ class _SavedPlacesRow extends ConsumerWidget {
           (d) => AlertDialog(
             title: Text('Remove "${p.label}"?'),
             actions: [
-              HorideButton(
-                kind: HorideButtonKind.quiet,
+              MusrideButton(
+                kind: MusrideButtonKind.quiet,
                 label: 'Keep',
                 onPressed: () => Navigator.pop(d, false),
               ),
-              HorideButton(label: 'Remove', onPressed: () => Navigator.pop(d, true)),
+              MusrideButton(label: 'Remove', onPressed: () => Navigator.pop(d, true)),
             ],
           ),
     );
@@ -368,18 +368,18 @@ class _SavedPlacesRow extends ConsumerWidget {
         places.any((p) => p.point.lat == place.point.lat && p.point.lng == place.point.lng);
     if (places.isEmpty && (place == null || alreadySaved)) return const SizedBox.shrink();
     return Padding(
-      padding: const EdgeInsets.only(top: HorideSpace.sm),
+      padding: const EdgeInsets.only(top: MusrideSpace.sm),
       child: SingleChildScrollView(
         scrollDirection: Axis.horizontal,
         child: Row(
           children: [
             for (final p in places)
               Padding(
-                padding: const EdgeInsets.only(right: HorideSpace.sm),
+                padding: const EdgeInsets.only(right: MusrideSpace.sm),
                 child: GestureDetector(
                   onLongPress: () => _delete(context, ref, p),
                   child: ActionChip(
-                    avatar: const Icon(Icons.bookmark, size: HorideSize.iconSmall),
+                    avatar: const Icon(Icons.bookmark, size: MusrideSize.iconSmall),
                     label: Text(p.label),
                     tooltip: 'Go to ${p.label} (hold to remove)',
                     onPressed: () => onPick(p),
@@ -388,7 +388,7 @@ class _SavedPlacesRow extends ConsumerWidget {
               ),
             if (place != null && !alreadySaved)
               ActionChip(
-                avatar: const Icon(Icons.bookmark_add_outlined, size: HorideSize.iconSmall),
+                avatar: const Icon(Icons.bookmark_add_outlined, size: MusrideSize.iconSmall),
                 label: const Text('Save this place'),
                 onPressed: () => _save(context, ref, place),
               ),

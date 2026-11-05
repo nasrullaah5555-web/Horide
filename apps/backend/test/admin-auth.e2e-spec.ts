@@ -27,12 +27,12 @@ describe('Admin authentication and permissions (e2e)', () => {
         totpCode(c.totpSecret, totpStep()),
       ).expect(200);
       const cookie = ([] as string[]).concat(res.headers['set-cookie'] ?? []).join(';');
-      expect(cookie).toMatch(/horide_admin=/);
+      expect(cookie).toMatch(/musride_admin=/);
       expect(cookie).toMatch(/HttpOnly/i);
       expect(cookie).toMatch(/SameSite=Strict/i);
       expect(res.body.csrfToken).toMatch(/^[\w-]{40,}$/);
       // The session token itself is never in the response body.
-      expect(JSON.stringify(res.body)).not.toMatch(/horide_admin/);
+      expect(JSON.stringify(res.body)).not.toMatch(/musride_admin/);
     });
 
     it('requires the TOTP code: the right password alone is not enough', async () => {

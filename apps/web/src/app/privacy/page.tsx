@@ -11,14 +11,14 @@ export default function Privacy() {
   return (
     <Page
       title="Privacy policy"
-      lead="What Horide collects, why, how long it is kept, and your choices."
+      lead="What Musride collects, why, how long it is kept, and your choices."
     >
       <div className="prose-legal">
         <DraftNotice />
 
         <h2>Who we are</h2>
         <p>
-          Horide operates a ride-hailing service in Jijiga, Ethiopia.{' '}
+          Musride operates a ride-hailing service in Jijiga, Ethiopia.{' '}
           <NotYetPublished what="The registered company name and address" />
         </p>
 
@@ -74,11 +74,11 @@ export default function Privacy() {
             number. Drivers’ vehicle and plate are shown to their passengers.
           </li>
           <li>
-            Horide staff see only what their role needs. Driver documents can be opened only by
+            Musride staff see only what their role needs. Driver documents can be opened only by
             verification staff, and every opening is recorded.
           </li>
           <li>
-            Service providers that run parts of Horide for us: hosting, sign-in text messages, maps
+            Service providers that run parts of Musride for us: hosting, sign-in text messages, maps
             and directions.{' '}
             <NotYetPublished what="The list of providers and the countries where data is stored" />
           </li>

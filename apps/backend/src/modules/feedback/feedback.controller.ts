@@ -208,7 +208,7 @@ export class FeedbackController {
   /**
    * Emergency button. Records the alert with the trip and position, logs it at error level so
    * monitoring raises an alarm, and returns the public emergency numbers to call immediately.
-   * Horide staff are NOT an emergency service; the app always shows the numbers first.
+   * Musride staff are NOT an emergency service; the app always shows the numbers first.
    */
   @Post('emergency')
   @HttpCode(201)

@@ -1,6 +1,6 @@
 /**
  * DEV ONLY: signs in to a locally running dashboard with the demo staff account created by
- * `pnpm --filter @horide/backend demo`, opens every screen and saves screenshots.
+ * `pnpm --filter @musride/backend demo`, opens every screen and saves screenshots.
  *   node e2e/screenshots.mjs <output-dir> [path ...]
  * Fails if any screen shows an error message or a browser console error.
  */

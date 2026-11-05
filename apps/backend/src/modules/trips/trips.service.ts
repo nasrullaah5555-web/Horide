@@ -321,7 +321,7 @@ export class TripsService {
           .execute();
       }
       if (to === 'completed') {
-        // A payment RECORD; Horide never receives the money (BR-01).
+        // A payment RECORD; Musride never receives the money (BR-01).
         await trx
           .insertInto('payments')
           .values({

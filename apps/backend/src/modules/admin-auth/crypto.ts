@@ -108,8 +108,8 @@ export function matchTotp(secret: string, code: string, now = Date.now()): numbe
 }
 
 export function otpauthUrl(secret: string, email: string): string {
-  const label = encodeURIComponent(`Horide Admin:${email}`);
-  return `otpauth://totp/${label}?secret=${secret}&issuer=Horide&algorithm=SHA1&digits=6&period=30`;
+  const label = encodeURIComponent(`Musride Admin:${email}`);
+  return `otpauth://totp/${label}?secret=${secret}&issuer=Musride&algorithm=SHA1&digits=6&period=30`;
 }
 
 /* ---------- Encrypting TOTP secrets at rest (AES-256-GCM) ---------- */

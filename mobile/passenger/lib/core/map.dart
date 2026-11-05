@@ -1,5 +1,5 @@
-// Maps come from horide_core so both apps look the same.
-export 'package:horide_core/horide_core.dart'
+// Maps come from musride_core so both apps look the same.
+export 'package:musride_core/musride_core.dart'
     show
         baseMapLayers,
         mapAttribution,

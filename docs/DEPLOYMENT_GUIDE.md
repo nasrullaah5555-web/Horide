@@ -33,7 +33,7 @@ Separate **staging** and **production** for both Render and Supabase. Staging ge
    ```
 7. Backup key pair (keep the private key OFFLINE, e.g. on a USB stick in a safe, plus a printed copy):
    ```bash
-   age-keygen -o horide-backup.key   # prints the public key "age1..." — that goes into the backup job
+   age-keygen -o musride-backup.key   # prints the public key "age1..." — that goes into the backup job
    ```
 
 ## 3. Deploying
@@ -42,16 +42,16 @@ Separate **staging** and **production** for both Render and Supabase. Staging ge
    - `DATABASE_URL`: Supabase connection string (the **session pooler** or direct connection, with `sslmode=require`).
    - `CORS_ORIGINS`: `https://admin.<domain>,https://<domain>`.
    - `S3_ENDPOINT`: `https://<project>.supabase.co/storage/v1/s3`, `S3_REGION`: the project's region, `S3_BUCKET`: `driver-documents`.
-   - `HORIDE_API_URL` (console): `https://api.<domain>`. It is read when the console is **built**, so redeploy the console if it changes.
+   - `MUSRIDE_API_URL` (console): `https://api.<domain>`. It is read when the console is **built**, so redeploy the console if it changes.
 2. Deploys are manual (`autoDeploy: false`). Deploy only a commit whose CI is green.
 3. Each API deploy first runs `node apps/backend/dist/database/migrate-cli.js latest`. If a migration fails, the deploy stops and the old version keeps running.
 4. The API refuses to start if anything is missing or unsafe (development adapters, placeholder or repeated secrets, non-SSL database, non-https origins). Read the deploy log: it lists every problem.
-5. Create the first staff account from the Render shell of `horide-api`:
+5. Create the first staff account from the Render shell of `musride-api`:
    ```bash
    node apps/backend/dist/modules/admin-auth/create-admin-cli.js --email you@<domain> --name "Your Name" --roles super
    ```
    It prints, once, a temporary password and an authenticator link with its manual key. Add the key to an authenticator app, sign in at `https://admin.<domain>`, and change the password under Account. Clear the shell output afterwards.
-6. Website: Cloudflare Pages → connect the repository → build command `corepack enable && pnpm install --frozen-lockfile && pnpm --filter @horide/web build`, output directory `apps/web/out`.
+6. Website: Cloudflare Pages → connect the repository → build command `corepack enable && pnpm install --frozen-lockfile && pnpm --filter @musride/web build`, output directory `apps/web/out`.
 
 ## 4. Cloudflare
 
@@ -80,7 +80,7 @@ Separate **staging** and **production** for both Render and Supabase. Staging ge
   ```bash
   # once, as a superuser on the empty target database:
   CREATE EXTENSION postgis; CREATE EXTENSION pgcrypto; CREATE EXTENSION citext; CREATE EXTENSION btree_gist;
-  TARGET_DATABASE_URL=<empty database> AGE_IDENTITY=horide-backup.key infra/backup/restore.sh horide-<date>.dump.age
+  TARGET_DATABASE_URL=<empty database> AGE_IDENTITY=musride-backup.key infra/backup/restore.sh musride-<date>.dump.age
   ```
   Compare the printed row counts with production, run the migration command against it (must say "up to date"), and record the time taken in TEST_REPORT.md. Targets: RPO 24 h, RTO 4 h.
 - Driver document files are in Supabase Storage, not in the database backup. Enable bucket versioning or a periodic copy if the plan allows (owner decision).
@@ -102,7 +102,7 @@ Separate **staging** and **production** for both Render and Supabase. Staging ge
 
 | Step | Local check | Result |
 |---|---|---|
-| Build | `pnpm --filter @horide/backend build`, `pnpm --filter @horide/admin build`, `pnpm --filter @horide/web build` | Pass (CI) |
+| Build | `pnpm --filter @musride/backend build`, `pnpm --filter @musride/admin build`, `pnpm --filter @musride/web build` | Pass (CI) |
 | Migrations | `migrate-cli.js latest` on an existing database | "up to date" |
 | Backup + restore | `infra/backup/backup.sh` → `restore.sh` into an empty database | Row counts match; restored database migrates as "up to date" (TEST_REPORT) |
 | Production config refusal | `src/config/env.spec.ts` | Pass |
@@ -113,32 +113,32 @@ App IDs (permanent once published; OA-23 asks the owner to confirm them before t
 
 | App | Android `applicationId` | iOS bundle ID | Name on the phone |
 |---|---|---|---|
-| Passenger | `et.horide.passenger` | `et.horide.passenger` | Horide |
-| Driver | `et.horide.driver` | `et.horide.driver` | Horide Driver |
+| Passenger | `et.musride.passenger` | `et.musride.passenger` | Musride |
+| Driver | `et.musride.driver` | `et.musride.driver` | Musride Driver |
 
 Every release build must be given the API address; a release build without an `https://` address shows an error screen instead of running:
 ```bash
---dart-define=HORIDE_API_URL=https://api.<domain>
+--dart-define=MUSRIDE_API_URL=https://api.<domain>
 ```
 
 ### Android (owner: OA-05)
 
 1. Create the upload key once, on your own computer, and back it up in two safe places. Losing it means asking Google to reset it; leaking it lets someone else publish "updates".
    ```bash
-   keytool -genkeypair -v -keystore horide-upload.jks -alias upload -keyalg RSA -keysize 4096 -validity 10000
+   keytool -genkeypair -v -keystore musride-upload.jks -alias upload -keyalg RSA -keysize 4096 -validity 10000
    ```
 2. Either build on your computer with `mobile/<app>/android/key.properties` (git-ignored):
    ```properties
-   storeFile=/full/path/to/horide-upload.jks
+   storeFile=/full/path/to/musride-upload.jks
    storePassword=...
    keyAlias=upload
    keyPassword=...
    ```
    ```bash
    cd mobile/passenger
-   flutter build appbundle --release --obfuscate --split-debug-info=build/symbols --dart-define=HORIDE_API_URL=https://api.<domain>
+   flutter build appbundle --release --obfuscate --split-debug-info=build/symbols --dart-define=MUSRIDE_API_URL=https://api.<domain>
    ```
-3. Or let CI build it: in GitHub → Settings → Secrets and variables → Actions, add secrets `HORIDE_KEYSTORE_BASE64` (`base64 -w0 horide-upload.jks`), `HORIDE_KEYSTORE_PASSWORD`, `HORIDE_KEY_ALIAS`, `HORIDE_KEY_PASSWORD`, and the variable `HORIDE_API_URL`. The "Mobile build" run then offers the signed `.aab` and the symbol files as downloads for 14 days.
+3. Or let CI build it: in GitHub → Settings → Secrets and variables → Actions, add secrets `MUSRIDE_KEYSTORE_BASE64` (`base64 -w0 musride-upload.jks`), `MUSRIDE_KEYSTORE_PASSWORD`, `MUSRIDE_KEY_ALIAS`, `MUSRIDE_KEY_PASSWORD`, and the variable `MUSRIDE_API_URL`. The "Mobile build" run then offers the signed `.aab` and the symbol files as downloads for 14 days.
 4. In Play Console: enable Play App Signing, upload the `.aab` to Internal testing first, add the privacy policy URL (`https://<domain>/privacy/`) and the account deletion URL (`https://<domain>/delete-account/`), and complete the Data safety form from the privacy policy.
 5. Keep `build/symbols` for each release: it turns obfuscated crash reports back into readable ones.
 
@@ -147,7 +147,7 @@ Every release build must be given the API address; a release build without an `h
 Needs a Mac with Xcode and an Apple Developer account. CI proves the iOS app compiles (unsigned); signing and upload happen on the Mac:
 ```bash
 cd mobile/passenger
-flutter build ipa --release --obfuscate --split-debug-info=build/symbols --dart-define=HORIDE_API_URL=https://api.<domain>
+flutter build ipa --release --obfuscate --split-debug-info=build/symbols --dart-define=MUSRIDE_API_URL=https://api.<domain>
 ```
 Then upload with Xcode's Organizer or Transporter to TestFlight. Set the team and the bundle IDs above in Xcode (Runner → Signing & Capabilities) the first time.
 
@@ -172,10 +172,10 @@ Cost: free. Supabase pauses a free project after a week without use (resume it i
    - `DATABASE_URL`: the Session pooler string.
    - `DATABASE_CA_CERT`: open the downloaded certificate in a text editor and paste all of it (including the BEGIN and END lines). If the field won't take several lines, paste the output of `base64 -w0 prod-ca-2021.crt` instead (macOS: `base64 -i prod-ca-2021.crt`).
    - `STAGING_BOOTSTRAP_ADMIN_EMAIL`: your email.
-   - `CORS_ORIGINS` and `HORIDE_API_URL`: leave a placeholder (`https://example.org`) for now.
-3. When the three services exist, note their addresses (`https://horide-staging-api-xxxx.onrender.com` and so on). Set:
+   - `CORS_ORIGINS` and `MUSRIDE_API_URL`: leave a placeholder (`https://example.org`) for now.
+3. When the three services exist, note their addresses (`https://musride-staging-api-xxxx.onrender.com` and so on). Set:
    - API → Environment → `CORS_ORIGINS` = `https://<console address>,https://<website address>`.
-   - Console → Environment → `HORIDE_API_URL` = `https://<api address>`, then **Manual Deploy → Clear build cache & deploy** (the address is read when the console is built).
+   - Console → Environment → `MUSRIDE_API_URL` = `https://<api address>`, then **Manual Deploy → Clear build cache & deploy** (the address is read when the console is built).
 4. Check `https://<api address>/health` shows `{"status":"ok","database":"up"}`.
 5. API → Logs: find the block "STAGING: first staff account created". It shows the email, a temporary password and an authenticator key, **once**. Add the key to an authenticator app, sign in to the console, and change the password under Account.
 6. Open the website address and click through every page.

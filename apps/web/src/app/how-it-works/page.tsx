@@ -11,11 +11,11 @@ const steps = [
   ['Choose where to go', 'Pick your destination on the map.'],
   [
     'See the prices',
-    'Horide shows the fare for a car and for a Bajaj, worked out from the road distance.',
+    'Musride shows the fare for a car and for a Bajaj, worked out from the road distance.',
   ],
   [
     'Choose cash or eBirr',
-    'This tells the driver how you will pay. You pay the driver, not Horide.',
+    'This tells the driver how you will pay. You pay the driver, not Musride.',
   ],
   [
     'Book',
@@ -29,7 +29,7 @@ const steps = [
     'Arrive and pay',
     'Pay the driver, then confirm in the app. If something is wrong with the payment, report it there.',
   ],
-  ['Rate the trip', 'Ratings help keep Horide safe and friendly for everyone.'],
+  ['Rate the trip', 'Ratings help keep Musride safe and friendly for everyone.'],
 ] as const;
 
 export default function HowItWorks() {
@@ -50,7 +50,7 @@ export default function HowItWorks() {
       </ol>
       <h2 className="mt-10 text-headline font-extrabold">If your destination changes</h2>
       <p className="mt-2 text-navy-soft">
-        Change it in the app during the trip. Horide works out the new price and you approve it
+        Change it in the app during the trip. Musride works out the new price and you approve it
         before anything changes. If you don’t approve, the original price stays.
       </p>
       <h2 className="mt-8 text-headline font-extrabold">Prices</h2>

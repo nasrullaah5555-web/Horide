@@ -4,7 +4,7 @@ Format: context → decision → consequences. Status: Accepted unless marked ot
 
 ## ADR-001 Monorepo
 
-**Decision:** One Git repository. `apps/backend` (NestJS), `apps/admin` (Next.js), `apps/website` (Next.js), `mobile/passenger`, `mobile/driver` (Flutter), `packages/horide_core` (shared Dart package). JavaScript workspaces managed with pnpm.
+**Decision:** One Git repository. `apps/backend` (NestJS), `apps/admin` (Next.js), `apps/website` (Next.js), `mobile/passenger`, `mobile/driver` (Flutter), `packages/musride_core` (shared Dart package). JavaScript workspaces managed with pnpm.
 **Why:** One source of truth, shared CI, atomic changes across API and clients.
 
 ## ADR-002 Database access: Kysely + SQL migrations
@@ -93,10 +93,16 @@ Decision: implement each adapter against the provider's public API and test it w
 
 Consequences: when an account exists, going live is configuration plus one real check per service (listed in OWNER_ACTION_REGISTER). AfroMessage was written from public SDKs because the official developer page couldn't be opened from the development environment; it carries the highest risk of a mismatch.
 
-## ADR-018 One design-token file for every part of Horide, enforced in CI
+## ADR-018 One design-token file for every part of Musride, enforced in CI
 
 Context: the owner requires every layout, button and colour to be constant across the project. Before this, the apps, console and website each had their own copies of the colours and many one-off sizes (over 300 hardcoded values found).
 
-Decision: `design/tokens.json` is the single source. `scripts/gen-tokens.mjs` generates Dart constants for the apps, a CSS/Tailwind theme for the console and website, and a TypeScript colour map. Screens are built from shared components (`HorideButton` and friends in `horide_core`; `.sign` classes in `packages/design-tokens/components.css`). `scripts/check-design.mjs` fails CI on any hardcoded colour, size, font size, corner, padding or custom button outside the token and component files.
+Decision: `design/tokens.json` is the single source. `scripts/gen-tokens.mjs` generates Dart constants for the apps, a CSS/Tailwind theme for the console and website, and a TypeScript colour map. Screens are built from shared components (`MusrideButton` and friends in `musride_core`; `.sign` classes in `packages/design-tokens/components.css`). `scripts/check-design.mjs` fails CI on any hardcoded colour, size, font size, corner, padding or custom button outside the token and component files.
 
 Consequences: a look change is one edit plus `pnpm tokens`. Some spacing values were rounded to the nearest step of the scale (e.g. 10 → 12, 6 → 8), which slightly changes a few layouts on purpose. Tailwind's spacing scale (4 px steps) stays allowed on the web because it is itself a fixed scale.
+
+## ADR-019 Product renamed from Horide to Musride (2026-11-05)
+
+Decision by the owner. Everything in the repository now uses Musride: app names ("Musride", "Musride Driver"), website, staff console, SMS and notification texts, app IDs (`et.musride.passenger`, `et.musride.driver` — not yet published, so still changeable), code names (`musride_core`, `MusrideButton`, `@musride/*`), environment variables (`MUSRIDE_API_URL`, `MUSRIDE_KEYSTORE_*`), local database names, and docs. Earlier commit messages keep the old name.
+
+Not renamed here (owner actions): the GitHub repository (`nasrullaah5555-web/Horide`; GitHub redirects after a rename), the Claude project name, and anything already created outside the repository. The launcher icons use a temporary "M" sign until the owner's logo arrives.

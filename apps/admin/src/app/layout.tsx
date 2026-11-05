@@ -2,7 +2,7 @@ import type { Metadata } from 'next';
 import './globals.css';
 
 export const metadata: Metadata = {
-  title: 'Horide console',
+  title: 'Musride console',
   robots: { index: false, follow: false },
 };
 

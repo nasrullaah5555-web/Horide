@@ -41,7 +41,7 @@ export class FakeSmsProvider implements SmsProvider {
 export interface AfroMessageOptions {
   /** API token from the AfroMessage dashboard. A secret. */
   token: string;
-  /** Approved sender name shown on the phone (e.g. "Horide"), if the account has one. */
+  /** Approved sender name shown on the phone (e.g. "Musride"), if the account has one. */
   sender?: string;
   /** Identifier ("from") for accounts with more than one; optional. */
   identifierId?: string;

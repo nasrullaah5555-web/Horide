@@ -1,16 +1,16 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_test/flutter_test.dart';
-import 'package:horide_core/horide_core.dart';
-import 'package:horide_passenger/app.dart';
-import 'package:horide_passenger/core/providers.dart';
+import 'package:musride_core/musride_core.dart';
+import 'package:musride_passenger/app.dart';
+import 'package:musride_passenger/core/providers.dart';
 
 void main() {
   testWidgets('someone not signed in is sent to the phone-number screen', (tester) async {
     await tester.pumpWidget(
       ProviderScope(
         overrides: [tokenStoreProvider.overrideWithValue(MemoryTokenStore())],
-        child: const HorideApp(),
+        child: const MusrideApp(),
       ),
     );
     await tester.pumpAndSettle();
@@ -22,7 +22,7 @@ void main() {
     await tester.pumpWidget(
       ProviderScope(
         overrides: [tokenStoreProvider.overrideWithValue(MemoryTokenStore())],
-        child: const HorideApp(),
+        child: const MusrideApp(),
       ),
     );
     await tester.pumpAndSettle();

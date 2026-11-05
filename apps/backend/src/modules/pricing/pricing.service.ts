@@ -156,14 +156,14 @@ export class PricingService {
       throw new AppError(
         HttpStatus.UNPROCESSABLE_ENTITY,
         'PICKUP_OUTSIDE_SERVICE_AREA',
-        'Horide is not available at this pickup point yet.',
+        'Musride is not available at this pickup point yet.',
       );
     }
     if (!destinationZone) {
       throw new AppError(
         HttpStatus.UNPROCESSABLE_ENTITY,
         'DESTINATION_OUTSIDE_SERVICE_AREA',
-        'This destination is outside the Horide service area.',
+        'This destination is outside the Musride service area.',
       );
     }
     const straight = haversineMetres(input.pickup, input.destination);

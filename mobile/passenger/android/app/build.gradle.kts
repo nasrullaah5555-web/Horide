@@ -7,7 +7,7 @@ plugins {
 }
 
 android {
-    namespace = "et.horide.horide_passenger"
+    namespace = "et.musride.passenger"
     compileSdk = flutter.compileSdkVersion
     ndkVersion = flutter.ndkVersion
 
@@ -18,7 +18,7 @@ android {
 
     defaultConfig {
         // Permanent once published on Google Play (OWNER_ACTION_REGISTER OA-23 confirms it).
-        applicationId = "et.horide.passenger"
+        applicationId = "et.musride.passenger"
         // You can update the following values to match your application needs.
         // For more information, see: https://flutter.dev/to/review-gradle-config.
         minSdk = flutter.minSdkVersion
@@ -33,9 +33,9 @@ android {
 
     // Release signing (T-046). The upload key never enters Git. It comes from either
     //  - android/key.properties (on the owner's computer; git-ignored), or
-    //  - environment variables HORIDE_KEYSTORE_FILE, HORIDE_KEYSTORE_PASSWORD, HORIDE_KEY_ALIAS,
-    //    HORIDE_KEY_PASSWORD (CI, from GitHub secrets).
-    // Without either, a release build fails, unless HORIDE_ALLOW_DEBUG_SIGNING=true (CI compile
+    //  - environment variables MUSRIDE_KEYSTORE_FILE, MUSRIDE_KEYSTORE_PASSWORD, MUSRIDE_KEY_ALIAS,
+    //    MUSRIDE_KEY_PASSWORD (CI, from GitHub secrets).
+    // Without either, a release build fails, unless MUSRIDE_ALLOW_DEBUG_SIGNING=true (CI compile
     // check only: such a build is signed with the debug key and can't be uploaded to Play).
     val keyProps = Properties().apply {
         val f = rootProject.file("key.properties")
@@ -43,15 +43,15 @@ android {
     }
     fun secret(prop: String, env: String): String? =
         keyProps.getProperty(prop) ?: System.getenv(env)?.takeIf { it.isNotBlank() }
-    val storeFilePath = secret("storeFile", "HORIDE_KEYSTORE_FILE")
+    val storeFilePath = secret("storeFile", "MUSRIDE_KEYSTORE_FILE")
 
     signingConfigs {
         if (storeFilePath != null) {
             create("release") {
                 storeFile = file(storeFilePath)
-                storePassword = secret("storePassword", "HORIDE_KEYSTORE_PASSWORD")
-                keyAlias = secret("keyAlias", "HORIDE_KEY_ALIAS")
-                keyPassword = secret("keyPassword", "HORIDE_KEY_PASSWORD")
+                storePassword = secret("storePassword", "MUSRIDE_KEYSTORE_PASSWORD")
+                keyAlias = secret("keyAlias", "MUSRIDE_KEY_ALIAS")
+                keyPassword = secret("keyPassword", "MUSRIDE_KEY_PASSWORD")
             }
         }
     }
@@ -60,7 +60,7 @@ android {
         release {
             signingConfig = when {
                 storeFilePath != null -> signingConfigs.getByName("release")
-                System.getenv("HORIDE_ALLOW_DEBUG_SIGNING") == "true" -> signingConfigs.getByName("debug")
+                System.getenv("MUSRIDE_ALLOW_DEBUG_SIGNING") == "true" -> signingConfigs.getByName("debug")
                 else -> null // refused below, only when a release build is actually requested
             }
             isMinifyEnabled = true
@@ -87,7 +87,7 @@ gradle.taskGraph.whenReady {
     if (wantsRelease && android.buildTypes.getByName("release").signingConfig == null) {
         throw GradleException(
             "No release signing key. Create android/key.properties (docs/DEPLOYMENT_GUIDE.md §10) " +
-                "or set the HORIDE_KEYSTORE_* variables."
+                "or set the MUSRIDE_KEYSTORE_* variables."
         )
     }
 }

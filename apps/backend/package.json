@@ -1,8 +1,8 @@
 {
-  "name": "@horide/backend",
+  "name": "@musride/backend",
   "version": "0.1.0",
   "private": true,
-  "description": "Horide API (NestJS modular monolith)",
+  "description": "Musride API (NestJS modular monolith)",
   "scripts": {
     "build": "tsc -p tsconfig.build.json",
     "start": "node dist/main.js",

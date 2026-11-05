@@ -7,7 +7,7 @@ export default function DeleteAccount() {
   return (
     <Page
       title="Delete your account"
-      lead="You can delete your Horide account at any time, from the app."
+      lead="You can delete your Musride account at any time, from the app."
     >
       <div className="prose-legal">
         <h2>In the passenger app</h2>
@@ -34,7 +34,7 @@ export default function DeleteAccount() {
         </p>
 
         <h2>No longer have the app?</h2>
-        <p>Contact Horide support (see the Contact page) from the phone number of the account.</p>
+        <p>Contact Musride support (see the Contact page) from the phone number of the account.</p>
       </div>
     </Page>
   );

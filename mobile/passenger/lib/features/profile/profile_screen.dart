@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:horide_core/horide_core.dart';
+import 'package:musride_core/musride_core.dart';
 
 import '../../core/passenger_api.dart';
 import '../../core/providers.dart';
@@ -85,10 +85,10 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen> {
           _loading
               ? const Center(child: CircularProgressIndicator())
               : ListView(
-                padding: const EdgeInsets.all(HorideSpace.lg),
+                padding: const EdgeInsets.all(MusrideSpace.lg),
                 children: [
                   if (_phone != null) InfoRow('Phone', _phone!),
-                  const Gap(HorideSpace.md),
+                  const Gap(MusrideSpace.md),
                   TextField(
                     controller: _name,
                     maxLength: 120,
@@ -105,17 +105,17 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen> {
                       labelText: 'Emergency contact phone (optional)',
                     ),
                   ),
-                  const Gap(HorideSpace.sm),
-                  HorideButton(label: 'Save', onPressed: _busy ? null : _save),
-                  const Gap(HorideSpace.xxl),
-                  HorideButton(
-                    kind: HorideButtonKind.secondary,
+                  const Gap(MusrideSpace.sm),
+                  MusrideButton(label: 'Save', onPressed: _busy ? null : _save),
+                  const Gap(MusrideSpace.xxl),
+                  MusrideButton(
+                    kind: MusrideButtonKind.secondary,
                     label: 'Sign out',
                     onPressed: () => ref.read(sessionProvider.notifier).signOut(),
                   ),
-                  const Gap(HorideSpace.xxl),
-                  HorideButton(
-                    kind: HorideButtonKind.quietDanger,
+                  const Gap(MusrideSpace.xxl),
+                  MusrideButton(
+                    kind: MusrideButtonKind.quietDanger,
                     label: 'Delete my account',
                     onPressed: () async {
                       final ok = await confirmAccountDeletion(

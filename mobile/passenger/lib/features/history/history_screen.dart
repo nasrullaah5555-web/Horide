@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
-import 'package:horide_core/horide_core.dart';
+import 'package:musride_core/musride_core.dart';
 
 import '../../core/passenger_api.dart';
 
@@ -25,11 +25,11 @@ class HistoryScreen extends ConsumerWidget {
           error:
               (e, _) => ListView(
                 children: [
-                  const Gap(HorideSpace.xxxl),
+                  const Gap(MusrideSpace.xxxl),
                   Center(child: Text(e is ApiException ? e.message : 'Could not load your trips.')),
                   Center(
-                    child: HorideButton(
-                      kind: HorideButtonKind.quiet,
+                    child: MusrideButton(
+                      kind: MusrideButtonKind.quiet,
                       label: 'Try again',
                       onPressed: () => ref.invalidate(historyProvider),
                     ),
@@ -41,7 +41,7 @@ class HistoryScreen extends ConsumerWidget {
                   list.isEmpty
                       ? ListView(
                         children: const [
-                          Gap(HorideSpace.xxxl),
+                          Gap(MusrideSpace.xxxl),
                           Center(child: Text('No trips yet.')),
                         ],
                       )
@@ -57,7 +57,7 @@ class HistoryScreen extends ConsumerWidget {
                             subtitle: Text('${_date(t.requestedAt)}  •  ${_statusText(t.status)}'),
                             trailing: Text(
                               formatEtbShort(t.fare),
-                              style: const TextStyle(fontWeight: HorideFontWeight.heavy),
+                              style: const TextStyle(fontWeight: MusrideFontWeight.heavy),
                             ),
                             onTap: done ? () => context.push('/history/${t.id}') : null,
                           );

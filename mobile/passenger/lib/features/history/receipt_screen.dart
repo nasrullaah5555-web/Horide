@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
-import 'package:horide_core/horide_core.dart';
+import 'package:musride_core/musride_core.dart';
 
 import '../../core/passenger_api.dart';
 
@@ -25,10 +25,10 @@ class ReceiptScreen extends ConsumerWidget {
                 Center(child: Text(e is ApiException ? e.message : 'Could not load the receipt.')),
         data:
             (r) => ListView(
-              padding: const EdgeInsets.all(HorideSpace.lg),
+              padding: const EdgeInsets.all(MusrideSpace.lg),
               children: [
                 SignPanel(title: formatEtb(r.finalFare), subtitle: 'Paid by ${_method(r.method)}'),
-                const Gap(HorideSpace.lg),
+                const Gap(MusrideSpace.lg),
                 InfoRow('From', r.pickupText ?? 'Point on the map'),
                 InfoRow('To', r.destinationText ?? 'Point on the map'),
                 InfoRow('Distance', formatKm(r.distanceMetres)),
@@ -38,14 +38,14 @@ class ReceiptScreen extends ConsumerWidget {
                 if (r.plate != null) InfoRow('Plate', r.plate!),
                 InfoRow('Payment', r.paymentStatus.replaceAll('_', ' ')),
                 if (r.ebirrReference != null) InfoRow('eBirr reference', r.ebirrReference!),
-                const Gap(HorideSpace.md),
+                const Gap(MusrideSpace.md),
                 Text(
                   r.note,
                   style: TextStyle(color: Theme.of(context).colorScheme.onSurfaceVariant),
                 ),
-                const Gap(HorideSpace.xl),
-                HorideButton(
-                  kind: HorideButtonKind.secondary,
+                const Gap(MusrideSpace.xl),
+                MusrideButton(
+                  kind: MusrideButtonKind.secondary,
                   label: 'Report a problem with this trip',
                   onPressed: () => context.push('/complaint?tripId=$tripId'),
                 ),

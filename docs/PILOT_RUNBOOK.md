@@ -1,6 +1,6 @@
 # Pilot Runbook — Jijiga
 
-How to run the first Horide pilot day to day, and what to do when something goes wrong. Written before the pilot; update it with what actually happens.
+How to run the first Musride pilot day to day, and what to do when something goes wrong. Written before the pilot; update it with what actually happens.
 
 ## 1. Go / no-go before the first real passenger
 
@@ -38,7 +38,7 @@ Morning:
 4. Console → Subscriptions, filter "expiring": call those drivers.
 
 During the day:
-- Emergencies appear at the top of the console. Call the person back immediately. Horide staff are not an emergency service: if there is danger, they must call 991/907 and you call them too.
+- Emergencies appear at the top of the console. Call the person back immediately. Musride staff are not an emergency service: if there is danger, they must call 991/907 and you call them too.
 - Complaints: reply within 24 h. Safety complaints the same day.
 
 Evening:
@@ -66,13 +66,13 @@ A breach is any loss of control over personal data: a leaked database copy, a st
 1. **Contain** (minutes): revoke the exposed credential (Supabase keys, staff account — console → Staff accounts → disable; rotate secrets as in DEPLOYMENT_GUIDE §8).
 2. **Record**: what data, whose, how many people, when it started, when it was found. The audit log (console → Audit log) shows staff actions, including every document opening.
 3. **Notify the authority within 72 hours** of becoming aware, as the proclamation requires (the owner confirms the exact authority and form during OA-07).
-4. **Tell affected people** without undue delay when the breach is likely to harm them, in plain words: what happened, what it means for them, what Horide is doing, what they can do.
+4. **Tell affected people** without undue delay when the breach is likely to harm them, in plain words: what happened, what it means for them, what Musride is doing, what they can do.
 5. **Review** within a week: cause, fix, and what changes in this runbook.
 
 ## 6. Support process
 
 - Channels: support phone and in-app "Report a problem" (goes to console → Complaints).
-- Identify callers by the phone number on their account; never ask for a sign-in code. Horide staff never need it, and anyone asking for one is attempting account takeover — say so to the caller.
+- Identify callers by the phone number on their account; never ask for a sign-in code. Musride staff never need it, and anyone asking for one is attempting account takeover — say so to the caller.
 - Payment disputes: console → Ride payments. Talk to both sides; the record shows what each confirmed and the eBirr reference typed by the driver (not verified with eBirr until OA-10).
 - Account deletion requests by phone: only from the account's own phone number, after a call-back to that number. Deletion itself is done by the person in the app; if they can't, record the request and escalate to the owner.
 - Driver suspension: only with a written reason (the console requires one); trips already under way are never interrupted.

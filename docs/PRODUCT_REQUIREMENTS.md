@@ -1,12 +1,12 @@
-# Horide — Product Requirements
+# Musride — Product Requirements
 
-Source of truth: the HORIDE MASTER DEVELOPMENT PROMPT. This document restates it as testable requirements. Any change from the master prompt is recorded in `ARCHITECTURE_DECISIONS.md`.
+Source of truth: the MUSRIDE MASTER DEVELOPMENT PROMPT. This document restates it as testable requirements. Any change from the master prompt is recorded in `ARCHITECTURE_DECISIONS.md`.
 
 ## 1. Product summary
 
-Horide is a ride-hailing platform for **Jijiga, Ethiopia** only, at launch. Two vehicle categories: **Car** and **Bajaj**. English only for v1.
+Musride is a ride-hailing platform for **Jijiga, Ethiopia** only, at launch. Two vehicle categories: **Car** and **Bajaj**. English only for v1.
 
-Revenue comes from **monthly driver subscriptions**. Passengers pay the driver directly in **cash or eBirr**. Horide never holds ride money.
+Revenue comes from **monthly driver subscriptions**. Passengers pay the driver directly in **cash or eBirr**. Musride never holds ride money.
 
 ## 2. Users and roles
 
@@ -24,7 +24,7 @@ An admin may hold several roles. No role grants another role's permissions impli
 
 ## 3. Business rules (non-negotiable)
 
-- BR-01 Horide does not collect, hold or settle passenger ride payments. No passenger wallet.
+- BR-01 Musride does not collect, hold or settle passenger ride payments. No passenger wallet.
 - BR-02 The app records the payment method (cash / eBirr) and confirmations from driver and passenger.
 - BR-03 Driver subscriptions are recorded separately from ride payments.
 - BR-04 A driver without an ACTIVE subscription, or who is suspended or not approved, receives **no new offers**.

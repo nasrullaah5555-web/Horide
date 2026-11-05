@@ -1,8 +1,8 @@
 {
-  "name": "@horide/admin",
+  "name": "@musride/admin",
   "version": "0.1.0",
   "private": true,
-  "description": "Horide admin dashboard",
+  "description": "Musride admin dashboard",
   "scripts": {
     "dev": "next dev -p 3001",
     "build": "next build",

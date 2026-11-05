@@ -28,7 +28,7 @@ describe('LocalDiskStorage', () => {
   let storage: LocalDiskStorage;
 
   beforeAll(async () => {
-    dir = await mkdtemp(join(tmpdir(), 'horide-storage-'));
+    dir = await mkdtemp(join(tmpdir(), 'musride-storage-'));
     storage = new LocalDiskStorage(dir);
   });
 

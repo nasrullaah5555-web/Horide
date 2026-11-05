@@ -11,14 +11,14 @@ export default function Terms() {
 
         <h2>The service</h2>
         <p>
-          Horide is an app that connects passengers with independent drivers in Jijiga. Drivers use
-          their own vehicles. Horide is not a transport operator and does not carry passengers.
+          Musride is an app that connects passengers with independent drivers in Jijiga. Drivers use
+          their own vehicles. Musride is not a transport operator and does not carry passengers.
         </p>
 
         <h2>Fares and payment</h2>
         <ul>
           <li>
-            The app shows the fare before you book. It is worked out by Horide from the road
+            The app shows the fare before you book. It is worked out by Musride from the road
             distance and the published prices for cars and Bajaj.
           </li>
           <li>
@@ -26,12 +26,12 @@ export default function Terms() {
             and approve the new price in the app.
           </li>
           <li>
-            Passengers pay the driver directly in cash or by eBirr. Horide does not collect or hold
+            Passengers pay the driver directly in cash or by eBirr. Musride does not collect or hold
             ride payments.
           </li>
           <li>
             Both the passenger and the driver confirm the payment in the app. Disagreements are
-            reviewed by Horide staff.
+            reviewed by Musride staff.
           </li>
           <li>
             Cancellation and waiting charges, if any, are shown in the app before they apply.{' '}
@@ -42,7 +42,7 @@ export default function Terms() {
         <h2>Drivers</h2>
         <ul>
           <li>
-            Drivers must hold a valid licence and the documents Horide asks for, and keep them up to
+            Drivers must hold a valid licence and the documents Musride asks for, and keep them up to
             date.
           </li>
           <li>
@@ -62,7 +62,7 @@ export default function Terms() {
             Don’t misuse the app: no false bookings, false payment confirmations or false locations.
           </li>
           <li>
-            Horide may suspend accounts that break these terms. Suspension never stops a trip
+            Musride may suspend accounts that break these terms. Suspension never stops a trip
             already under way.
           </li>
         </ul>

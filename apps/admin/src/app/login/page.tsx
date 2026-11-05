@@ -37,14 +37,14 @@ export default function LoginPage() {
   return (
     <main className="grid min-h-screen md:grid-cols-[1fr_minmax(380px,480px)]">
       <section className="hidden flex-col justify-between bg-navy p-12 text-white md:flex">
-        <p className="text-headline font-extrabold">Horide</p>
+        <p className="text-headline font-extrabold">Musride</p>
         <div className="max-w-md">
           <div className="inline-block rounded-card border-4 border-white bg-sign px-6 py-4">
             <p className="text-small font-semibold text-white/85">Jijiga</p>
             <p className="text-display font-extrabold leading-none">Operations console</p>
           </div>
           <p className="mt-6 text-white/75">
-            For Horide staff only. Every sign-in and every change is recorded.
+            For Musride staff only. Every sign-in and every change is recorded.
           </p>
         </div>
         <p className="text-small text-white/50">

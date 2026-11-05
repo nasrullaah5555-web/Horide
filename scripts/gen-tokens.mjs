@@ -1,5 +1,5 @@
 #!/usr/bin/env node
-// Generates the design constants for every part of Horide from design/tokens.json.
+// Generates the design constants for every part of Musride from design/tokens.json.
 //   node scripts/gen-tokens.mjs          write the files
 //   node scripts/gen-tokens.mjs --check  fail if any generated file is out of date (CI)
 import { readFileSync, writeFileSync, existsSync } from 'node:fs';
@@ -30,25 +30,25 @@ const dart = [
   header('//'),
   "import 'package:flutter/painting.dart';\n",
   dartGroup(
-    'HorideColors',
+    'MusrideColors',
     'Every colour used anywhere in the apps.',
     t.color,
     (v) => `Color(${dartColor(v)})`,
   ),
   dartGroup(
-    'HorideSpace',
+    'MusrideSpace',
     'Spacing scale (logical pixels). Paddings and gaps use only these.',
     t.space,
     num,
   ),
-  dartGroup('HorideRadius', 'Corner radii.', t.radius, num),
-  dartGroup('HorideFontSize', 'Type scale.', t.fontSize, num),
-  dartGroup('HorideFontWeight', 'Font weights.', t.fontWeight, weight),
-  dartGroup('HorideLineHeight', 'Line heights (multiples of the font size).', t.lineHeight, num),
-  dartGroup('HorideLetterSpacing', 'Letter spacing.', t.letterSpacing, num),
-  dartGroup('HorideSize', 'Fixed sizes: touch targets, icons, map markers.', t.size, num),
-  dartGroup('HorideStroke', 'Line and border widths.', t.stroke, num),
-  `/// The bundled typeface (packages/horide_core/assets/fonts).\nconst horideFontFamily = 'packages/horide_core/${t.font.family}';\n`,
+  dartGroup('MusrideRadius', 'Corner radii.', t.radius, num),
+  dartGroup('MusrideFontSize', 'Type scale.', t.fontSize, num),
+  dartGroup('MusrideFontWeight', 'Font weights.', t.fontWeight, weight),
+  dartGroup('MusrideLineHeight', 'Line heights (multiples of the font size).', t.lineHeight, num),
+  dartGroup('MusrideLetterSpacing', 'Letter spacing.', t.letterSpacing, num),
+  dartGroup('MusrideSize', 'Fixed sizes: touch targets, icons, map markers.', t.size, num),
+  dartGroup('MusrideStroke', 'Line and border widths.', t.stroke, num),
+  `/// The bundled typeface (packages/musride_core/assets/fonts).\nconst musrideFontFamily = 'packages/musride_core/${t.font.family}';\n`,
 ].join('\n');
 
 const css = [
@@ -77,7 +77,7 @@ const ts = [
 ].join('\n');
 
 const outputs = {
-  'packages/horide_core/lib/src/design/tokens.g.dart': dart,
+  'packages/musride_core/lib/src/design/tokens.g.dart': dart,
   'packages/design-tokens/tokens.css': css,
   'apps/admin/src/lib/tokens.g.ts': ts,
 };

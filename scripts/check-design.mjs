@@ -1,5 +1,5 @@
 #!/usr/bin/env node
-// Keeps the look of Horide constant: every colour, size, corner, font and button must come from
+// Keeps the look of Musride constant: every colour, size, corner, font and button must come from
 // design/tokens.json (through the generated files and the shared components). Fails CI when a
 // screen hardcodes one instead.   node scripts/check-design.mjs
 import { readdirSync, readFileSync, statSync } from 'node:fs';
@@ -10,29 +10,29 @@ const root = join(dirname(fileURLToPath(import.meta.url)), '..');
 
 /** Where design values may be defined (the token source and its consumers that build themes). */
 const ALLOWED = [
-  'packages/horide_core/lib/src/design/',
-  'packages/horide_core/lib/src/theme.dart',
+  'packages/musride_core/lib/src/design/',
+  'packages/musride_core/lib/src/theme.dart',
   'packages/design-tokens/',
   'apps/admin/src/lib/tokens.g.ts',
 ];
 
 const dartRules = [
-  [/\bColor\(0x|Color\.fromARGB|\bColors\.\w/, 'raw colour: use HorideColors.* or the theme'],
-  [/fontSize:\s*\d/, 'raw font size: use HorideFontSize.* or a textTheme style'],
-  [/FontWeight\.w\d/, 'raw font weight: use HorideFontWeight.*'],
-  [/circular\(\s*\d/, 'raw corner radius: use HorideRadius.*'],
+  [/\bColor\(0x|Color\.fromARGB|\bColors\.\w/, 'raw colour: use MusrideColors.* or the theme'],
+  [/fontSize:\s*\d/, 'raw font size: use MusrideFontSize.* or a textTheme style'],
+  [/FontWeight\.w\d/, 'raw font weight: use MusrideFontWeight.*'],
+  [/circular\(\s*\d/, 'raw corner radius: use MusrideRadius.*'],
   [
     /EdgeInsets\.\w+\([^)]*(?<![\w.])[1-9]\d*(\.\d+)?\b/,
-    'raw padding: use HorideSpace.* or HorideInsets.*',
+    'raw padding: use MusrideSpace.* or MusrideInsets.*',
   ],
   [
     /\b(width|height|size|iconSize|radius|blurRadius|spreadRadius|strokeWidth|elevation):\s*[1-9]/,
-    'raw size: use HorideSize.* / HorideSpace.* / HorideStroke.*',
+    'raw size: use MusrideSize.* / MusrideSpace.* / MusrideStroke.*',
   ],
-  [/\bstyleFrom\(/, 'custom button style: use HorideButton'],
+  [/\bstyleFrom\(/, 'custom button style: use MusrideButton'],
   [
     /\b(FilledButton|OutlinedButton|TextButton|ElevatedButton)(\.icon)?\(/,
-    'raw Material button: use HorideButton',
+    'raw Material button: use MusrideButton',
   ],
 ];
 
@@ -47,7 +47,7 @@ const webRules = [
   ],
   [
     /\b(bg|text|border|ring|from|to|fill|stroke|outline|divide|accent)-(slate|gray|zinc|neutral|stone|red|orange|yellow|lime|green|emerald|teal|cyan|sky|blue|indigo|violet|purple|fuchsia|pink|rose)-\d/,
-    'Tailwind palette colour: use a Horide colour token',
+    'Tailwind palette colour: use a Musride colour token',
   ],
   [
     /^\s*[\w-]+:[^;]*\b\d+(\.\d+)?(px|rem|em)\b/,
@@ -76,7 +76,7 @@ function walk(dir, out = []) {
 }
 
 const targets = [
-  ['packages/horide_core/lib', /\.dart$/, dartRules],
+  ['packages/musride_core/lib', /\.dart$/, dartRules],
   ['mobile/passenger/lib', /\.dart$/, dartRules],
   ['mobile/driver/lib', /\.dart$/, dartRules],
   ['apps/admin/src', /\.(tsx?|css)$/, webRules],

@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:horide_core/horide_core.dart';
+import 'package:musride_core/musride_core.dart';
 import 'package:image_picker/image_picker.dart';
 
 import '../../core/driver_api.dart';
@@ -12,8 +12,8 @@ final subscriptionProvider = FutureProvider.autoDispose(
   (ref) => ref.watch(driverApiProvider).subscriptions(),
 );
 
-/// Account, vehicle, documents and subscription: everything Horide checks before a driver can
-/// go online. Documents are reviewed by Horide staff; nothing here approves itself.
+/// Account, vehicle, documents and subscription: everything Musride checks before a driver can
+/// go online. Documents are reviewed by Musride staff; nothing here approves itself.
 class OnboardingScreen extends ConsumerWidget {
   const OnboardingScreen({super.key});
 
@@ -30,8 +30,8 @@ class OnboardingScreen extends ConsumerWidget {
                 mainAxisSize: MainAxisSize.min,
                 children: [
                   Text(e is ApiException ? e.message : 'Could not load your account.'),
-                  HorideButton(
-                    kind: HorideButtonKind.quiet,
+                  MusrideButton(
+                    kind: MusrideButtonKind.quiet,
                     label: 'Try again',
                     onPressed: () => ref.invalidate(overviewProvider),
                   ),
@@ -42,7 +42,7 @@ class OnboardingScreen extends ConsumerWidget {
             (o) => RefreshIndicator(
               onRefresh: () => ref.refresh(overviewProvider.future),
               child: ListView(
-                padding: const EdgeInsets.all(HorideSpace.lg),
+                padding: const EdgeInsets.all(MusrideSpace.lg),
                 children: [
                   SignPanel(
                     title: o.eligibility.eligible ? 'Ready to drive' : 'Not ready yet',
@@ -54,7 +54,7 @@ class OnboardingScreen extends ConsumerWidget {
                                 .join('\n'),
                     tone: o.eligibility.eligible ? SignTone.go : SignTone.calm,
                   ),
-                  const Gap(HorideSpace.xl),
+                  const Gap(MusrideSpace.xl),
                   _Section(
                     title: '1. Your name',
                     child: _NameForm(initial: o.fullName, locked: o.approvalStatus == 'approved'),
@@ -62,8 +62,8 @@ class OnboardingScreen extends ConsumerWidget {
                   _Section(title: '2. Your vehicle', child: _VehicleSection(vehicle: o.vehicle)),
                   _Section(title: '3. Documents', child: _Documents(overview: o)),
                   const _Section(title: '4. Monthly subscription', child: _SubscriptionSection()),
-                  HorideButton(
-                    kind: HorideButtonKind.quietDanger,
+                  MusrideButton(
+                    kind: MusrideButtonKind.quietDanger,
                     label: 'Delete my account',
                     onPressed: () async {
                       final ok = await confirmAccountDeletion(
@@ -95,12 +95,12 @@ class _Section extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) => Padding(
-    padding: const EdgeInsets.only(bottom: HorideSpace.xl),
+    padding: const EdgeInsets.only(bottom: MusrideSpace.xl),
     child: Column(
       crossAxisAlignment: CrossAxisAlignment.stretch,
       children: [
         Text(title, style: Theme.of(context).textTheme.titleLarge),
-        const Gap(HorideSpace.sm),
+        const Gap(MusrideSpace.sm),
         child,
       ],
     ),
@@ -138,8 +138,8 @@ class _NameFormState extends ConsumerState<_NameForm> {
           textCapitalization: TextCapitalization.words,
           decoration: const InputDecoration(labelText: 'Full name, as on your National ID'),
         ),
-        HorideButton(
-          kind: HorideButtonKind.secondary,
+        MusrideButton(
+          kind: MusrideButtonKind.secondary,
           label: 'Save name',
           onPressed:
               _busy
@@ -239,7 +239,7 @@ class _VehicleSectionState extends ConsumerState<_VehicleSection> {
           selected: {_category},
           onSelectionChanged: (s) => setState(() => _category = s.first),
         ),
-        const Gap(HorideSpace.sm),
+        const Gap(MusrideSpace.sm),
         TextField(
           controller: _make,
           maxLength: 40,
@@ -267,14 +267,14 @@ class _VehicleSectionState extends ConsumerState<_VehicleSection> {
           textCapitalization: TextCapitalization.characters,
           decoration: const InputDecoration(labelText: 'Plate number'),
         ),
-        HorideButton(label: 'Add vehicle', onPressed: _busy ? null : _save),
+        MusrideButton(label: 'Add vehicle', onPressed: _busy ? null : _save),
       ],
     );
   }
 }
 
 String _status(String s) => switch (s) {
-  'pending' => 'Waiting for Horide review',
+  'pending' => 'Waiting for Musride review',
   'approved' => 'Approved',
   'rejected' => 'Rejected',
   'expired' => 'Expired',
@@ -347,19 +347,19 @@ class _DocumentsState extends ConsumerState<_Documents> {
                   style: TextStyle(
                     color:
                         doc?.status == 'rejected' || (doc == null && missing)
-                            ? HorideColors.signal
+                            ? MusrideColors.signal
                             : null,
                   ),
                 ),
                 trailing:
                     _uploading == entry.key
                         ? const SizedBox(
-                          width: HorideSize.spinner,
-                          height: HorideSize.spinner,
-                          child: CircularProgressIndicator(strokeWidth: HorideStroke.signBorder),
+                          width: MusrideSize.spinner,
+                          height: MusrideSize.spinner,
+                          child: CircularProgressIndicator(strokeWidth: MusrideStroke.signBorder),
                         )
                         : doc?.status == 'approved'
-                        ? const Icon(Icons.check_circle, color: HorideColors.sign)
+                        ? const Icon(Icons.check_circle, color: MusrideColors.sign)
                         : PopupMenuButton<ImageSource>(
                           tooltip: 'Upload',
                           icon: const Icon(Icons.upload),
@@ -379,9 +379,9 @@ class _DocumentsState extends ConsumerState<_Documents> {
               );
             },
           ),
-        const Gap(HorideSpace.sm),
+        const Gap(MusrideSpace.sm),
         Text(
-          'Your documents are stored privately and only Horide verification staff can see them.',
+          'Your documents are stored privately and only Musride verification staff can see them.',
           style: TextStyle(color: Theme.of(context).colorScheme.onSurfaceVariant),
         ),
       ],
@@ -405,7 +405,7 @@ class _SubscriptionSection extends ConsumerWidget {
           children: [
             if (active == null)
               const Text(
-                'No active subscription. Pay your monthly subscription at the Horide office; staff '
+                'No active subscription. Pay your monthly subscription at the Musride office; staff '
                 'will record it and you can go online right away.',
               )
             else ...[
@@ -415,7 +415,7 @@ class _SubscriptionSection extends ConsumerWidget {
                 const Text(
                   'Your subscription ends soon. Renew it to keep receiving rides. A trip in progress '
                   'is never interrupted.',
-                  style: TextStyle(color: HorideColors.amber, fontWeight: HorideFontWeight.bold),
+                  style: TextStyle(color: MusrideColors.amber, fontWeight: MusrideFontWeight.bold),
                 ),
             ],
           ],

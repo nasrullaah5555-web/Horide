@@ -41,7 +41,7 @@ const listSchema = z.strictObject({
 });
 
 /**
- * Ride payment RECORDS (BR-01, BR-02). Passengers pay drivers directly; Horide only records
+ * Ride payment RECORDS (BR-01, BR-02). Passengers pay drivers directly; Musride only records
  * what each side reports. Protections against fake confirmations: only the trip's own driver and
  * passenger, only after the trip is completed, once per party, and every disagreement goes to a
  * finance admin. An eBirr reference is recorded as typed; it is NOT verified (no eBirr API yet, OA-10).
@@ -285,7 +285,7 @@ export class PaymentsController {
       throw new AppError(
         HttpStatus.CONFLICT,
         'PAYMENT_RESOLVED',
-        'This payment has already been resolved by Horide.',
+        'This payment has already been resolved by Musride.',
       );
     }
   }
@@ -353,7 +353,7 @@ export class PaymentsController {
     return {
       ...r,
       finalFareEtb: r.final_fare ? formatEtb(BigInt(r.final_fare)) : null,
-      note: 'Paid directly to the driver. Horide does not collect ride payments.',
+      note: 'Paid directly to the driver. Musride does not collect ride payments.',
     };
   }
 }

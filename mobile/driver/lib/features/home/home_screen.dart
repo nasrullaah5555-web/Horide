@@ -5,7 +5,7 @@ import 'package:flutter/services.dart';
 import 'package:flutter_map/flutter_map.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
-import 'package:horide_core/horide_core.dart';
+import 'package:musride_core/musride_core.dart';
 
 import '../../core/driver_api.dart';
 import '../../core/providers.dart';
@@ -55,7 +55,7 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
 
     return Scaffold(
       appBar: AppBar(
-        title: const Text('Horide Driver'),
+        title: const Text('Musride Driver'),
         actions: [
           IconButton(
             tooltip: 'Your trips and earnings',
@@ -78,7 +78,7 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
           ),
           Align(
             alignment: Alignment.bottomCenter,
-            child: HorideBottomPanel(
+            child: MusrideBottomPanel(
               children: [
                 if (state.offers.isNotEmpty)
                   _OfferCard(offer: state.offers.first)
@@ -92,45 +92,45 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
                     tone: state.online ? SignTone.go : SignTone.calm,
                   ),
                 if (state.message != null) ...[
-                  const Gap(HorideSpace.md),
-                  HorideNotice(
+                  const Gap(MusrideSpace.md),
+                  MusrideNotice(
                     text: state.message!,
                     onClose: ref.read(driverControllerProvider.notifier).dismissMessage,
                   ),
                 ],
                 if (eligibility != null && !eligibility.eligible && !state.online) ...[
-                  const Gap(HorideSpace.md),
-                  HorideNotice(
+                  const Gap(MusrideSpace.md),
+                  MusrideNotice(
                     text: eligibility.reasons.map((r) => Eligibility.reasonText[r] ?? r).join('\n'),
-                    action: HorideButton(
-                      kind: HorideButtonKind.quiet,
+                    action: MusrideButton(
+                      kind: MusrideButtonKind.quiet,
                       label: 'Open',
                       onPressed: () => context.push('/onboarding'),
                     ),
                   ),
                 ],
                 if (state.online) ...[
-                  const Gap(HorideSpace.sm),
+                  const Gap(MusrideSpace.sm),
                   ValueListenableBuilder<bool>(
                     valueListenable: ref.watch(locationReporterProvider).connected,
                     builder:
                         (_, ok, __) => StatusText(
                           ok
                               ? 'Location is being shared.'
-                              : 'Location not reaching Horide. Check your signal.',
+                              : 'Location not reaching Musride. Check your signal.',
                           ok: ok,
                         ),
                   ),
                 ],
-                const Gap(HorideSpace.md),
+                const Gap(MusrideSpace.md),
                 if (state.offers.isEmpty)
-                  HorideButton(
-                    kind: state.online ? HorideButtonKind.primary : HorideButtonKind.go,
+                  MusrideButton(
+                    kind: state.online ? MusrideButtonKind.primary : MusrideButtonKind.go,
                     label: _busy ? 'Please wait…' : (state.online ? 'Go offline' : 'Go online'),
                     onPressed: _busy ? null : () => _toggle(!state.online),
                   ),
-                HorideButton(
-                  kind: HorideButtonKind.quiet,
+                MusrideButton(
+                  kind: MusrideButtonKind.quiet,
                   label: 'Sign out',
                   onPressed: () => ref.read(sessionProvider.notifier).signOut(),
                 ),
@@ -186,36 +186,36 @@ class _OfferCardState extends ConsumerState<_OfferCard> {
           trailing: Text(
             '${left}s',
             style: const TextStyle(
-              color: HorideColors.white,
-              fontSize: HorideFontSize.headline,
-              fontWeight: HorideFontWeight.heavy,
+              color: MusrideColors.white,
+              fontSize: MusrideFontSize.headline,
+              fontWeight: MusrideFontWeight.heavy,
             ),
           ),
         ),
-        const Gap(HorideSpace.md),
+        const Gap(MusrideSpace.md),
         Text(
           'Pickup ${formatKm(o.distanceToPickupMetres)} away',
           style: theme.textTheme.titleMedium,
         ),
         Text(o.pickupText ?? 'Point on the map'),
-        const Gap(HorideSpace.xs),
+        const Gap(MusrideSpace.xs),
         Text('To: ${o.destinationText ?? 'Point on the map'}'),
-        const Gap(HorideSpace.md),
+        const Gap(MusrideSpace.md),
         Row(
           children: [
             Expanded(
-              child: HorideButton(
-                kind: HorideButtonKind.secondary,
+              child: MusrideButton(
+                kind: MusrideButtonKind.secondary,
                 label: 'Decline',
                 onPressed:
                     _busy ? null : () => ref.read(driverControllerProvider.notifier).reject(o),
               ),
             ),
-            const Gap(HorideSpace.md),
+            const Gap(MusrideSpace.md),
             Expanded(
               flex: 2,
-              child: HorideButton(
-                kind: HorideButtonKind.go,
+              child: MusrideButton(
+                kind: MusrideButtonKind.go,
                 label: 'Accept',
                 onPressed:
                     _busy || left == 0

@@ -39,7 +39,7 @@ const planSchema = z.strictObject({
 
 /**
  * Recording a subscription payment received from a driver (cash, eBirr transfer, bank).
- * Horide verifies the money arrived OUTSIDE the app; this records it and extends the subscription.
+ * Musride verifies the money arrived OUTSIDE the app; this records it and extends the subscription.
  */
 const recordPaymentSchema = z.strictObject({
   driverId: z.string().uuid(),

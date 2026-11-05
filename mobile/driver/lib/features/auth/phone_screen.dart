@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
-import 'package:horide_core/horide_core.dart';
+import 'package:musride_core/musride_core.dart';
 
 import '../../core/providers.dart';
 import '../../core/ui.dart';
@@ -55,37 +55,37 @@ class _PhoneScreenState extends ConsumerState<PhoneScreen> {
       body: SafeArea(
         child: ListView(
           padding: const EdgeInsets.fromLTRB(
-            HorideSpace.xl,
-            HorideSpace.xxl,
-            HorideSpace.xl,
-            HorideSpace.xl,
+            MusrideSpace.xl,
+            MusrideSpace.xxl,
+            MusrideSpace.xl,
+            MusrideSpace.xl,
           ),
           children: [
-            const SignPanel(title: 'Horide Driver', subtitle: 'Drive in Jijiga'),
-            const Gap(HorideSpace.xxxl),
+            const SignPanel(title: 'Musride Driver', subtitle: 'Drive in Jijiga'),
+            const Gap(MusrideSpace.xxxl),
             Text('Your phone number', style: theme.textTheme.headlineMedium),
-            const Gap(HorideSpace.sm),
+            const Gap(MusrideSpace.sm),
             Text(
               'We will send you a 6-digit code by SMS.',
               style: TextStyle(color: theme.colorScheme.onSurfaceVariant),
             ),
-            const Gap(HorideSpace.xl),
+            const Gap(MusrideSpace.xl),
             TextField(
               controller: _phone,
               keyboardType: TextInputType.phone,
               autofillHints: const [AutofillHints.telephoneNumber],
               inputFormatters: [FilteringTextInputFormatter.allow(RegExp(r'[0-9+ ]'))],
               style: const TextStyle(
-                fontSize: HorideFontSize.titleLarge,
-                fontWeight: HorideFontWeight.bold,
-                letterSpacing: HorideLetterSpacing.phone,
+                fontSize: MusrideFontSize.titleLarge,
+                fontWeight: MusrideFontWeight.bold,
+                letterSpacing: MusrideLetterSpacing.phone,
               ),
               decoration: InputDecoration(hintText: '09XX XXX XXX', errorText: _error),
               onSubmitted: (_) => _submit(),
             ),
-            const Gap(HorideSpace.xl),
-            HorideButton(
-              kind: HorideButtonKind.go,
+            const Gap(MusrideSpace.xl),
+            MusrideButton(
+              kind: MusrideButtonKind.go,
               label: _busy ? 'Sending code…' : 'Send code',
               onPressed: _busy ? null : _submit,
             ),

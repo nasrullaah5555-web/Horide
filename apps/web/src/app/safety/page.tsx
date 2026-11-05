@@ -12,7 +12,7 @@ const numbers = [
 
 export default function Safety() {
   return (
-    <Page title="Safety" lead="What Horide does before, during and after every trip.">
+    <Page title="Safety" lead="What Musride does before, during and after every trip.">
       <section aria-labelledby="emergency" className="sign sign-navy p-6">
         <h2 id="emergency" className="text-headline font-extrabold">
           In an emergency, call first
@@ -28,14 +28,14 @@ export default function Safety() {
           ))}
         </ul>
         <p className="mt-3 text-white/85">
-          Horide staff are not an emergency service. The emergency button in the app shows these
-          numbers and also alerts the Horide team with your trip and location.
+          Musride staff are not an emergency service. The emergency button in the app shows these
+          numbers and also alerts the Musride team with your trip and location.
         </p>
       </section>
 
       <h2 className="mt-10 text-headline font-extrabold">Before the trip</h2>
       <ul className="mt-3 list-disc space-y-1 pl-6 text-navy-soft">
-        <li>Every driver’s identity, licence and vehicle documents are checked by Horide staff.</li>
+        <li>Every driver’s identity, licence and vehicle documents are checked by Musride staff.</li>
         <li>
           You see the driver’s name, rating, vehicle and plate. Check the plate before you get in.
         </li>
@@ -49,7 +49,7 @@ export default function Safety() {
       </ul>
       <h2 className="mt-8 text-headline font-extrabold">After the trip</h2>
       <ul className="mt-3 list-disc space-y-1 pl-6 text-navy-soft">
-        <li>Rate the driver and report problems from the app. Horide staff review every report.</li>
+        <li>Rate the driver and report problems from the app. Musride staff review every report.</li>
         <li>Drivers who break the rules can be suspended.</li>
       </ul>
     </Page>

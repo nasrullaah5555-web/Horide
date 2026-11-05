@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_map/flutter_map.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
-import 'package:horide_core/horide_core.dart';
+import 'package:musride_core/musride_core.dart';
 import 'package:url_launcher/url_launcher.dart';
 
 import '../../core/driver_api.dart';
@@ -48,12 +48,12 @@ class _TripScreenState extends ConsumerState<TripScreen> {
               ),
             ),
             actions: [
-              HorideButton(
-                kind: HorideButtonKind.quiet,
+              MusrideButton(
+                kind: MusrideButtonKind.quiet,
                 label: 'Keep trip',
                 onPressed: () => Navigator.pop(d),
               ),
-              HorideButton(
+              MusrideButton(
                 label: 'Cancel trip',
                 onPressed: () => Navigator.pop(d, reason.text.trim()),
               ),
@@ -75,7 +75,7 @@ class _TripScreenState extends ConsumerState<TripScreen> {
     }
   }
 
-  /// Opens the phone's maps app with directions (no maps SDK or key needed in Horide).
+  /// Opens the phone's maps app with directions (no maps SDK or key needed in Musride).
   Future<void> _navigate(LatLngPoint to) async {
     final google = Uri.parse(
       'https://www.google.com/maps/dir/?api=1&destination=${to.lat},${to.lng}&travelmode=driving',
@@ -89,7 +89,7 @@ class _TripScreenState extends ConsumerState<TripScreen> {
   void _emergency(Trip trip) {
     showEmergencySheet(
       context,
-      alertHoride: () async {
+      alertMusride: () async {
         final p = await currentPosition();
         await ref
             .read(driverApiProvider)
@@ -103,7 +103,7 @@ class _TripScreenState extends ConsumerState<TripScreen> {
     final trip = ref.watch(driverControllerProvider.select((s) => s.trip));
     if (trip == null) {
       return Scaffold(
-        body: Center(child: HorideButton(label: 'Back', onPressed: () => context.go('/'))),
+        body: Center(child: MusrideButton(label: 'Back', onPressed: () => context.go('/'))),
       );
     }
     if (trip.status == TripStatus.completed) return PaymentScreen(trip: trip);
@@ -137,8 +137,8 @@ class _TripScreenState extends ConsumerState<TripScreen> {
               ...baseMapLayers(),
               MarkerLayer(
                 markers: [
-                  pinMarker(trip.pickup.point, HorideColors.sign, 'Pickup'),
-                  pinMarker(trip.destination.point, HorideColors.navy, 'Destination'),
+                  pinMarker(trip.pickup.point, MusrideColors.sign, 'Pickup'),
+                  pinMarker(trip.destination.point, MusrideColors.navy, 'Destination'),
                 ],
               ),
               mapAttribution(),
@@ -146,11 +146,11 @@ class _TripScreenState extends ConsumerState<TripScreen> {
           ),
           SafeArea(
             child: Padding(
-              padding: const EdgeInsets.all(HorideSpace.md),
+              padding: const EdgeInsets.all(MusrideSpace.md),
               child: Align(
                 alignment: Alignment.topRight,
-                child: HorideButton(
-                  kind: HorideButtonKind.emergency,
+                child: MusrideButton(
+                  kind: MusrideButtonKind.emergency,
                   icon: Icons.sos,
                   label: 'Emergency',
                   onPressed: () => _emergency(trip),
@@ -160,14 +160,14 @@ class _TripScreenState extends ConsumerState<TripScreen> {
           ),
           Align(
             alignment: Alignment.bottomCenter,
-            child: HorideBottomPanel(
+            child: MusrideBottomPanel(
               children: [
                 SignPanel(
                   title: title,
                   subtitle: subtitle,
                   tone: trip.status.isFinal ? SignTone.alert : SignTone.go,
                 ),
-                const Gap(HorideSpace.md),
+                const Gap(MusrideSpace.md),
                 if (passenger != null)
                   Row(
                     children: [
@@ -190,9 +190,9 @@ class _TripScreenState extends ConsumerState<TripScreen> {
                   '${formatEtb(trip.fare)}  (${paymentLabel(trip.paymentMethod)}, paid to you)',
                   bold: true,
                 ),
-                const Gap(HorideSpace.sm),
+                const Gap(MusrideSpace.sm),
                 if (trip.status.isFinal)
-                  HorideButton(
+                  MusrideButton(
                     label: 'Back to home',
                     onPressed: () {
                       ref.read(driverControllerProvider.notifier).closeTrip();
@@ -201,14 +201,14 @@ class _TripScreenState extends ConsumerState<TripScreen> {
                   )
                 else ...[
                   if (trip.status != TripStatus.arrived)
-                    HorideButton(
-                      kind: HorideButtonKind.secondary,
+                    MusrideButton(
+                      kind: MusrideButtonKind.secondary,
                       icon: Icons.navigation,
                       label: toPickup ? 'Navigate to pickup' : 'Navigate to destination',
                       onPressed: () => _navigate(target.point),
                     ),
-                  const Gap(HorideSpace.sm),
-                  HorideButton(
+                  const Gap(MusrideSpace.sm),
+                  MusrideButton(
                     label: switch (trip.status) {
                       TripStatus.accepted => 'I am on the way',
                       TripStatus.driverArriving => 'I have arrived',
@@ -226,8 +226,8 @@ class _TripScreenState extends ConsumerState<TripScreen> {
                             }),
                   ),
                   if (trip.status != TripStatus.inProgress)
-                    HorideButton(
-                      kind: HorideButtonKind.quietDanger,
+                    MusrideButton(
+                      kind: MusrideButtonKind.quietDanger,
                       label: 'Cancel trip',
                       onPressed: _busy ? null : () => _cancel(trip),
                     ),
@@ -296,10 +296,10 @@ class _PaymentScreenState extends ConsumerState<PaymentScreen> {
         automaticallyImplyLeading: widget.fromHistory,
       ),
       body: ListView(
-        padding: const EdgeInsets.all(HorideSpace.lg),
+        padding: const EdgeInsets.all(MusrideSpace.lg),
         children: [
           SignPanel(title: formatEtb(trip.fare), subtitle: 'Collect from the passenger'),
-          const Gap(HorideSpace.lg),
+          const Gap(MusrideSpace.lg),
           if (recorded)
             InfoRow(
               'Payment',
@@ -307,7 +307,7 @@ class _PaymentScreenState extends ConsumerState<PaymentScreen> {
             )
           else ...[
             Text('How did the passenger pay?', style: Theme.of(context).textTheme.titleMedium),
-            const Gap(HorideSpace.sm),
+            const Gap(MusrideSpace.sm),
             SegmentedButton<PaymentMethod>(
               segments: const [
                 ButtonSegment(value: PaymentMethod.cash, label: Text('Cash')),
@@ -322,8 +322,8 @@ class _PaymentScreenState extends ConsumerState<PaymentScreen> {
                 maxLength: 40,
                 decoration: const InputDecoration(labelText: 'eBirr transaction reference'),
               ),
-            const Gap(HorideSpace.sm),
-            HorideButton(
+            const Gap(MusrideSpace.sm),
+            MusrideButton(
               label: 'I received the payment',
               onPressed:
                   _busy
@@ -338,18 +338,18 @@ class _PaymentScreenState extends ConsumerState<PaymentScreen> {
                         if (mounted) setState(() => _receipt = r);
                       }),
             ),
-            const Gap(HorideSpace.sm),
+            const Gap(MusrideSpace.sm),
             Text(
-              'Only record a payment you actually received. Horide compares your record with the '
-              'passenger\'s confirmation; differences go to Horide staff.',
+              'Only record a payment you actually received. Musride compares your record with the '
+              'passenger\'s confirmation; differences go to Musride staff.',
               style: TextStyle(color: Theme.of(context).colorScheme.onSurfaceVariant),
             ),
           ],
-          const Gap(HorideSpace.xl),
+          const Gap(MusrideSpace.xl),
           Text('Rate the passenger', style: Theme.of(context).textTheme.titleMedium),
           if (_rated)
             const Padding(
-              padding: EdgeInsets.symmetric(vertical: HorideSpace.md),
+              padding: EdgeInsets.symmetric(vertical: MusrideSpace.md),
               child: Text('Thank you.'),
             )
           else
@@ -366,8 +366,8 @@ class _PaymentScreenState extends ConsumerState<PaymentScreen> {
                         });
                       },
             ),
-          const Gap(HorideSpace.xl),
-          HorideButton(
+          const Gap(MusrideSpace.xl),
+          MusrideButton(
             label: recorded ? 'Done' : 'Close',
             onPressed: () {
               if (widget.fromHistory) {

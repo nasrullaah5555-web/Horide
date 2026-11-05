@@ -3,7 +3,7 @@ import 'dart:async';
 import 'package:flutter/foundation.dart';
 import 'package:geolocator/geolocator.dart';
 
-/// Sends the driver's position to Horide while online.
+/// Sends the driver's position to Musride while online.
 ///
 /// Battery and data: on a trip the phone reports every 5 seconds (the passenger is watching);
 /// when waiting for rides, every 15 seconds and only after moving 20 metres. Points are buffered
@@ -35,9 +35,9 @@ class LocationReporter {
     }
     var p = await Geolocator.checkPermission();
     if (p == LocationPermission.denied) p = await Geolocator.requestPermission();
-    if (p == LocationPermission.denied) return 'Horide Driver needs your location to go online.';
+    if (p == LocationPermission.denied) return 'Musride Driver needs your location to go online.';
     if (p == LocationPermission.deniedForever) {
-      return 'Location is blocked for Horide Driver. Allow it in your phone settings.';
+      return 'Location is blocked for Musride Driver. Allow it in your phone settings.';
     }
     return null;
   }
@@ -106,9 +106,9 @@ class LocationReporter {
         distanceFilter: distance,
         intervalDuration: interval,
         // A visible notification keeps location working while the screen is off, and tells
-        // the driver Horide is using their location.
+        // the driver Musride is using their location.
         foregroundNotificationConfig: const ForegroundNotificationConfig(
-          notificationTitle: 'Horide Driver is online',
+          notificationTitle: 'Musride Driver is online',
           notificationText: 'Sharing your location so passengers can be matched to you.',
           enableWakeLock: false,
         ),

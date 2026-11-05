@@ -43,7 +43,7 @@ export async function adminLogin(t: TestApp, roles: AdminRole[]): Promise<AdminS
     })
     .expect(200);
   const setCookie = ([] as string[]).concat(res.headers['set-cookie'] ?? []);
-  const cookie = setCookie.find((c) => c.startsWith('horide_admin='))!.split(';')[0]!;
+  const cookie = setCookie.find((c) => c.startsWith('musride_admin='))!.split(';')[0]!;
   return {
     id: creds.id,
     email: creds.email,

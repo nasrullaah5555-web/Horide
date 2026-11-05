@@ -20,8 +20,8 @@ jobs:
       - name: Generate platform folders
         run: |
           flutter --version
-          (cd mobile/passenger && flutter create --project-name horide_passenger --org et.horide --platforms android,ios .)
-          (cd mobile/driver && flutter create --project-name horide_driver --org et.horide --platforms android,ios .)
+          (cd mobile/passenger && flutter create --project-name musride_passenger --org et.musride --platforms android,ios .)
+          (cd mobile/driver && flutter create --project-name musride_driver --org et.musride --platforms android,ios .)
       # Pushed to a separate branch (artifact downloads aren't reachable from the dev workspace);
       # the files are then reviewed and copied onto main.
       - name: Push generated files to a branch

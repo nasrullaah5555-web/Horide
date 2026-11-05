@@ -3,7 +3,7 @@
  * created through the real HTTP API (the same endpoints the apps use). Used to look at and test
  * the admin dashboard. Refuses to run in production or against a non-local database.
  *
- *   pnpm --filter @horide/backend demo
+ *   pnpm --filter @musride/backend demo
  *
  * Everything created is clearly marked: names start with "Demo", plates with "DEMO-".
  * Sign-in details for a demo staff account are written to .demo-admin.json (git-ignored).
@@ -92,7 +92,7 @@ async function main(): Promise<void> {
     .executeTakeFirst();
 
   // Demo staff account with every role, so every screen can be inspected.
-  const email = 'demo.admin@horide.local';
+  const email = 'demo.admin@musride.local';
   await db
     .deleteFrom('admin_users')
     .where('email', '=', email)

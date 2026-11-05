@@ -280,7 +280,7 @@ function Subscriptions() {
     <>
       <PageHeader
         title="Driver subscriptions"
-        description="Drivers pay Horide a monthly subscription to receive rides. Record each payment here after you have received it."
+        description="Drivers pay Musride a monthly subscription to receive rides. Record each payment here after you have received it."
       />
       <ErrorNotice error={list.error ?? plans.error} />
 

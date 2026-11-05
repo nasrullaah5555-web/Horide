@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
-import 'package:horide_core/horide_core.dart';
+import 'package:musride_core/musride_core.dart';
 
 import 'core/providers.dart';
 import 'features/auth/code_screen.dart';
@@ -53,24 +53,24 @@ final routerProvider = Provider<GoRouter>((ref) {
   );
 });
 
-class HorideApp extends ConsumerWidget {
-  const HorideApp({super.key});
+class MusrideApp extends ConsumerWidget {
+  const MusrideApp({super.key});
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final session = ref.watch(sessionProvider);
     if (session.isLoading) {
       return MaterialApp(
-        theme: HorideTheme.light(),
-        darkTheme: HorideTheme.dark(),
+        theme: MusrideTheme.light(),
+        darkTheme: MusrideTheme.dark(),
         home: const Scaffold(body: Center(child: CircularProgressIndicator())),
       );
     }
     return MaterialApp.router(
-      title: 'Horide',
+      title: 'Musride',
       debugShowCheckedModeBanner: false,
-      theme: HorideTheme.light(),
-      darkTheme: HorideTheme.dark(),
+      theme: MusrideTheme.light(),
+      darkTheme: MusrideTheme.dark(),
       routerConfig: ref.watch(routerProvider),
       builder: (context, child) => ConnectionBanner(child: child ?? const SizedBox.shrink()),
     );

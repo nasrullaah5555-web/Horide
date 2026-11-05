@@ -1,19 +1,19 @@
 import type { Metadata } from 'next';
 import { NotYetPublished, Page } from '@/components/site';
 
-export const metadata: Metadata = { title: 'Drive with Horide' };
+export const metadata: Metadata = { title: 'Drive with Musride' };
 
 export default function Drive() {
   return (
     <Page
-      title="Drive with Horide"
+      title="Drive with Musride"
       lead="Use your own car or Bajaj. Keep every fare: passengers pay you directly."
     >
       <div className="grid gap-4 sm:grid-cols-2">
         <div className="rounded-card border border-line bg-white p-5">
           <h2 className="text-title font-extrabold">No commission on fares</h2>
           <p className="text-navy-soft">
-            Horide charges drivers a monthly subscription instead of taking a share of each trip.
+            Musride charges drivers a monthly subscription instead of taking a share of each trip.
             Passengers pay you in cash or eBirr.
           </p>
         </div>
@@ -36,20 +36,20 @@ export default function Drive() {
         <li>Any insurance or permit that applies to your vehicle</li>
       </ul>
       <p className="mt-3 text-navy-soft">
-        Horide staff check every document before you can take rides. The full list of legal
+        Musride staff check every document before you can take rides. The full list of legal
         requirements for Jijiga is being confirmed and will be shown here.
       </p>
 
       <h2 className="mt-10 text-headline font-extrabold">Subscription</h2>
       <p className="mt-2 text-navy-soft">
-        You pay the monthly subscription at the Horide office. When it ends, you stop receiving new
+        You pay the monthly subscription at the Musride office. When it ends, you stop receiving new
         requests, but a trip you are already on is never interrupted.{' '}
         <NotYetPublished what="The subscription price" />
       </p>
 
       <h2 className="mt-10 text-headline font-extrabold">How to join</h2>
       <ol className="mt-3 list-decimal space-y-1 pl-6 text-navy-soft">
-        <li>Install the Horide Driver app (available when Horide launches).</li>
+        <li>Install the Musride Driver app (available when Musride launches).</li>
         <li>Sign in with your phone number.</li>
         <li>Add your vehicle and photograph your documents.</li>
         <li>Wait for approval, pay your subscription, and go online.</li>

@@ -1,12 +1,12 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_test/flutter_test.dart';
-import 'package:horide_core/horide_core.dart';
-import 'package:horide_driver/app.dart';
-import 'package:horide_driver/core/driver_api.dart';
-import 'package:horide_driver/core/location_reporter.dart';
-import 'package:horide_driver/core/providers.dart';
-import 'package:horide_driver/features/history/history_screen.dart';
+import 'package:musride_core/musride_core.dart';
+import 'package:musride_driver/app.dart';
+import 'package:musride_driver/core/driver_api.dart';
+import 'package:musride_driver/core/location_reporter.dart';
+import 'package:musride_driver/core/providers.dart';
+import 'package:musride_driver/features/history/history_screen.dart';
 import 'package:geolocator/geolocator.dart';
 
 void main() {
@@ -14,12 +14,12 @@ void main() {
     await tester.pumpWidget(
       ProviderScope(
         overrides: [tokenStoreProvider.overrideWithValue(MemoryTokenStore())],
-        child: const HorideApp(),
+        child: const MusrideApp(),
       ),
     );
     await tester.pumpAndSettle();
     expect(find.text('Your phone number'), findsOneWidget);
-    expect(find.text('Horide Driver'), findsOneWidget);
+    expect(find.text('Musride Driver'), findsOneWidget);
     expect(find.byType(TextField), findsOneWidget);
   });
 

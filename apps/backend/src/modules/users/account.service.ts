@@ -77,7 +77,7 @@ export class AccountService {
       throw new AppError(
         HttpStatus.FORBIDDEN,
         'ACCOUNT_SUSPENDED',
-        'Your account is suspended. Contact Horide support.',
+        'Your account is suspended. Contact Musride support.',
         { reason: user.suspended_reason },
       );
     }

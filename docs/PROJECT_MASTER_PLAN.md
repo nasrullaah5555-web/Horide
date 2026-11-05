@@ -1,4 +1,4 @@
-# Horide — Project Master Plan
+# Musride — Project Master Plan
 
 ## Goal
 A working, tested ride-hailing platform for a closed pilot in Jijiga: passenger app, driver app, admin dashboard, public website, one backend.

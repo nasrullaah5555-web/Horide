@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
-import 'package:horide_core/horide_core.dart';
+import 'package:musride_core/musride_core.dart';
 
 import '../../core/driver_api.dart';
 import '../trip/trip_screen.dart';
@@ -11,7 +11,7 @@ final driverHistoryProvider = FutureProvider.autoDispose<List<DriverTripSummary>
 );
 
 /// Trip records and an earnings summary. Earnings are the fares of completed trips, which
-/// passengers paid to the driver directly; Horide takes no commission (BR-01).
+/// passengers paid to the driver directly; Musride takes no commission (BR-01).
 class HistoryScreen extends ConsumerWidget {
   const HistoryScreen({super.key});
 
@@ -38,14 +38,14 @@ class HistoryScreen extends ConsumerWidget {
           return RefreshIndicator(
             onRefresh: () => ref.refresh(driverHistoryProvider.future),
             child: ListView(
-              padding: const EdgeInsets.all(HorideSpace.lg),
+              padding: const EdgeInsets.all(MusrideSpace.lg),
               children: [
                 Row(
                   children: [
                     Expanded(
                       child: _Total(label: 'Today', santim: sumFares(todays), trips: todays.length),
                     ),
-                    const Gap(HorideSpace.md),
+                    const Gap(MusrideSpace.md),
                     Expanded(
                       child: _Total(
                         label: 'This week',
@@ -55,16 +55,16 @@ class HistoryScreen extends ConsumerWidget {
                     ),
                   ],
                 ),
-                const Gap(HorideSpace.sm),
+                const Gap(MusrideSpace.sm),
                 Text(
                   'Based on your last ${list.length} trips. Fares are paid to you directly.',
                   style: TextStyle(color: Theme.of(context).colorScheme.onSurfaceVariant),
                 ),
-                const Gap(HorideSpace.md),
+                const Gap(MusrideSpace.md),
                 if (list.isEmpty)
                   const Center(
                     child: Padding(
-                      padding: EdgeInsets.all(HorideSpace.xxl),
+                      padding: EdgeInsets.all(MusrideSpace.xxl),
                       child: Text('No trips yet.'),
                     ),
                   ),
@@ -83,7 +83,7 @@ class HistoryScreen extends ConsumerWidget {
                     ),
                     trailing: Text(
                       formatEtbShort(t.fare),
-                      style: const TextStyle(fontWeight: HorideFontWeight.heavy),
+                      style: const TextStyle(fontWeight: MusrideFontWeight.heavy),
                     ),
                     // Completed trips open the payment record (if it wasn't recorded at the time).
                     onTap:
@@ -109,7 +109,7 @@ class _Total extends StatelessWidget {
   @override
   Widget build(BuildContext context) => Card(
     child: Padding(
-      padding: const EdgeInsets.all(HorideSpace.lg),
+      padding: const EdgeInsets.all(MusrideSpace.lg),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [

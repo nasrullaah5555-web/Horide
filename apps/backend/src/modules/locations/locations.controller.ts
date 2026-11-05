@@ -211,7 +211,7 @@ function toPoint(p: Point): LocationPoint {
 function rejectPoint(verdict: PointVerdict): AppError {
   const messages: Record<PointVerdict, string> = {
     ok: '',
-    mocked: 'A mock-location app is faking your position. Turn it off to drive with Horide.',
+    mocked: 'A mock-location app is faking your position. Turn it off to drive with Musride.',
     inaccurate: 'Your GPS signal is weak. Move to an open area and try again.',
     future: 'Your phone clock is wrong. Turn on automatic date and time.',
     too_old: 'Your location is out of date. Wait for GPS and try again.',

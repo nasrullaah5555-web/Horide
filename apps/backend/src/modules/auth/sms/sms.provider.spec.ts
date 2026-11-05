@@ -12,17 +12,17 @@ function fake(status: number, body: unknown) {
 describe('AfroMessageSmsProvider (fake gateway; unverified against the real one, OA-08)', () => {
   it('posts the number, text and sender with the bearer token', async () => {
     const f = fake(200, { acknowledge: 'success', response: { message_id: 'm1' } });
-    await new AfroMessageSmsProvider({ token: 'tok', sender: 'Horide' }, f.fn).send(
+    await new AfroMessageSmsProvider({ token: 'tok', sender: 'Musride' }, f.fn).send(
       '+251911234567',
-      'Your Horide code is 123456',
+      'Your Musride code is 123456',
     );
     expect(f.calls[0]!.url).toBe('https://api.afromessage.com/api/send');
     expect(f.calls[0]!.init.method).toBe('POST');
     expect((f.calls[0]!.init.headers as Record<string, string>).Authorization).toBe('Bearer tok');
     expect(JSON.parse(f.calls[0]!.init.body as string)).toEqual({
       to: '+251911234567',
-      message: 'Your Horide code is 123456',
-      sender: 'Horide',
+      message: 'Your Musride code is 123456',
+      sender: 'Musride',
     });
   });
 

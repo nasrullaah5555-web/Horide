@@ -56,7 +56,7 @@ export class SessionService {
         throw new AppError(
           HttpStatus.FORBIDDEN,
           'ACCOUNT_DELETED',
-          'This account has been deleted. Contact Horide support.',
+          'This account has been deleted. Contact Musride support.',
         );
       }
 

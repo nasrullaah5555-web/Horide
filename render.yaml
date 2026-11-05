@@ -1,4 +1,4 @@
-# Render Blueprint for Horide (DEPLOYMENT_GUIDE.md). Nothing here is deployed until the owner
+# Render Blueprint for Musride (DEPLOYMENT_GUIDE.md). Nothing here is deployed until the owner
 # connects the repository in Render (OA-13). Secrets are "sync: false": Render asks for them when
 # the blueprint is applied, and they never live in Git.
 #
@@ -6,12 +6,12 @@
 # its connection string and S3 keys are entered as secrets below.
 services:
   - type: web
-    name: horide-api
+    name: musride-api
     runtime: node
     region: frankfurt
     plan: starter # always-on paid instance: the free plan sleeps, which would drop live trips
     branch: main
-    buildCommand: corepack enable && pnpm install --frozen-lockfile && pnpm --filter @horide/backend build
+    buildCommand: corepack enable && pnpm install --frozen-lockfile && pnpm --filter @musride/backend build
     # Runs before each deploy goes live; a failed migration stops the deploy.
     preDeployCommand: node apps/backend/dist/database/migrate-cli.js latest
     startCommand: node apps/backend/dist/main.js
@@ -72,13 +72,13 @@ services:
         sync: false
 
   - type: web
-    name: horide-admin
+    name: musride-admin
     runtime: node
     region: frankfurt
     plan: starter
     branch: main
-    buildCommand: corepack enable && pnpm install --frozen-lockfile && pnpm --filter @horide/admin build
-    startCommand: pnpm --filter @horide/admin exec next start -p $PORT
+    buildCommand: corepack enable && pnpm install --frozen-lockfile && pnpm --filter @musride/admin build
+    startCommand: pnpm --filter @musride/admin exec next start -p $PORT
     healthCheckPath: /login
     autoDeploy: false
     envVars:
@@ -86,5 +86,5 @@ services:
         value: '22'
       - key: NEXT_TELEMETRY_DISABLED
         value: '1'
-      - key: HORIDE_API_URL
+      - key: MUSRIDE_API_URL
         sync: false # https://api.<domain>; read at BUILD time into the /admin/* forwarding rule (ADR-016)

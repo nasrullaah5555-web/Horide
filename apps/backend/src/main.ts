@@ -49,7 +49,7 @@ main().catch((err: unknown) => {
   if (err instanceof ConfigError) {
     console.error(err.message);
   } else {
-    console.error('Failed to start Horide API:', err);
+    console.error('Failed to start Musride API:', err);
   }
   process.exit(1);
 });

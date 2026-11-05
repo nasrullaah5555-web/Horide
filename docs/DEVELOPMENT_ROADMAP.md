@@ -1,4 +1,4 @@
-# Horide — Development Roadmap
+# Musride — Development Roadmap
 
 Estimates are rough. They assume Claude builds code in sessions and the owner reviews, builds the mobile apps and completes owner actions. They are not promises; the biggest risk to the timeline is owner actions and field testing, not coding.
 

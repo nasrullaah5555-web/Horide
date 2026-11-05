@@ -1,7 +1,7 @@
 {
-  "name": "horide",
+  "name": "musride",
   "private": true,
-  "description": "Horide ride-hailing platform monorepo",
+  "description": "Musride ride-hailing platform monorepo",
   "packageManager": "pnpm@10.12.1",
   "engines": {
     "node": ">=22"

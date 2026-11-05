@@ -8,7 +8,7 @@ const points = [
   },
   {
     title: 'Pay the driver directly',
-    text: 'Pay in cash or by eBirr, straight to the driver. Horide does not hold your money and there is no wallet to top up.',
+    text: 'Pay in cash or by eBirr, straight to the driver. Musride does not hold your money and there is no wallet to top up.',
   },
   {
     title: 'Know who is coming',
@@ -16,7 +16,7 @@ const points = [
   },
   {
     title: 'Help when you need it',
-    text: 'An emergency button on every trip shows the police and ambulance numbers and alerts the Horide team with your location.',
+    text: 'An emergency button on every trip shows the police and ambulance numbers and alerts the Musride team with your location.',
   },
 ];
 
@@ -35,11 +35,11 @@ export default function Home() {
                 at a fixed price.
               </h1>
               <p className="mt-4 max-w-md text-title text-white/80">
-                Horide connects passengers with local drivers. You see the price first and pay the
+                Musride connects passengers with local drivers. You see the price first and pay the
                 driver directly.
               </p>
               <p className="mt-6 inline-block rounded-control border border-white/30 px-4 py-2 font-semibold text-white/90">
-                The Horide apps are being tested and are not in the app stores yet.
+                The Musride apps are being tested and are not in the app stores yet.
               </p>
             </div>
             {/* A sign, not a screenshot: the apps haven't launched, so no store badges or fake screens. */}
@@ -75,7 +75,7 @@ export default function Home() {
               href="/drive/"
               className="rounded-control border-2 border-navy px-5 py-3 font-bold hover:bg-white"
             >
-              Drive with Horide
+              Drive with Musride
             </Link>
           </div>
         </section>

@@ -1,9 +1,9 @@
 #!/usr/bin/env bash
-# Encrypted logical backup of the Horide database (DEPLOYMENT_GUIDE "Backups").
+# Encrypted logical backup of the Musride database (DEPLOYMENT_GUIDE "Backups").
 #
 #   DATABASE_URL=postgres://... AGE_RECIPIENT=age1... infra/backup/backup.sh [output-dir]
 #
-# Writes horide-YYYYMMDD-HHMMSS.dump.age: a pg_dump custom-format archive encrypted with `age`
+# Writes musride-YYYYMMDD-HHMMSS.dump.age: a pg_dump custom-format archive encrypted with `age`
 # to a PUBLIC key. Only the holder of the matching private key (kept offline by the owner, never
 # on the server) can decrypt it, so a stolen backup file is useless on its own.
 set -euo pipefail
@@ -13,7 +13,7 @@ set -euo pipefail
 OUT_DIR="${1:-.}"
 mkdir -p "$OUT_DIR"
 STAMP="$(date -u +%Y%m%d-%H%M%S)"
-FILE="$OUT_DIR/horide-$STAMP.dump.age"
+FILE="$OUT_DIR/musride-$STAMP.dump.age"
 
 # --no-owner/--no-privileges: restorable into a database with different role names.
 pg_dump --format=custom --no-owner --no-privileges "$DATABASE_URL" \

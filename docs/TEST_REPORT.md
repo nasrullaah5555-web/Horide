@@ -6,8 +6,8 @@ Only results that were actually run. Format: date · task · command · result.
 |---|---|---|---|
 | 2026-11-04 | T-001 | `CREATE EXTENSION postgis; SELECT postgis_full_version();` on local PostgreSQL 16 | Passed |
 | 2026-11-04 | T-001 | HTTPS reachability: storage.googleapis.com (Flutter), pub.dev | 403 — Flutter cannot be installed in this workspace |
-| 2026-11-04 | T-003 | `infra/setup-local-postgres.sh` (socket path adapted for this workspace) | Passed — `horide` and `horide_test` created with postgis, pgcrypto, citext |
-| 2026-11-04 | T-005/T-006 | `pnpm --filter @horide/backend test` (Jest, local PostgreSQL 16 + PostGIS) | Passed — 34/34 tests, 3 suites |
+| 2026-11-04 | T-003 | `infra/setup-local-postgres.sh` (socket path adapted for this workspace) | Passed — `musride` and `musride_test` created with postgis, pgcrypto, citext |
+| 2026-11-04 | T-005/T-006 | `pnpm --filter @musride/backend test` (Jest, local PostgreSQL 16 + PostGIS) | Passed — 34/34 tests, 3 suites |
 | 2026-11-04 | T-005/T-006 | `pnpm typecheck`, `pnpm lint`, `pnpm build` | Passed |
 | 2026-11-04 | T-005 | Started `dist/main.js`, `GET /health` | `{"status":"ok","database":"up"}`; unknown route 404 |
 | 2026-11-04 | T-005 | Production boot with development adapters | Refused, all 5 problems listed |
@@ -58,17 +58,17 @@ Not yet verified: CI on GitHub (first run happens after this push).
 | 2026-11-04 | T-004 | Dependabot PR runs | Failed: gitleaks needed `pull-requests: read`. Fixed; Dependabot now groups minor/patch and skips majors |
 | 2026-11-05 | T-004 | CI secret scan after T-013 | Failed: 3 findings, all intentional public values (dev placeholder key, fake test secret, RFC 6238 test vector). Allowlisted by exact value, not by file. Local gitleaks: history clean; a planted fake key in `test/` is still detected |
 
-| 2026-11-05 | T-037–T-041 | GitHub Actions `Mobile` (Flutter 3.47.9 stable, Dart 3.13.7): `dart format`, `flutter analyze --fatal-infos`, `flutter test` for horide_core, passenger, driver | No analysis issues in any package; 28 + 2 + 3 tests passed (run 41962410066) |
+| 2026-11-05 | T-037–T-041 | GitHub Actions `Mobile` (Flutter 3.47.9 stable, Dart 3.13.7): `dart format`, `flutter analyze --fatal-infos`, `flutter test` for musride_core, passenger, driver | No analysis issues in any package; 28 + 2 + 3 tests passed (run 41962410066) |
 | 2026-11-05 | T-037–T-041 | GitHub Actions `Mobile build` run 41962696337: `flutter build apk --debug` (passenger, driver) and `flutter build ios --debug --no-codesign` on macOS (passenger, driver) | All 4 built (debug APKs about 160 MB each; debug builds include every CPU type and are not representative of release size). Unsigned; NOT installed or run on any phone or emulator |
 | 2026-11-05 | T-048 | `test/account.e2e-spec.ts` + updated auth test | Passed: confirmation required, passenger data removed and sessions ended, same phone registers as a new account, refused during an open trip (found and fixed: first version only checked trips that already had a driver), driver documents removed with their files, vehicle disabled, database constraints on deleted accounts, retention purge removes old OTPs and ended sessions and keeps the current one |
 | 2026-11-05 | T-048 | Migration 0006 rolled down and up by every test file's reset | Found and fixed: rollback failed once deleted accounts existed; down migration now keeps phone nullable in that case |
 | 2026-11-05 | all | Full backend suite | 253/253 passed |
-| 2026-11-05 | T-042 | `pnpm --filter @horide/web lint/typecheck/build`; Playwright over all 8 pages at 1280 px and 390 px served from the static output | Build passed; all pages 200, no console errors, no horizontal overflow on phone width; screenshots reviewed |
+| 2026-11-05 | T-042 | `pnpm --filter @musride/web lint/typecheck/build`; Playwright over all 8 pages at 1280 px and 390 px served from the static output | Build passed; all pages 200, no console errors, no horizontal overflow on phone width; screenshots reviewed |
 | 2026-11-05 | T-043 | `test/proxy.e2e-spec.ts`; mock-location test in `test/trips.e2e-spec.ts` | Passed: with 2 hops the address Cloudflare saw is used and a forged X-Forwarded-For entry ignored; mock-location positions refused for going online and dropped from updates |
 | 2026-11-05 | T-043 | `pnpm audit --prod --audit-level high` | No known high or critical vulnerabilities |
 | 2026-11-05 | all | Full backend suite | 256/256 passed |
 
-### T-044 load test (2026-11-05) — `pnpm --filter @horide/backend load-test`
+### T-044 load test (2026-11-05) — `pnpm --filter @musride/backend load-test`
 
 Machine: the 2-CPU development workspace, with the load generator, the API (one Node process, 10 database connections) and PostgreSQL 16 all on the same machine. Drivers send a location every 5 s and check offers every 3 s — more often than the driver app does when waiting (15 s and 8 s), so this is a heavier-than-real profile. Not a production capacity figure.
 

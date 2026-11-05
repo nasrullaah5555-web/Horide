@@ -36,8 +36,8 @@ jobs:
       run:
         working-directory: mobile/${{ matrix.app }}
     steps:
-      - uses: actions/checkout@v4
-      - uses: actions/setup-java@v4
+      - uses: actions/checkout@v7
+      - uses: actions/setup-java@v6
         with:
           distribution: temurin
           java-version: '17'
@@ -68,8 +68,8 @@ jobs:
       MUSRIDE_API_URL: ${{ vars.MUSRIDE_API_URL || 'https://api.musride.invalid' }}
       HAS_KEY: ${{ secrets.MUSRIDE_KEYSTORE_BASE64 != '' }}
     steps:
-      - uses: actions/checkout@v4
-      - uses: actions/setup-java@v4
+      - uses: actions/checkout@v7
+      - uses: actions/setup-java@v6
         with:
           distribution: temurin
           java-version: '17'
@@ -96,7 +96,7 @@ jobs:
           ls -la build/app/outputs/bundle/release/
       - name: Keep the bundle and symbols (signed builds only)
         if: env.HAS_KEY == 'true'
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v7
         with:
           name: musride-${{ matrix.app }}-release
           path: |
@@ -116,7 +116,7 @@ jobs:
       run:
         working-directory: mobile/${{ matrix.app }}
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v7
       - uses: subosito/flutter-action@v2
         with:
           channel: stable

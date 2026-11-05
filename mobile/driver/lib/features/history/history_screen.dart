@@ -83,9 +83,10 @@ class HistoryScreen extends ConsumerWidget {
                       style: const TextStyle(fontWeight: FontWeight.w800),
                     ),
                     // Completed trips open the payment record (if it wasn't recorded at the time).
-                    onTap: t.status == TripStatus.completed
-                        ? () => context.push('/history/${t.id}/payment')
-                        : null,
+                    onTap:
+                        t.status == TripStatus.completed
+                            ? () => context.push('/history/${t.id}/payment')
+                            : null,
                   ),
               ],
             ),
@@ -128,10 +129,11 @@ class HistoryPaymentScreen extends ConsumerWidget {
     final trip = ref.watch(_tripProvider(tripId));
     return trip.when(
       loading: () => const Scaffold(body: Center(child: CircularProgressIndicator())),
-      error: (e, _) => Scaffold(
-        appBar: AppBar(),
-        body: Center(child: Text(e is ApiException ? e.message : 'Could not load the trip.')),
-      ),
+      error:
+          (e, _) => Scaffold(
+            appBar: AppBar(),
+            body: Center(child: Text(e is ApiException ? e.message : 'Could not load the trip.')),
+          ),
       data: (t) => PaymentScreen(trip: t, fromHistory: true),
     );
   }

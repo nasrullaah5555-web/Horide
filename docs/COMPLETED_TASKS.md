@@ -87,3 +87,7 @@ Limits: one 2-CPU machine shared by load generator, API and database; production
 Evidence: `storage.provider.ts` + `storage.s3.int-spec.ts` (moto S3 emulator, run in CI); `routing.provider.ts` + spec + `test/routing.e2e-spec.ts` (routing down → 503); `push.provider.ts` + spec (real RSA signature verified, token caching, unregistered tokens deleted); `sms.provider.ts` + spec. ADR-017.
 Not verified: none of these has talked to the real service. AfroMessage is based on public SDKs, not the official page (unreachable from here).
 
+## T-045 Deployment configuration — 2026-11-05 (live deployment blocked by owner actions)
+Evidence: `render.yaml`, `docs/DEPLOYMENT_GUIDE.md`, `infra/backup/backup.sh`, `infra/backup/restore.sh`; restore drill in TEST_REPORT.
+Not verified: nothing has been deployed; the Render blueprint has not been applied (needs OA-13).
+

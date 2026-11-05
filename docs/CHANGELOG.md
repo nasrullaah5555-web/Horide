@@ -29,6 +29,7 @@
 - Public website (`apps/web`, static): home, how it works, drive with Horide, safety, privacy policy (draft), terms (draft), contact, account deletion instructions.
 - Load test script for location ingestion and matching; configurable database pool size (`DATABASE_POOL_MAX`).
 - Production adapters (unverified against the real services): S3-compatible private storage, Google Routes / OSRM routing, Firebase Cloud Messaging push, AfroMessage SMS.
+- Deployment: Render blueprint, deployment guide, encrypted backup and tested restore scripts.
 
 ### Security
 - Client IP read through a configurable number of proxy hops (`TRUST_PROXY_HOPS`; 2 behind Cloudflare + Render) so per-IP limits are neither shared nor forgeable.

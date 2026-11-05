@@ -1,0 +1,90 @@
+# Render Blueprint for Horide (DEPLOYMENT_GUIDE.md). Nothing here is deployed until the owner
+# connects the repository in Render (OA-13). Secrets are "sync: false": Render asks for them when
+# the blueprint is applied, and they never live in Git.
+#
+# Database and private document storage are NOT here: they are a Supabase project (OA-12), and
+# its connection string and S3 keys are entered as secrets below.
+services:
+  - type: web
+    name: horide-api
+    runtime: node
+    region: frankfurt
+    plan: starter # always-on paid instance: the free plan sleeps, which would drop live trips
+    branch: main
+    buildCommand: corepack enable && pnpm install --frozen-lockfile && pnpm --filter @horide/backend build
+    # Runs before each deploy goes live; a failed migration stops the deploy.
+    preDeployCommand: node apps/backend/dist/database/migrate-cli.js latest
+    startCommand: node apps/backend/dist/main.js
+    healthCheckPath: /health
+    autoDeploy: false # deploy deliberately, after CI is green
+    envVars:
+      - key: NODE_ENV
+        value: production
+      - key: NODE_VERSION
+        value: '22'
+      - key: LOG_LEVEL
+        value: info
+      - key: TRUST_PROXY_HOPS
+        value: '2' # Cloudflare in front of Render
+      - key: DATABASE_SSL
+        value: 'true'
+      - key: DATABASE_POOL_MAX
+        value: '10'
+      - key: CORS_ORIGINS
+        sync: false # e.g. https://admin.<domain>,https://<domain>
+      - key: DATABASE_URL
+        sync: false
+      - key: JWT_ACCESS_SECRET
+        sync: false
+      - key: OTP_PEPPER
+        sync: false
+      - key: QUOTE_SIGNING_SECRET
+        sync: false
+      - key: ADMIN_TOTP_ENCRYPTION_KEY
+        sync: false
+      - key: SMS_PROVIDER
+        value: afromessage
+      - key: AFROMESSAGE_TOKEN
+        sync: false
+      - key: AFROMESSAGE_SENDER
+        sync: false
+      - key: ROUTING_PROVIDER
+        value: google
+      - key: ROUTING_GOOGLE_API_KEY
+        sync: false
+      - key: STORAGE_PROVIDER
+        value: s3
+      - key: S3_BUCKET
+        sync: false
+      - key: S3_ENDPOINT
+        sync: false
+      - key: S3_REGION
+        sync: false
+      - key: S3_ACCESS_KEY_ID
+        sync: false
+      - key: S3_SECRET_ACCESS_KEY
+        sync: false
+      - key: S3_FORCE_PATH_STYLE
+        value: 'true' # Supabase Storage
+      - key: PUSH_PROVIDER
+        value: fcm
+      - key: FCM_SERVICE_ACCOUNT_BASE64
+        sync: false
+
+  - type: web
+    name: horide-admin
+    runtime: node
+    region: frankfurt
+    plan: starter
+    branch: main
+    buildCommand: corepack enable && pnpm install --frozen-lockfile && pnpm --filter @horide/admin build
+    startCommand: pnpm --filter @horide/admin exec next start -p $PORT
+    healthCheckPath: /login
+    autoDeploy: false
+    envVars:
+      - key: NODE_VERSION
+        value: '22'
+      - key: NEXT_TELEMETRY_DISABLED
+        value: '1'
+      - key: HORIDE_API_URL
+        sync: false # https://api.<domain>; read at BUILD time into the /admin/* forwarding rule (ADR-016)

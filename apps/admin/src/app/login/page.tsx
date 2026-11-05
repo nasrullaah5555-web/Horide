@@ -1,5 +1,6 @@
 'use client';
 
+import Image from 'next/image';
 import { useRouter } from 'next/navigation';
 import { useState } from 'react';
 import { api, ApiError, setCsrfToken } from '@/lib/api';
@@ -37,7 +38,14 @@ export default function LoginPage() {
   return (
     <main className="grid min-h-screen md:grid-cols-[1fr_minmax(380px,480px)]">
       <section className="hidden flex-col justify-between bg-navy p-12 text-white md:flex">
-        <p className="text-headline font-extrabold">Musride</p>
+        <Image
+          src="/brand/musride-logo-on-dark.svg"
+          alt="Musride"
+          width={238}
+          height={48}
+          priority
+          className="h-(--size-logo-large) w-auto"
+        />
         <div className="max-w-md">
           <div className="inline-block rounded-card border-4 border-white bg-sign px-6 py-4">
             <p className="text-small font-semibold text-white/85">Jijiga</p>

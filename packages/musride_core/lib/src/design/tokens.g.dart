@@ -100,6 +100,8 @@ abstract final class MusrideSize {
   static const marker = 30.0;
   static const spinner = 24.0;
   static const star = 38.0;
+  static const logo = 32.0;
+  static const logoLarge = 48.0;
 }
 
 /// Line and border widths.

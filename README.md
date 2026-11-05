@@ -6,16 +6,16 @@ Ride-hailing platform for Jijiga, Ethiopia. Cars and Bajaj. Drivers pay a monthl
 
 ## What's in this repository
 
-| Folder                 | What it is                                          | Technology                               |
-| ---------------------- | --------------------------------------------------- | ---------------------------------------- |
-| `apps/backend`         | The API: all business rules, fares, matching, trips | NestJS, TypeScript, PostgreSQL + PostGIS |
-| `apps/admin`           | Admin dashboard for staff                           | Next.js, Tailwind                        |
-| `apps/website`         | Public website and legal pages                      | Next.js                                  |
-| `mobile/passenger`     | Passenger app (Android + iOS)                       | Flutter                                  |
-| `mobile/driver`        | Driver app (Android + iOS)                          | Flutter                                  |
+| Folder                  | What it is                                          | Technology                               |
+| ----------------------- | --------------------------------------------------- | ---------------------------------------- |
+| `apps/backend`          | The API: all business rules, fares, matching, trips | NestJS, TypeScript, PostgreSQL + PostGIS |
+| `apps/admin`            | Admin dashboard for staff                           | Next.js, Tailwind                        |
+| `apps/website`          | Public website and legal pages                      | Next.js                                  |
+| `mobile/passenger`      | Passenger app (Android + iOS)                       | Flutter                                  |
+| `mobile/driver`         | Driver app (Android + iOS)                          | Flutter                                  |
 | `packages/musride_core` | Shared Dart code for both apps                      | Dart                                     |
-| `infra`                | Local database setup, deployment config             | Docker, scripts                          |
-| `docs`                 | Plans, decisions, registers, test reports           | Markdown                                 |
+| `infra`                 | Local database setup, deployment config             | Docker, scripts                          |
+| `docs`                  | Plans, decisions, registers, test reports           | Markdown                                 |
 
 Start with `docs/PROJECT_MASTER_PLAN.md`.
 

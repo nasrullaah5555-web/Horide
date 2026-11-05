@@ -90,8 +90,8 @@ export function DraftNotice() {
       role="note"
       className="mb-6 rounded-control border border-amber bg-amber-soft px-4 py-3 font-semibold text-navy"
     >
-      Draft. This document has not yet been reviewed by a lawyer and will be finalised before Musride
-      launches.
+      Draft. This document has not yet been reviewed by a lawyer and will be finalised before
+      Musride launches.
     </p>
   );
 }

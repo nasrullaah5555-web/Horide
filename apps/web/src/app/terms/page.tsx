@@ -42,8 +42,8 @@ export default function Terms() {
         <h2>Drivers</h2>
         <ul>
           <li>
-            Drivers must hold a valid licence and the documents Musride asks for, and keep them up to
-            date.
+            Drivers must hold a valid licence and the documents Musride asks for, and keep them up
+            to date.
           </li>
           <li>
             Drivers pay a monthly subscription to receive ride requests. When it ends, new requests

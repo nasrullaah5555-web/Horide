@@ -7,7 +7,8 @@ import { join } from 'node:path';
  */
 process.env.NODE_ENV = 'test';
 process.env.DATABASE_URL =
-  process.env.TEST_DATABASE_URL ?? 'postgres://musride:musride_local_dev@localhost:5432/musride_test';
+  process.env.TEST_DATABASE_URL ??
+  'postgres://musride:musride_local_dev@localhost:5432/musride_test';
 process.env.DATABASE_SSL = 'false';
 process.env.CORS_ORIGINS = 'http://localhost:3001';
 process.env.SMS_PROVIDER = 'fake';

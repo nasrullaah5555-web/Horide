@@ -35,7 +35,9 @@ export default function Safety() {
 
       <h2 className="mt-10 text-headline font-extrabold">Before the trip</h2>
       <ul className="mt-3 list-disc space-y-1 pl-6 text-navy-soft">
-        <li>Every driver’s identity, licence and vehicle documents are checked by Musride staff.</li>
+        <li>
+          Every driver’s identity, licence and vehicle documents are checked by Musride staff.
+        </li>
         <li>
           You see the driver’s name, rating, vehicle and plate. Check the plate before you get in.
         </li>
@@ -49,7 +51,9 @@ export default function Safety() {
       </ul>
       <h2 className="mt-8 text-headline font-extrabold">After the trip</h2>
       <ul className="mt-3 list-disc space-y-1 pl-6 text-navy-soft">
-        <li>Rate the driver and report problems from the app. Musride staff review every report.</li>
+        <li>
+          Rate the driver and report problems from the app. Musride staff review every report.
+        </li>
         <li>Drivers who break the rules can be suspended.</li>
       </ul>
     </Page>

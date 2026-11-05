@@ -1,3 +1,5 @@
+import java.util.Properties
+
 plugins {
     id("com.android.application")
     // The Flutter Gradle Plugin must be applied after the Android and Kotlin Gradle plugins.
@@ -15,8 +17,8 @@ android {
     }
 
     defaultConfig {
-        // TODO: Specify your own unique Application ID (https://developer.android.com/studio/build/application-id.html).
-        applicationId = "et.horide.horide_passenger"
+        // Permanent once published on Google Play (OWNER_ACTION_REGISTER OA-23 confirms it).
+        applicationId = "et.horide.passenger"
         // You can update the following values to match your application needs.
         // For more information, see: https://flutter.dev/to/review-gradle-config.
         minSdk = flutter.minSdkVersion
@@ -29,11 +31,43 @@ android {
         versionName = flutter.versionName
     }
 
+    // Release signing (T-046). The upload key never enters Git. It comes from either
+    //  - android/key.properties (on the owner's computer; git-ignored), or
+    //  - environment variables HORIDE_KEYSTORE_FILE, HORIDE_KEYSTORE_PASSWORD, HORIDE_KEY_ALIAS,
+    //    HORIDE_KEY_PASSWORD (CI, from GitHub secrets).
+    // Without either, a release build fails, unless HORIDE_ALLOW_DEBUG_SIGNING=true (CI compile
+    // check only: such a build is signed with the debug key and can't be uploaded to Play).
+    val keyProps = Properties().apply {
+        val f = rootProject.file("key.properties")
+        if (f.exists()) f.inputStream().use { load(it) }
+    }
+    fun secret(prop: String, env: String): String? =
+        keyProps.getProperty(prop) ?: System.getenv(env)?.takeIf { it.isNotBlank() }
+    val storeFilePath = secret("storeFile", "HORIDE_KEYSTORE_FILE")
+
+    signingConfigs {
+        if (storeFilePath != null) {
+            create("release") {
+                storeFile = file(storeFilePath)
+                storePassword = secret("storePassword", "HORIDE_KEYSTORE_PASSWORD")
+                keyAlias = secret("keyAlias", "HORIDE_KEY_ALIAS")
+                keyPassword = secret("keyPassword", "HORIDE_KEY_PASSWORD")
+            }
+        }
+    }
+
     buildTypes {
         release {
-            // TODO: Add your own signing config for the release build.
-            // Signing with the debug keys for now, so `flutter run --release` works.
-            signingConfig = signingConfigs.getByName("debug")
+            signingConfig = when {
+                storeFilePath != null -> signingConfigs.getByName("release")
+                System.getenv("HORIDE_ALLOW_DEBUG_SIGNING") == "true" -> signingConfigs.getByName("debug")
+                else -> throw GradleException(
+                    "No release signing key. Create android/key.properties (see docs/DEPLOYMENT_GUIDE.md, " +
+                        "mobile release) or set HORIDE_KEYSTORE_* variables."
+                )
+            }
+            isMinifyEnabled = true
+            isShrinkResources = true
         }
     }
 }

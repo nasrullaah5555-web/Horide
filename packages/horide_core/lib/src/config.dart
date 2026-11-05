@@ -1,3 +1,5 @@
+import 'package:flutter/foundation.dart';
+
 /// Build-time configuration. Nothing secret lives in the app: only the public API address.
 ///
 /// Set it when building, for example:
@@ -10,6 +12,22 @@ class HorideConfig {
     'HORIDE_API_URL',
     defaultValue: 'http://10.0.2.2:3000',
   );
+
+  /// Why this build must not run, or null. A release build must talk to the real API over
+  /// HTTPS: the development default would silently send people's data nowhere useful (or over
+  /// plain HTTP). Checked at startup by both apps.
+  static String? get releaseProblem => checkApiUrl(apiUrl, release: kReleaseMode);
+
+  @visibleForTesting
+  static String? checkApiUrl(String url, {required bool release}) {
+    if (!release) return null;
+    final uri = Uri.tryParse(url);
+    if (uri == null || uri.scheme != 'https' || uri.host.isEmpty) {
+      return 'This build has no valid server address. Build it with '
+          '--dart-define=HORIDE_API_URL=https://api.<your-domain>';
+    }
+    return null;
+  }
 
   /// Jijiga city centre, used to centre maps before the phone has a GPS fix.
   static const double jijigaLat = 9.3505;

@@ -106,3 +106,47 @@ Separate **staging** and **production** for both Render and Supabase. Staging ge
 | Migrations | `migrate-cli.js latest` on an existing database | "up to date" |
 | Backup + restore | `infra/backup/backup.sh` → `restore.sh` into an empty database | Row counts match; restored database migrates as "up to date" (TEST_REPORT) |
 | Production config refusal | `src/config/env.spec.ts` | Pass |
+
+## 10. Mobile releases (T-046)
+
+App IDs (permanent once published; OA-23 asks the owner to confirm them before the first upload):
+
+| App | Android `applicationId` | iOS bundle ID | Name on the phone |
+|---|---|---|---|
+| Passenger | `et.horide.passenger` | `et.horide.passenger` | Horide |
+| Driver | `et.horide.driver` | `et.horide.driver` | Horide Driver |
+
+Every release build must be given the API address; a release build without an `https://` address shows an error screen instead of running:
+```bash
+--dart-define=HORIDE_API_URL=https://api.<domain>
+```
+
+### Android (owner: OA-05)
+
+1. Create the upload key once, on your own computer, and back it up in two safe places. Losing it means asking Google to reset it; leaking it lets someone else publish "updates".
+   ```bash
+   keytool -genkeypair -v -keystore horide-upload.jks -alias upload -keyalg RSA -keysize 4096 -validity 10000
+   ```
+2. Either build on your computer with `mobile/<app>/android/key.properties` (git-ignored):
+   ```properties
+   storeFile=/full/path/to/horide-upload.jks
+   storePassword=...
+   keyAlias=upload
+   keyPassword=...
+   ```
+   ```bash
+   cd mobile/passenger
+   flutter build appbundle --release --obfuscate --split-debug-info=build/symbols --dart-define=HORIDE_API_URL=https://api.<domain>
+   ```
+3. Or let CI build it: in GitHub → Settings → Secrets and variables → Actions, add secrets `HORIDE_KEYSTORE_BASE64` (`base64 -w0 horide-upload.jks`), `HORIDE_KEYSTORE_PASSWORD`, `HORIDE_KEY_ALIAS`, `HORIDE_KEY_PASSWORD`, and the variable `HORIDE_API_URL`. The "Mobile build" run then offers the signed `.aab` and the symbol files as downloads for 14 days.
+4. In Play Console: enable Play App Signing, upload the `.aab` to Internal testing first, add the privacy policy URL (`https://<domain>/privacy/`) and the account deletion URL (`https://<domain>/delete-account/`), and complete the Data safety form from the privacy policy.
+5. Keep `build/symbols` for each release: it turns obfuscated crash reports back into readable ones.
+
+### iOS (owner: OA-04)
+
+Needs a Mac with Xcode and an Apple Developer account. CI proves the iOS app compiles (unsigned); signing and upload happen on the Mac:
+```bash
+cd mobile/passenger
+flutter build ipa --release --obfuscate --split-debug-info=build/symbols --dart-define=HORIDE_API_URL=https://api.<domain>
+```
+Then upload with Xcode's Organizer or Transporter to TestFlight. Set the team and the bundle IDs above in Xcode (Runner → Signing & Capabilities) the first time.

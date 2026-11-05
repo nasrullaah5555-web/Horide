@@ -59,3 +59,8 @@ apps/web/next-env.d.ts
 **/build/
 **/.flutter-plugins-dependencies
 **/pubspec.lock.bak
+
+# Mobile signing keys: never commit
+*.jks
+*.keystore
+key.properties

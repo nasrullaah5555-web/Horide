@@ -41,7 +41,10 @@ class SignPanel extends StatelessWidget {
           ],
         ),
         child: Padding(
-          padding: const EdgeInsets.symmetric(horizontal: MusrideSpace.lg, vertical: MusrideSpace.md),
+          padding: const EdgeInsets.symmetric(
+            horizontal: MusrideSpace.lg,
+            vertical: MusrideSpace.md,
+          ),
           child: Row(
             children: [
               Expanded(

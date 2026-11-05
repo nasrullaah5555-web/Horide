@@ -74,7 +74,9 @@ class MusrideButton extends StatelessWidget {
   Widget build(BuildContext context) {
     final scheme = Theme.of(context).colorScheme;
     final height = compact ? MusrideSize.touchTarget - MusrideSpace.sm : MusrideSize.touchTarget;
-    final shape = RoundedRectangleBorder(borderRadius: BorderRadius.circular(MusrideRadius.control));
+    final shape = RoundedRectangleBorder(
+      borderRadius: BorderRadius.circular(MusrideRadius.control),
+    );
     final minSize = Size(compact ? 0 : double.infinity, height);
     final text = Text(label);
     final iconWidget = icon == null ? null : Icon(icon, size: MusrideSize.iconSmall);
@@ -267,7 +269,9 @@ class InfoRow extends StatelessWidget {
           Expanded(
             child: Text(
               value,
-              style: TextStyle(fontWeight: bold ? MusrideFontWeight.heavy : MusrideFontWeight.medium),
+              style: TextStyle(
+                fontWeight: bold ? MusrideFontWeight.heavy : MusrideFontWeight.medium,
+              ),
             ),
           ),
         ],

@@ -28,7 +28,9 @@ class MapPin extends StatelessWidget {
               color: colour,
               shape: BoxShape.circle,
               border: Border.all(color: MusrideColors.white, width: MusrideStroke.marker),
-              boxShadow: const [BoxShadow(color: MusrideColors.shadow, blurRadius: MusrideSpace.sm)],
+              boxShadow: const [
+                BoxShadow(color: MusrideColors.shadow, blurRadius: MusrideSpace.sm),
+              ],
             ),
           ),
           Container(width: MusrideStroke.signBorder, height: MusrideSize.pinStem, color: colour),

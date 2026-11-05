@@ -79,4 +79,6 @@ Machine: the 2-CPU development workspace, with the load generator, the API (one 
 | 600 drivers, 180 passengers, 90 s | 406 | 0 server errors; 606 lost accept races (409, expected); 6 quotes refused (422, random points too close together) | 1038 / 1038 / 0 | 1614, 543, 1669, 3117, 3167 ms | p95 5.2 s, max 6.5 s |
 
 Findings: every booking was matched and no two drivers ever won the same trip at any load. Up to about 150 requests/s responses stay well under a quarter of a second. At about 400 requests/s on this 2-CPU machine latency rises to seconds (CPU shared by all three processes); nothing failed. The pilot (expected tens of drivers) is far below either level. Before launch: rerun against the real hosting plan (OA-12/13), and keep `DATABASE_POOL_MAX` × instances under the database's connection limit (new setting).
+| 2026-11-05 | T-049 | Adapter tests: S3 storage against moto 5.2.5 S3 emulator; Google Routes, OSRM, FCM, AfroMessage against fake HTTP servers; quote with routing server down | Passed. S3: store/read/delete, unsafe keys refused. FCM: RS256 assertion verifies with the public key, one token request reused for 55 min, unregistered token reported. Routing down → HTTP 503 ROUTING_UNAVAILABLE. These are format tests, not tests against the real services |
+| 2026-11-05 | all | Full backend suite | 271/271 passed |
 

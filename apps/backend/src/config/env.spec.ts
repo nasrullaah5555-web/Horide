@@ -14,9 +14,18 @@ const productionOk = {
   DATABASE_SSL: 'true',
   CORS_ORIGINS: 'https://admin.example.com',
   SMS_PROVIDER: 'afromessage',
+  AFROMESSAGE_TOKEN: 'test-token-not-real',
   ROUTING_PROVIDER: 'google',
+  ROUTING_GOOGLE_API_KEY: 'AIza-test-key-not-real-000000',
   STORAGE_PROVIDER: 's3',
+  S3_BUCKET: 'horide-documents',
+  S3_ACCESS_KEY_ID: 'test-access-key',
+  S3_SECRET_ACCESS_KEY: 'test-secret-key',
+  S3_ENDPOINT: 'https://example.supabase.co/storage/v1/s3',
   PUSH_PROVIDER: 'fcm',
+  FCM_SERVICE_ACCOUNT_BASE64: Buffer.from('{"type":"service_account"}'.padEnd(120, ' ')).toString(
+    'base64',
+  ),
 };
 
 describe('loadConfig', () => {

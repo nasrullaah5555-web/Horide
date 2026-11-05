@@ -1,4 +1,4 @@
-import { HttpStatus, Inject, Injectable } from '@nestjs/common';
+import { HttpStatus, Inject, Injectable, Logger } from '@nestjs/common';
 import { Kysely } from 'kysely';
 import { AppError } from '../../common/errors';
 import { haversineMetres, type LatLng } from '../../common/geo';
@@ -6,7 +6,13 @@ import { APP_CONFIG } from '../../config/config.module';
 import type { AppConfig } from '../../config/env';
 import { DATABASE } from '../../database/database.module';
 import type { DB, PaymentMethod, VehicleCategory } from '../../database/types';
-import { type Route, ROUTING_PROVIDER, type RoutingProvider } from '../geo/routing.provider';
+import {
+  NoRouteError,
+  type Route,
+  ROUTING_PROVIDER,
+  type RoutingProvider,
+  RoutingUnavailableError,
+} from '../geo/routing.provider';
 import { ZonesService } from '../geo/zones.service';
 import { calculateFare, formatEtb } from './fare-engine';
 import { signQuote, type QuotePayload } from './quote-token';
@@ -43,6 +49,8 @@ export interface CurrentRates {
 
 @Injectable()
 export class PricingService {
+  private readonly logger = new Logger(PricingService.name);
+
   constructor(
     @Inject(DATABASE) private readonly db: Kysely<DB>,
     @Inject(APP_CONFIG) private readonly config: AppConfig,
@@ -167,7 +175,27 @@ export class PricingService {
       );
     }
 
-    const route = await this.routing.route(input.pickup, input.destination);
+    let route: Route;
+    try {
+      route = await this.routing.route(input.pickup, input.destination);
+    } catch (err) {
+      if (err instanceof NoRouteError) {
+        throw new AppError(
+          HttpStatus.UNPROCESSABLE_ENTITY,
+          'NO_ROUTE',
+          'There is no road route between these points. Move the pin to a road.',
+        );
+      }
+      if (err instanceof RoutingUnavailableError) {
+        this.logger.error({ err: String(err) }, 'Routing provider unavailable');
+        throw new AppError(
+          HttpStatus.SERVICE_UNAVAILABLE,
+          'ROUTING_UNAVAILABLE',
+          'Prices are unavailable right now. Please try again in a moment.',
+        );
+      }
+      throw err;
+    }
     if (
       route.distanceMetres < straight * 0.95 ||
       route.distanceMetres > straight * MAX_ROUTE_DETOUR_FACTOR + 2000

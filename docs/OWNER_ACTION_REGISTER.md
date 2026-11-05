@@ -30,3 +30,4 @@ Actions only the owner can perform. Status: OPEN until the owner confirms or the
 Notes:
 - "WeBirr" (a separate Ethiopian bill-payment gateway) is not eBirr. Do not confuse them during OA-10.
 - No credentials should ever be pasted into chat; they go into the hosting provider's secret settings.
+- When OA-08/09/11/12 are done, each service needs one real check before launch: send a code to a test phone (SMS), price a known Jijiga trip and compare with the road distance (routing), upload and download a test document and confirm the bucket refuses anonymous access (storage), receive a test notification on a phone (push).

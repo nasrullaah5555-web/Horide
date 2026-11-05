@@ -128,11 +128,15 @@ export class NotificationsService implements OnModuleInit, OnModuleDestroy {
         .select('fcm_token')
         .where('user_id', '=', userId)
         .execute();
-      if (tokens.length)
-        await this.push.send(
-          tokens.map((t) => t.fcm_token),
-          message,
-        );
+      if (tokens.length === 0) return;
+      const { invalidTokens } = await this.push.send(
+        tokens.map((t) => t.fcm_token),
+        message,
+      );
+      if (invalidTokens.length) {
+        // The app was uninstalled or the token replaced: stop sending to it.
+        await this.db.deleteFrom('device_tokens').where('fcm_token', 'in', invalidTokens).execute();
+      }
     } catch (err) {
       this.logger.warn({ err, userId }, 'Push delivery failed');
     }

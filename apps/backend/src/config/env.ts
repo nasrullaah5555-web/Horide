@@ -49,10 +49,25 @@ export const envSchema = z
     // fake it by sending its own header. Render alone: 1. Cloudflare in front of Render: 2.
     TRUST_PROXY_HOPS: z.coerce.number().int().min(0).max(5).default(1),
     SMS_PROVIDER: z.enum(['console', 'fake', 'afromessage']).default('console'),
+    AFROMESSAGE_TOKEN: z.string().min(10).optional(),
+    AFROMESSAGE_SENDER: z.string().min(1).max(11).optional(),
+    AFROMESSAGE_IDENTIFIER_ID: z.string().min(1).optional(),
     ROUTING_PROVIDER: z.enum(['dev_estimate', 'fake', 'google', 'osrm']).default('dev_estimate'),
+    ROUTING_GOOGLE_API_KEY: z.string().min(20).optional(),
+    ROUTING_OSRM_URL: z.string().url().optional(),
     STORAGE_PROVIDER: z.enum(['local', 's3']).default('local'),
     STORAGE_LOCAL_DIR: z.string().min(1).default('./storage'),
+    // S3-compatible private bucket (STORAGE_PROVIDER=s3). Required together; checked below.
+    S3_BUCKET: z.string().min(3).max(63).optional(),
+    S3_REGION: z.string().min(1).default('auto'),
+    S3_ENDPOINT: z.string().url().optional(),
+    S3_ACCESS_KEY_ID: z.string().min(1).optional(),
+    S3_SECRET_ACCESS_KEY: z.string().min(1).optional(),
+    S3_FORCE_PATH_STYLE: boolFromString,
+    S3_SERVER_SIDE_ENCRYPTION: boolFromString,
     PUSH_PROVIDER: z.enum(['log', 'fcm']).default('log'),
+    // The Firebase service-account key file, base64-encoded (PUSH_PROVIDER=fcm). A secret.
+    FCM_SERVICE_ACCOUNT_BASE64: z.string().min(100).optional(),
     // Rate limiting is always on in production; tests switch it off except in the rate-limit tests.
     RATE_LIMIT_ENABLED: z
       .enum(['true', 'false'])
@@ -80,7 +95,67 @@ export const envSchema = z
     OTP_GLOBAL_PER_HOUR: z.coerce.number().int().min(1).default(500),
   })
   .superRefine((env, ctx) => {
+    if (env.ROUTING_PROVIDER === 'google' && !env.ROUTING_GOOGLE_API_KEY) {
+      ctx.addIssue({
+        code: 'custom',
+        path: ['ROUTING_GOOGLE_API_KEY'],
+        message: 'required when ROUTING_PROVIDER=google',
+      });
+    }
+    if (env.ROUTING_PROVIDER === 'osrm' && !env.ROUTING_OSRM_URL) {
+      ctx.addIssue({
+        code: 'custom',
+        path: ['ROUTING_OSRM_URL'],
+        message: 'required when ROUTING_PROVIDER=osrm',
+      });
+    }
+    if (env.SMS_PROVIDER === 'afromessage' && !env.AFROMESSAGE_TOKEN) {
+      ctx.addIssue({
+        code: 'custom',
+        path: ['AFROMESSAGE_TOKEN'],
+        message: 'required when SMS_PROVIDER=afromessage',
+      });
+    }
+    if (env.PUSH_PROVIDER === 'fcm' && !env.FCM_SERVICE_ACCOUNT_BASE64) {
+      ctx.addIssue({
+        code: 'custom',
+        path: ['FCM_SERVICE_ACCOUNT_BASE64'],
+        message: 'required when PUSH_PROVIDER=fcm',
+      });
+    }
+    if (env.STORAGE_PROVIDER === 's3') {
+      for (const key of ['S3_BUCKET', 'S3_ACCESS_KEY_ID', 'S3_SECRET_ACCESS_KEY'] as const) {
+        if (!env[key]) {
+          ctx.addIssue({
+            code: 'custom',
+            path: [key],
+            message: 'required when STORAGE_PROVIDER=s3',
+          });
+        }
+      }
+    }
     if (env.NODE_ENV !== 'production') return;
+    if (env.ROUTING_OSRM_URL && !env.ROUTING_OSRM_URL.startsWith('https://')) {
+      ctx.addIssue({
+        code: 'custom',
+        path: ['ROUTING_OSRM_URL'],
+        message: 'must be https in production',
+      });
+    }
+    if (env.ROUTING_OSRM_URL?.includes('router.project-osrm.org')) {
+      ctx.addIssue({
+        code: 'custom',
+        path: ['ROUTING_OSRM_URL'],
+        message: 'the public OSRM demo server is not for production use',
+      });
+    }
+    if (env.S3_ENDPOINT && !env.S3_ENDPOINT.startsWith('https://')) {
+      ctx.addIssue({
+        code: 'custom',
+        path: ['S3_ENDPOINT'],
+        message: 'must be https in production',
+      });
+    }
     for (const key of [
       'JWT_ACCESS_SECRET',
       'OTP_PEPPER',

@@ -28,7 +28,13 @@ import {
           case 'fake':
             return new FakeSmsProvider();
           case 'afromessage':
-            return new AfroMessageSmsProvider();
+            return new AfroMessageSmsProvider({
+              token: config.AFROMESSAGE_TOKEN!,
+              ...(config.AFROMESSAGE_SENDER ? { sender: config.AFROMESSAGE_SENDER } : {}),
+              ...(config.AFROMESSAGE_IDENTIFIER_ID
+                ? { identifierId: config.AFROMESSAGE_IDENTIFIER_ID }
+                : {}),
+            });
         }
       },
     },

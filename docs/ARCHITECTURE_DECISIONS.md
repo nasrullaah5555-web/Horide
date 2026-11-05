@@ -84,3 +84,11 @@ Turn-by-turn navigation is handed to the phone's maps app via a deep link instea
 
 **Context:** The build environment blocks Flutter SDK and pub.dev downloads.
 **Decision:** Mobile code is written in the repository and checked in CI on GitHub (which can download Flutter) and on the owner's laptop. Mobile tasks are marked "Implemented — not compiled" until CI or the owner confirms a build.
+
+## ADR-017 Production adapters built before credentials exist, and labelled unverified
+
+Context: SMS, routing, document storage and push each need an account the owner has not created yet (OA-08, OA-09, OA-11, OA-12). Leaving them unimplemented would make deployment wait for development after the accounts exist.
+
+Decision: implement each adapter against the provider's public API and test it with a local stand-in: S3 storage against the moto S3 emulator; Google Routes, OSRM, FCM HTTP v1 and AfroMessage against fake HTTP servers that check the request format. FCM signs its own OAuth assertion with Node's crypto (no SDK). Each adapter's code comment and COMPLETED_TASKS say "not verified against the real service". Configuration refuses to start if an adapter is selected without its credentials. Failures surface as plain errors (routing down → 503 "prices unavailable", never a guessed price).
+
+Consequences: when an account exists, going live is configuration plus one real check per service (listed in OWNER_ACTION_REGISTER). AfroMessage was written from public SDKs because the official developer page couldn't be opened from the development environment; it carries the highest risk of a mismatch.

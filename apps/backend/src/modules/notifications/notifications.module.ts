@@ -3,7 +3,12 @@ import { APP_CONFIG } from '../../config/config.module';
 import type { AppConfig } from '../../config/env';
 import { NotificationsController } from './notifications.controller';
 import { NotificationsService } from './notifications.service';
-import { FcmPushProvider, LogPushProvider, PUSH_PROVIDER } from './push.provider';
+import {
+  FcmPushProvider,
+  LogPushProvider,
+  parseServiceAccount,
+  PUSH_PROVIDER,
+} from './push.provider';
 
 @Module({
   controllers: [NotificationsController],
@@ -13,7 +18,9 @@ import { FcmPushProvider, LogPushProvider, PUSH_PROVIDER } from './push.provider
       provide: PUSH_PROVIDER,
       inject: [APP_CONFIG],
       useFactory: (config: AppConfig) =>
-        config.PUSH_PROVIDER === 'log' ? new LogPushProvider() : new FcmPushProvider(),
+        config.PUSH_PROVIDER === 'log'
+          ? new LogPushProvider()
+          : new FcmPushProvider(parseServiceAccount(config.FCM_SERVICE_ACCOUNT_BASE64!)),
     },
   ],
   exports: [NotificationsService],

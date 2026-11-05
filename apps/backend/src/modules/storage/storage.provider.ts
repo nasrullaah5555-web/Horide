@@ -1,5 +1,11 @@
 import { mkdir, readFile, rm, writeFile } from 'node:fs/promises';
 import { dirname, join, resolve, sep } from 'node:path';
+import {
+  DeleteObjectCommand,
+  GetObjectCommand,
+  PutObjectCommand,
+  S3Client,
+} from '@aws-sdk/client-s3';
 
 /**
  * Private file storage for driver documents. Files are NEVER served by a public URL:
@@ -44,24 +50,71 @@ export class LocalDiskStorage implements StorageProvider {
   }
 }
 
+export interface S3StorageOptions {
+  bucket: string;
+  region: string;
+  accessKeyId: string;
+  secretAccessKey: string;
+  /** For S3-compatible services (Supabase Storage, Cloudflare R2, MinIO). Omit for AWS. */
+  endpoint?: string;
+  /** Supabase and MinIO need path-style URLs (endpoint/bucket/key). */
+  forcePathStyle: boolean;
+  /** Ask the service to encrypt at rest with its own keys (AWS, R2). Some services reject it. */
+  serverSideEncryption: boolean;
+}
+
 /**
- * Placeholder for S3-compatible private storage (e.g. a private Supabase Storage bucket).
- * Not implemented until a real bucket and credentials exist to test against (owner action OA-12).
+ * S3-compatible PRIVATE storage for driver documents (a private Supabase Storage bucket, Cloudflare
+ * R2 or AWS S3). The bucket must not allow public access; the API reads files with its own
+ * credentials and never hands out bucket URLs.
+ *
+ * Tested against an S3 emulator (moto) in `storage.s3.int-spec.ts`; NOT yet verified against the
+ * real bucket, which needs owner action OA-12.
  */
 export class S3Storage implements StorageProvider {
-  constructor() {
-    throw new Error(
-      'S3 storage is not implemented yet (blocked by owner action OA-12: storage bucket and credentials).',
+  private readonly client: S3Client;
+
+  constructor(private readonly opts: S3StorageOptions) {
+    this.client = new S3Client({
+      region: opts.region,
+      ...(opts.endpoint ? { endpoint: opts.endpoint } : {}),
+      forcePathStyle: opts.forcePathStyle,
+      credentials: { accessKeyId: opts.accessKeyId, secretAccessKey: opts.secretAccessKey },
+      maxAttempts: 3,
+    });
+  }
+
+  private checkKey(key: string): string {
+    if (!/^[a-z0-9/-]+$/i.test(key) || key.includes('//') || key.startsWith('/')) {
+      throw new Error('invalid storage key');
+    }
+    return key;
+  }
+
+  async put(key: string, data: Buffer, contentType: string): Promise<void> {
+    await this.client.send(
+      new PutObjectCommand({
+        Bucket: this.opts.bucket,
+        Key: this.checkKey(key),
+        Body: data,
+        ContentType: contentType,
+        ...(this.opts.serverSideEncryption ? { ServerSideEncryption: 'AES256' as const } : {}),
+      }),
     );
   }
-  put(): Promise<void> {
-    throw new Error('not implemented');
+
+  async get(key: string): Promise<Buffer> {
+    const res = await this.client.send(
+      new GetObjectCommand({ Bucket: this.opts.bucket, Key: this.checkKey(key) }),
+    );
+    if (!res.Body) throw new Error('empty object');
+    return Buffer.from(await res.Body.transformToByteArray());
   }
-  get(): Promise<Buffer> {
-    throw new Error('not implemented');
-  }
-  remove(): Promise<void> {
-    throw new Error('not implemented');
+
+  async remove(key: string): Promise<void> {
+    await this.client.send(
+      new DeleteObjectCommand({ Bucket: this.opts.bucket, Key: this.checkKey(key) }),
+    );
   }
 }
 

@@ -83,3 +83,7 @@ Not done: external penetration test, release obfuscation (T-046), monitoring and
 Evidence: `apps/backend/scripts/load-test.ts` (accounts prepared in a local database, built API started as a separate process, simulated driver and passenger behaviour, latency percentiles per endpoint); results in TEST_REPORT. Added `DATABASE_POOL_MAX`.
 Limits: one 2-CPU machine shared by load generator, API and database; production capacity must be measured on the real plan.
 
+## T-049 Production adapters — 2026-11-05 — IMPLEMENTED – NOT VERIFIED AGAINST THE REAL SERVICES
+Evidence: `storage.provider.ts` + `storage.s3.int-spec.ts` (moto S3 emulator, run in CI); `routing.provider.ts` + spec + `test/routing.e2e-spec.ts` (routing down → 503); `push.provider.ts` + spec (real RSA signature verified, token caching, unregistered tokens deleted); `sms.provider.ts` + spec. ADR-017.
+Not verified: none of these has talked to the real service. AfroMessage is based on public SDKs, not the official page (unreachable from here).
+

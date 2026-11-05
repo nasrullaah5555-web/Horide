@@ -5,7 +5,12 @@ import 'tokens.g.dart';
 /// The Musride logo (brand sheet, design/brand/): the Route M symbol, optionally with the wordmark.
 /// The M is a journey: green pickup ring to drop-off dot. Drawn as vectors, so it is sharp at any size.
 class MusrideLogo extends StatelessWidget {
-  const MusrideLogo({super.key, this.size = MusrideLogoSize.logo, this.onDark = false, this.wordmark = true});
+  const MusrideLogo({
+    super.key,
+    this.size = MusrideLogoSize.logo,
+    this.onDark = false,
+    this.wordmark = true,
+  });
 
   /// Height of the symbol.
   final double size;
@@ -65,19 +70,21 @@ class _RouteM extends CustomPainter {
   void paint(Canvas canvas, Size size) {
     final k = size.shortestSide / 100;
     canvas.scale(k);
-    final stroke = Paint()
-      ..color = ink
-      ..style = PaintingStyle.stroke
-      ..strokeWidth = MusrideLogoShape.stroke
-      ..strokeCap = StrokeCap.round
-      ..strokeJoin = StrokeJoin.round;
+    final stroke =
+        Paint()
+          ..color = ink
+          ..style = PaintingStyle.stroke
+          ..strokeWidth = MusrideLogoShape.stroke
+          ..strokeCap = StrokeCap.round
+          ..strokeJoin = StrokeJoin.round;
     // Same points as MusrideLogoShape.path: M22 72 V17 L50 53 L78 17 V72.
-    final m = Path()
-      ..moveTo(22, 72)
-      ..lineTo(22, 17)
-      ..lineTo(50, 53)
-      ..lineTo(78, 17)
-      ..lineTo(78, 72);
+    final m =
+        Path()
+          ..moveTo(22, 72)
+          ..lineTo(22, 17)
+          ..lineTo(50, 53)
+          ..lineTo(78, 17)
+          ..lineTo(78, 72);
     canvas.drawPath(m, stroke);
     const ring = Offset(MusrideLogoShape.ringX, MusrideLogoShape.ringY);
     canvas.drawCircle(ring, MusrideLogoShape.ringR, Paint()..color = MusrideColors.sign);

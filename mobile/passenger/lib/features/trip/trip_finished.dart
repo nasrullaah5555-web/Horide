@@ -73,7 +73,11 @@ class _TripFinishedScreenState extends ConsumerState<TripFinishedScreen> {
               ),
             ),
             actions: [
-              HorideButton(kind: HorideButtonKind.quiet, label: 'Back', onPressed: () => Navigator.pop(d)),
+              HorideButton(
+                kind: HorideButtonKind.quiet,
+                label: 'Back',
+                onPressed: () => Navigator.pop(d),
+              ),
               HorideButton(label: 'Send', onPressed: () => Navigator.pop(d, note.text.trim())),
             ],
           ),
@@ -118,7 +122,11 @@ class _TripFinishedScreenState extends ConsumerState<TripFinishedScreen> {
           Text('Payment', style: theme.textTheme.titleMedium),
           const Gap(HorideSpace.sm),
           if (receipt == null)
-            HorideButton(kind: HorideButtonKind.secondary, label: 'Load payment details', onPressed: _loadReceipt)
+            HorideButton(
+              kind: HorideButtonKind.secondary,
+              label: 'Load payment details',
+              onPressed: _loadReceipt,
+            )
           else ...[
             InfoRow(
               'Status',
@@ -129,7 +137,10 @@ class _TripFinishedScreenState extends ConsumerState<TripFinishedScreen> {
             if (receipt.ebirrReference != null) InfoRow('eBirr reference', receipt.ebirrReference!),
             const Gap(HorideSpace.sm),
             if (!passengerAnswered) ...[
-              HorideButton(label: 'I have paid the driver', onPressed: _busy
+              HorideButton(
+                label: 'I have paid the driver',
+                onPressed:
+                    _busy
                         ? null
                         : () => _do((api) async {
                           final r = await api.confirmPayment(trip.id);
@@ -139,11 +150,16 @@ class _TripFinishedScreenState extends ConsumerState<TripFinishedScreen> {
                               _confirmed = true;
                             });
                           }
-                        })),
+                        }),
+              ),
               const Gap(HorideSpace.sm),
             ],
             if (status != 'disputed' && status != 'resolved')
-              HorideButton(kind: HorideButtonKind.secondary, label: 'Report a payment problem', onPressed: _busy ? null : _dispute),
+              HorideButton(
+                kind: HorideButtonKind.secondary,
+                label: 'Report a payment problem',
+                onPressed: _busy ? null : _dispute,
+              ),
           ],
           const Gap(HorideSpace.xl),
           Text('Rate your driver', style: theme.textTheme.titleMedium),

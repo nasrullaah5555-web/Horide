@@ -8,7 +8,6 @@ import 'package:go_router/go_router.dart';
 import 'package:horide_core/horide_core.dart';
 
 import '../../core/driver_api.dart';
-import '../../core/map.dart';
 import '../../core/providers.dart';
 import 'driver_controller.dart';
 
@@ -80,52 +79,62 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
           Align(
             alignment: Alignment.bottomCenter,
             child: HorideBottomPanel(
-                    children: [
-                      if (state.offers.isNotEmpty)
-                        _OfferCard(offer: state.offers.first)
-                      else
-                        SignPanel(
-                          title: state.online ? 'Online' : 'Offline',
-                          subtitle:
-                              state.online
-                                  ? 'Waiting for ride requests'
-                                  : 'Go online to receive ride requests',
-                          tone: state.online ? SignTone.go : SignTone.calm,
+              children: [
+                if (state.offers.isNotEmpty)
+                  _OfferCard(offer: state.offers.first)
+                else
+                  SignPanel(
+                    title: state.online ? 'Online' : 'Offline',
+                    subtitle:
+                        state.online
+                            ? 'Waiting for ride requests'
+                            : 'Go online to receive ride requests',
+                    tone: state.online ? SignTone.go : SignTone.calm,
+                  ),
+                if (state.message != null) ...[
+                  const Gap(HorideSpace.md),
+                  HorideNotice(
+                    text: state.message!,
+                    onClose: ref.read(driverControllerProvider.notifier).dismissMessage,
+                  ),
+                ],
+                if (eligibility != null && !eligibility.eligible && !state.online) ...[
+                  const Gap(HorideSpace.md),
+                  HorideNotice(
+                    text: eligibility.reasons.map((r) => Eligibility.reasonText[r] ?? r).join('\n'),
+                    action: HorideButton(
+                      kind: HorideButtonKind.quiet,
+                      label: 'Open',
+                      onPressed: () => context.push('/onboarding'),
+                    ),
+                  ),
+                ],
+                if (state.online) ...[
+                  const Gap(HorideSpace.sm),
+                  ValueListenableBuilder<bool>(
+                    valueListenable: ref.watch(locationReporterProvider).connected,
+                    builder:
+                        (_, ok, __) => StatusText(
+                          ok
+                              ? 'Location is being shared.'
+                              : 'Location not reaching Horide. Check your signal.',
+                          ok: ok,
                         ),
-                      if (state.message != null) ...[
-                        const Gap(HorideSpace.md),
-                        HorideNotice(
-                          text: state.message!,
-                          onClose: ref.read(driverControllerProvider.notifier).dismissMessage,
-                        ),
-                      ],
-                      if (eligibility != null && !eligibility.eligible && !state.online) ...[
-                        const Gap(HorideSpace.md),
-                        HorideNotice(
-                          text: eligibility.reasons
-                              .map((r) => Eligibility.reasonText[r] ?? r)
-                              .join('\n'),
-                          action: HorideButton(kind: HorideButtonKind.quiet, label: 'Open', onPressed: () => context.push('/onboarding')),
-                        ),
-                      ],
-                      if (state.online) ...[
-                        const Gap(HorideSpace.sm),
-                        ValueListenableBuilder<bool>(
-                          valueListenable: ref.watch(locationReporterProvider).connected,
-                          builder:
-                              (_, ok, __) => StatusText(
-                                ok
-                                    ? 'Location is being shared.'
-                                    : 'Location not reaching Horide. Check your signal.',
-                                ok: ok,
-                              ),
-                        ),
-                      ],
-                      const Gap(HorideSpace.md),
-                      if (state.offers.isEmpty)
-                        HorideButton(kind: state.online ? HorideButtonKind.primary : HorideButtonKind.go, label: _busy ? 'Please wait…' : (state.online ? 'Go offline' : 'Go online'), onPressed: _busy ? null : () => _toggle(!state.online)),
-                      HorideButton(kind: HorideButtonKind.quiet, label: 'Sign out', onPressed: () => ref.read(sessionProvider.notifier).signOut()),
-                    ],
+                  ),
+                ],
+                const Gap(HorideSpace.md),
+                if (state.offers.isEmpty)
+                  HorideButton(
+                    kind: state.online ? HorideButtonKind.primary : HorideButtonKind.go,
+                    label: _busy ? 'Please wait…' : (state.online ? 'Go offline' : 'Go online'),
+                    onPressed: _busy ? null : () => _toggle(!state.online),
+                  ),
+                HorideButton(
+                  kind: HorideButtonKind.quiet,
+                  label: 'Sign out',
+                  onPressed: () => ref.read(sessionProvider.notifier).signOut(),
+                ),
+              ],
             ),
           ),
         ],
@@ -195,18 +204,28 @@ class _OfferCardState extends ConsumerState<_OfferCard> {
         Row(
           children: [
             Expanded(
-              child: HorideButton(kind: HorideButtonKind.secondary, label: 'Decline', onPressed: _busy ? null : () => ref.read(driverControllerProvider.notifier).reject(o)),
+              child: HorideButton(
+                kind: HorideButtonKind.secondary,
+                label: 'Decline',
+                onPressed:
+                    _busy ? null : () => ref.read(driverControllerProvider.notifier).reject(o),
+              ),
             ),
             const Gap(HorideSpace.md),
             Expanded(
               flex: 2,
-              child: HorideButton(kind: HorideButtonKind.go, label: 'Accept', onPressed: _busy || left == 0
+              child: HorideButton(
+                kind: HorideButtonKind.go,
+                label: 'Accept',
+                onPressed:
+                    _busy || left == 0
                         ? null
                         : () async {
                           setState(() => _busy = true);
                           await ref.read(driverControllerProvider.notifier).accept(o);
                           if (mounted) setState(() => _busy = false);
-                        }),
+                        },
+              ),
             ),
           ],
         ),

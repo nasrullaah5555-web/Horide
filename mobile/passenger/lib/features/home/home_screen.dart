@@ -4,7 +4,6 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import 'package:horide_core/horide_core.dart';
 
-import '../../core/map.dart';
 import '../../core/passenger_api.dart';
 import '../../core/ui.dart';
 import '../trip/trip_controller.dart';
@@ -126,9 +125,7 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
               ...baseMapLayers(),
               if (_destination != null)
                 MarkerLayer(
-                  markers: [
-                    pinMarker(_destination!.point, HorideColors.navy, 'Destination'),
-                  ],
+                  markers: [pinMarker(_destination!.point, HorideColors.navy, 'Destination')],
                 ),
               mapAttribution(),
             ],
@@ -166,84 +163,95 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
   Widget _bottomPanel(BuildContext context) {
     final quotes = _quotes;
     return HorideBottomPanel(
-            children: [
-              TextField(
-                controller: _pickupText,
-                maxLength: 200,
-                decoration: const InputDecoration(
-                  prefixIcon: Icon(Icons.trip_origin, color: HorideColors.sign),
-                  hintText: 'Pickup landmark (helps the driver find you)',
-                  counterText: '',
-                ),
+      children: [
+        TextField(
+          controller: _pickupText,
+          maxLength: 200,
+          decoration: const InputDecoration(
+            prefixIcon: Icon(Icons.trip_origin, color: HorideColors.sign),
+            hintText: 'Pickup landmark (helps the driver find you)',
+            counterText: '',
+          ),
+        ),
+        const Gap(HorideSpace.md),
+        HorideButton(
+          kind: HorideButtonKind.secondary,
+          icon: Icons.place,
+          label:
+              _destination == null
+                  ? 'Where to?'
+                  : (_destination!.text ?? 'Destination set on the map'),
+          onPressed: _busy ? null : _chooseDestination,
+        ),
+        _SavedPlacesRow(
+          onPick: (place) async {
+            setState(() => _destination = Place(place.point, place.label));
+            await _loadQuotes();
+          },
+          current: _destination,
+        ),
+        if (_busy && quotes == null) ...[
+          const Gap(HorideSpace.lg),
+          const Center(child: CircularProgressIndicator()),
+        ],
+        if (quotes != null) ...[
+          const Gap(HorideSpace.lg),
+          for (final q in quotes)
+            Padding(
+              padding: const EdgeInsets.only(bottom: HorideSpace.sm),
+              child: OptionTile(
+                selected: q.category == _category,
+                onTap: () => setState(() => _category = q.category),
+                icon:
+                    q.category == VehicleCategory.car
+                        ? Icons.directions_car
+                        : Icons.electric_rickshaw,
+                title: vehicleLabel(q.category),
+                subtitle:
+                    '${formatKm(q.distanceMetres)}, about ${formatMinutes(q.durationSeconds)}'
+                    '${q.isEstimate ? ' (estimate)' : ''}',
+                trailing: formatEtbShort(q.fare),
               ),
-              const Gap(HorideSpace.md),
-              HorideButton(kind: HorideButtonKind.secondary, icon: Icons.place, label: _destination == null
-                      ? 'Where to?'
-                      : (_destination!.text ?? 'Destination set on the map'), onPressed: _busy ? null : _chooseDestination),
-              _SavedPlacesRow(
-                onPick: (place) async {
-                  setState(() => _destination = Place(place.point, place.label));
-                  await _loadQuotes();
-                },
-                current: _destination,
+            ),
+          const Gap(HorideSpace.sm),
+          SegmentedButton<PaymentMethod>(
+            segments: const [
+              ButtonSegment(
+                value: PaymentMethod.cash,
+                label: Text('Cash'),
+                icon: Icon(Icons.payments_outlined),
               ),
-              if (_busy && quotes == null) ...[
-                const Gap(HorideSpace.lg),
-                const Center(child: CircularProgressIndicator()),
-              ],
-              if (quotes != null) ...[
-                const Gap(HorideSpace.lg),
-                for (final q in quotes)
-                  Padding(
-                    padding: const EdgeInsets.only(bottom: HorideSpace.sm),
-                    child: OptionTile(
-                      selected: q.category == _category,
-                      onTap: () => setState(() => _category = q.category),
-                      icon: q.category == VehicleCategory.car
-                          ? Icons.directions_car
-                          : Icons.electric_rickshaw,
-                      title: vehicleLabel(q.category),
-                      subtitle:
-                          '${formatKm(q.distanceMetres)}, about ${formatMinutes(q.durationSeconds)}'
-                          '${q.isEstimate ? ' (estimate)' : ''}',
-                      trailing: formatEtbShort(q.fare),
-                    ),
-                  ),
-                const Gap(HorideSpace.sm),
-                SegmentedButton<PaymentMethod>(
-                  segments: const [
-                    ButtonSegment(
-                      value: PaymentMethod.cash,
-                      label: Text('Cash'),
-                      icon: Icon(Icons.payments_outlined),
-                    ),
-                    ButtonSegment(
-                      value: PaymentMethod.ebirr,
-                      label: Text('eBirr'),
-                      icon: Icon(Icons.phone_android),
-                    ),
-                  ],
-                  selected: {_payment},
-                  onSelectionChanged: (s) {
-                    setState(() => _payment = s.first);
-                    _loadQuotes(); // the price is tied to the payment method in the quote
-                  },
-                ),
-                const Gap(HorideSpace.sm),
-                const HintText(
-                  'You pay the driver directly. Horide does not take payment in the app.',
-                  center: true,
-                ),
-                const Gap(HorideSpace.md),
-                Builder(
-                  builder: (context) {
-                    final selected = quotes.where((q) => q.category == _category).firstOrNull;
-                    if (selected == null) return const SizedBox.shrink();
-                    return HorideButton(label: 'Book ${vehicleLabel(selected.category).toLowerCase()} for ${formatEtbShort(selected.fare)}', onPressed: _busy ? null : () => _book(selected));
-                  },
-                ),
-              ],
+              ButtonSegment(
+                value: PaymentMethod.ebirr,
+                label: Text('eBirr'),
+                icon: Icon(Icons.phone_android),
+              ),
             ],
+            selected: {_payment},
+            onSelectionChanged: (s) {
+              setState(() => _payment = s.first);
+              _loadQuotes(); // the price is tied to the payment method in the quote
+            },
+          ),
+          const Gap(HorideSpace.sm),
+          const HintText(
+            'You pay the driver directly. Horide does not take payment in the app.',
+            center: true,
+          ),
+          const Gap(HorideSpace.md),
+          Builder(
+            builder: (context) {
+              final selected = quotes.where((q) => q.category == _category).firstOrNull;
+              if (selected == null) return const SizedBox.shrink();
+              return HorideButton(
+                label:
+                    'Book ${vehicleLabel(selected.category).toLowerCase()} for ${formatEtbShort(selected.fare)}',
+                onPressed: _busy ? null : () => _book(selected),
+              );
+            },
+          ),
+        ],
+      ],
     );
   }
 
@@ -307,7 +315,11 @@ class _SavedPlacesRow extends ConsumerWidget {
               decoration: const InputDecoration(hintText: 'Name, e.g. Home or Work'),
             ),
             actions: [
-              HorideButton(kind: HorideButtonKind.quiet, label: 'Cancel', onPressed: () => Navigator.pop(d)),
+              HorideButton(
+                kind: HorideButtonKind.quiet,
+                label: 'Cancel',
+                onPressed: () => Navigator.pop(d),
+              ),
               HorideButton(label: 'Save', onPressed: () => Navigator.pop(d, label.text.trim())),
             ],
           ),
@@ -329,7 +341,11 @@ class _SavedPlacesRow extends ConsumerWidget {
           (d) => AlertDialog(
             title: Text('Remove "${p.label}"?'),
             actions: [
-              HorideButton(kind: HorideButtonKind.quiet, label: 'Keep', onPressed: () => Navigator.pop(d, false)),
+              HorideButton(
+                kind: HorideButtonKind.quiet,
+                label: 'Keep',
+                onPressed: () => Navigator.pop(d, false),
+              ),
               HorideButton(label: 'Remove', onPressed: () => Navigator.pop(d, true)),
             ],
           ),

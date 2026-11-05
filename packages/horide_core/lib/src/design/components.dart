@@ -74,9 +74,7 @@ class HorideButton extends StatelessWidget {
   Widget build(BuildContext context) {
     final scheme = Theme.of(context).colorScheme;
     final height = compact ? HorideSize.touchTarget - HorideSpace.sm : HorideSize.touchTarget;
-    final shape = RoundedRectangleBorder(
-      borderRadius: BorderRadius.circular(HorideRadius.control),
-    );
+    final shape = RoundedRectangleBorder(borderRadius: BorderRadius.circular(HorideRadius.control));
     final minSize = Size(compact ? 0 : double.infinity, height);
     final text = Text(label);
     final iconWidget = icon == null ? null : Icon(icon, size: HorideSize.iconSmall);
@@ -195,7 +193,12 @@ class HorideNotice extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Container(
-      padding: const EdgeInsets.fromLTRB(HorideSpace.md, HorideSpace.sm, HorideSpace.xs, HorideSpace.sm),
+      padding: const EdgeInsets.fromLTRB(
+        HorideSpace.md,
+        HorideSpace.sm,
+        HorideSpace.xs,
+        HorideSpace.sm,
+      ),
       decoration: BoxDecoration(
         color: HorideColors.amberSoft,
         border: Border.all(color: HorideColors.amber),
@@ -260,16 +263,11 @@ class InfoRow extends StatelessWidget {
       child: Row(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          SizedBox(
-            width: labelWidth,
-            child: Text(label, style: TextStyle(color: muted)),
-          ),
+          SizedBox(width: labelWidth, child: Text(label, style: TextStyle(color: muted))),
           Expanded(
             child: Text(
               value,
-              style: TextStyle(
-                fontWeight: bold ? HorideFontWeight.heavy : HorideFontWeight.medium,
-              ),
+              style: TextStyle(fontWeight: bold ? HorideFontWeight.heavy : HorideFontWeight.medium),
             ),
           ),
         ],
@@ -294,7 +292,10 @@ class PlateBadge extends StatelessWidget {
       ),
       child: Text(
         plate,
-        style: const TextStyle(fontWeight: HorideFontWeight.heavy, letterSpacing: HorideLetterSpacing.plate),
+        style: const TextStyle(
+          fontWeight: HorideFontWeight.heavy,
+          letterSpacing: HorideLetterSpacing.plate,
+        ),
       ),
     );
   }
@@ -354,7 +355,10 @@ class PanelSpinner extends StatelessWidget {
   Widget build(BuildContext context) => const SizedBox(
     width: HorideSize.spinner,
     height: HorideSize.spinner,
-    child: CircularProgressIndicator(color: HorideColors.white, strokeWidth: HorideStroke.signBorder),
+    child: CircularProgressIndicator(
+      color: HorideColors.white,
+      strokeWidth: HorideStroke.signBorder,
+    ),
   );
 }
 

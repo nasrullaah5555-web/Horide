@@ -28,7 +28,11 @@ class HistoryScreen extends ConsumerWidget {
                   const Gap(HorideSpace.xxxl),
                   Center(child: Text(e is ApiException ? e.message : 'Could not load your trips.')),
                   Center(
-                    child: HorideButton(kind: HorideButtonKind.quiet, label: 'Try again', onPressed: () => ref.invalidate(historyProvider)),
+                    child: HorideButton(
+                      kind: HorideButtonKind.quiet,
+                      label: 'Try again',
+                      onPressed: () => ref.invalidate(historyProvider),
+                    ),
                   ),
                 ],
               ),
@@ -37,7 +41,7 @@ class HistoryScreen extends ConsumerWidget {
                   list.isEmpty
                       ? ListView(
                         children: const [
-                          const Gap(HorideSpace.xxxl),
+                          Gap(HorideSpace.xxxl),
                           Center(child: Text('No trips yet.')),
                         ],
                       )

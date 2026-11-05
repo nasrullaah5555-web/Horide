@@ -6,7 +6,6 @@ import 'package:horide_core/horide_core.dart';
 import 'package:url_launcher/url_launcher.dart';
 
 import '../../core/driver_api.dart';
-import '../../core/map.dart';
 import '../../core/ui.dart';
 import '../home/driver_controller.dart';
 
@@ -49,8 +48,15 @@ class _TripScreenState extends ConsumerState<TripScreen> {
               ),
             ),
             actions: [
-              HorideButton(kind: HorideButtonKind.quiet, label: 'Keep trip', onPressed: () => Navigator.pop(d)),
-              HorideButton(label: 'Cancel trip', onPressed: () => Navigator.pop(d, reason.text.trim())),
+              HorideButton(
+                kind: HorideButtonKind.quiet,
+                label: 'Keep trip',
+                onPressed: () => Navigator.pop(d),
+              ),
+              HorideButton(
+                label: 'Cancel trip',
+                onPressed: () => Navigator.pop(d, reason.text.trim()),
+              ),
             ],
           ),
     );
@@ -97,9 +103,7 @@ class _TripScreenState extends ConsumerState<TripScreen> {
     final trip = ref.watch(driverControllerProvider.select((s) => s.trip));
     if (trip == null) {
       return Scaffold(
-        body: Center(
-          child: HorideButton(label: 'Back', onPressed: () => context.go('/')),
-        ),
+        body: Center(child: HorideButton(label: 'Back', onPressed: () => context.go('/'))),
       );
     }
     if (trip.status == TripStatus.completed) return PaymentScreen(trip: trip);
@@ -145,70 +149,90 @@ class _TripScreenState extends ConsumerState<TripScreen> {
               padding: const EdgeInsets.all(HorideSpace.md),
               child: Align(
                 alignment: Alignment.topRight,
-                child: HorideButton(kind: HorideButtonKind.emergency, icon: Icons.sos, label: 'Emergency', onPressed: () => _emergency(trip)),
+                child: HorideButton(
+                  kind: HorideButtonKind.emergency,
+                  icon: Icons.sos,
+                  label: 'Emergency',
+                  onPressed: () => _emergency(trip),
+                ),
               ),
             ),
           ),
           Align(
             alignment: Alignment.bottomCenter,
             child: HorideBottomPanel(
+              children: [
+                SignPanel(
+                  title: title,
+                  subtitle: subtitle,
+                  tone: trip.status.isFinal ? SignTone.alert : SignTone.go,
+                ),
+                const Gap(HorideSpace.md),
+                if (passenger != null)
+                  Row(
                     children: [
-                      SignPanel(
-                        title: title,
-                        subtitle: subtitle,
-                        tone: trip.status.isFinal ? SignTone.alert : SignTone.go,
-                      ),
-                      const Gap(HorideSpace.md),
-                      if (passenger != null)
-                        Row(
-                          children: [
-                            Expanded(
-                              child: Text(
-                                passenger.name ?? 'Passenger',
-                                style: Theme.of(context).textTheme.titleMedium,
-                              ),
-                            ),
-                            if (passenger.phone != null && !trip.status.isFinal)
-                              IconButton.filledTonal(
-                                tooltip: 'Call passenger',
-                                onPressed:
-                                    () => launchUrl(Uri(scheme: 'tel', path: passenger.phone)),
-                                icon: const Icon(Icons.call),
-                              ),
-                          ],
+                      Expanded(
+                        child: Text(
+                          passenger.name ?? 'Passenger',
+                          style: Theme.of(context).textTheme.titleMedium,
                         ),
-                      InfoRow(
-                        'Fare',
-                        '${formatEtb(trip.fare)}  (${paymentLabel(trip.paymentMethod)}, paid to you)',
-                        bold: true,
                       ),
-                      const Gap(HorideSpace.sm),
-                      if (trip.status.isFinal)
-                        HorideButton(label: 'Back to home', onPressed: () {
-                            ref.read(driverControllerProvider.notifier).closeTrip();
-                            context.go('/');
-                          })
-                      else ...[
-                        if (trip.status != TripStatus.arrived)
-                          HorideButton(kind: HorideButtonKind.secondary, icon: Icons.navigation, label: toPickup ? 'Navigate to pickup' : 'Navigate to destination', onPressed: () => _navigate(target.point)),
-                        const Gap(HorideSpace.sm),
-                        HorideButton(label: switch (trip.status) {
-                            TripStatus.accepted => 'I am on the way',
-                            TripStatus.driverArriving => 'I have arrived',
-                            TripStatus.arrived => 'Start trip',
-                            _ => 'Complete trip',
-                          }, onPressed: _busy
-                                  ? null
-                                  : () => _step(trip, switch (trip.status) {
-                                    TripStatus.accepted => 'arriving',
-                                    TripStatus.driverArriving => 'arrived',
-                                    TripStatus.arrived => 'start',
-                                    _ => 'complete',
-                                  })),
-                        if (trip.status != TripStatus.inProgress)
-                          HorideButton(kind: HorideButtonKind.quietDanger, label: 'Cancel trip', onPressed: _busy ? null : () => _cancel(trip)),
-                      ],
+                      if (passenger.phone != null && !trip.status.isFinal)
+                        IconButton.filledTonal(
+                          tooltip: 'Call passenger',
+                          onPressed: () => launchUrl(Uri(scheme: 'tel', path: passenger.phone)),
+                          icon: const Icon(Icons.call),
+                        ),
                     ],
+                  ),
+                InfoRow(
+                  'Fare',
+                  '${formatEtb(trip.fare)}  (${paymentLabel(trip.paymentMethod)}, paid to you)',
+                  bold: true,
+                ),
+                const Gap(HorideSpace.sm),
+                if (trip.status.isFinal)
+                  HorideButton(
+                    label: 'Back to home',
+                    onPressed: () {
+                      ref.read(driverControllerProvider.notifier).closeTrip();
+                      context.go('/');
+                    },
+                  )
+                else ...[
+                  if (trip.status != TripStatus.arrived)
+                    HorideButton(
+                      kind: HorideButtonKind.secondary,
+                      icon: Icons.navigation,
+                      label: toPickup ? 'Navigate to pickup' : 'Navigate to destination',
+                      onPressed: () => _navigate(target.point),
+                    ),
+                  const Gap(HorideSpace.sm),
+                  HorideButton(
+                    label: switch (trip.status) {
+                      TripStatus.accepted => 'I am on the way',
+                      TripStatus.driverArriving => 'I have arrived',
+                      TripStatus.arrived => 'Start trip',
+                      _ => 'Complete trip',
+                    },
+                    onPressed:
+                        _busy
+                            ? null
+                            : () => _step(trip, switch (trip.status) {
+                              TripStatus.accepted => 'arriving',
+                              TripStatus.driverArriving => 'arrived',
+                              TripStatus.arrived => 'start',
+                              _ => 'complete',
+                            }),
+                  ),
+                  if (trip.status != TripStatus.inProgress)
+                    HorideButton(
+                      kind: HorideButtonKind.quietDanger,
+                      label: 'Cancel trip',
+                      onPressed: _busy ? null : () => _cancel(trip),
+                    ),
+                ],
+              ],
             ),
           ),
         ],
@@ -299,7 +323,10 @@ class _PaymentScreenState extends ConsumerState<PaymentScreen> {
                 decoration: const InputDecoration(labelText: 'eBirr transaction reference'),
               ),
             const Gap(HorideSpace.sm),
-            HorideButton(label: 'I received the payment', onPressed: _busy
+            HorideButton(
+              label: 'I received the payment',
+              onPressed:
+                  _busy
                       ? null
                       : () => _do((api) async {
                         final r = await api.recordPayment(
@@ -309,7 +336,8 @@ class _PaymentScreenState extends ConsumerState<PaymentScreen> {
                               _method == PaymentMethod.ebirr ? _reference.text.trim() : null,
                         );
                         if (mounted) setState(() => _receipt = r);
-                      })),
+                      }),
+            ),
             const Gap(HorideSpace.sm),
             Text(
               'Only record a payment you actually received. Horide compares your record with the '
@@ -320,29 +348,36 @@ class _PaymentScreenState extends ConsumerState<PaymentScreen> {
           const Gap(HorideSpace.xl),
           Text('Rate the passenger', style: Theme.of(context).textTheme.titleMedium),
           if (_rated)
-            const Padding(padding: EdgeInsets.symmetric(vertical: HorideSpace.md), child: Text('Thank you.'))
+            const Padding(
+              padding: EdgeInsets.symmetric(vertical: HorideSpace.md),
+              child: Text('Thank you.'),
+            )
           else
             StarRating(
               value: _stars,
-              onChanged: _busy
-                  ? null
-                  : (i) {
-                      setState(() => _stars = i);
-                      _do((api) async {
-                        await api.ratePassenger(trip.id, i);
-                        if (mounted) setState(() => _rated = true);
-                      });
-                    },
+              onChanged:
+                  _busy
+                      ? null
+                      : (i) {
+                        setState(() => _stars = i);
+                        _do((api) async {
+                          await api.ratePassenger(trip.id, i);
+                          if (mounted) setState(() => _rated = true);
+                        });
+                      },
             ),
           const Gap(HorideSpace.xl),
-          HorideButton(label: recorded ? 'Done' : 'Close', onPressed: () {
+          HorideButton(
+            label: recorded ? 'Done' : 'Close',
+            onPressed: () {
               if (widget.fromHistory) {
                 context.pop();
                 return;
               }
               ref.read(driverControllerProvider.notifier).closeTrip();
               context.go('/');
-            }),
+            },
+          ),
         ],
       ),
     );

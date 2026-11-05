@@ -64,7 +64,11 @@ class _ConnectionBannerState extends State<ConnectionBanner> {
                           ),
                           child: Row(
                             children: [
-                              Icon(Icons.wifi_off, color: HorideColors.white, size: HorideSize.iconSmall),
+                              Icon(
+                                Icons.wifi_off,
+                                color: HorideColors.white,
+                                size: HorideSize.iconSmall,
+                              ),
                               Gap(HorideSpace.md),
                               Expanded(
                                 child: Text(

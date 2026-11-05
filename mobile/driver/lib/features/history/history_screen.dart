@@ -63,7 +63,10 @@ class HistoryScreen extends ConsumerWidget {
                 const Gap(HorideSpace.md),
                 if (list.isEmpty)
                   const Center(
-                    child: Padding(padding: EdgeInsets.all(HorideSpace.xxl), child: Text('No trips yet.')),
+                    child: Padding(
+                      padding: EdgeInsets.all(HorideSpace.xxl),
+                      child: Text('No trips yet.'),
+                    ),
                   ),
                 for (final t in list)
                   ListTile(

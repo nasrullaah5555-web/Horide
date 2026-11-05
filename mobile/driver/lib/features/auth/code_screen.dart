@@ -87,7 +87,12 @@ class _CodeScreenState extends ConsumerState<CodeScreen> {
       appBar: AppBar(),
       body: SafeArea(
         child: ListView(
-          padding: const EdgeInsets.fromLTRB(HorideSpace.xl, HorideSpace.sm, HorideSpace.xl, HorideSpace.xl),
+          padding: const EdgeInsets.fromLTRB(
+            HorideSpace.xl,
+            HorideSpace.sm,
+            HorideSpace.xl,
+            HorideSpace.xl,
+          ),
           children: [
             Text('Enter the code', style: theme.textTheme.headlineMedium),
             const Gap(HorideSpace.sm),

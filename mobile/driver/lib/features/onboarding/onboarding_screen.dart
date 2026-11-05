@@ -30,7 +30,11 @@ class OnboardingScreen extends ConsumerWidget {
                 mainAxisSize: MainAxisSize.min,
                 children: [
                   Text(e is ApiException ? e.message : 'Could not load your account.'),
-                  HorideButton(kind: HorideButtonKind.quiet, label: 'Try again', onPressed: () => ref.invalidate(overviewProvider)),
+                  HorideButton(
+                    kind: HorideButtonKind.quiet,
+                    label: 'Try again',
+                    onPressed: () => ref.invalidate(overviewProvider),
+                  ),
                 ],
               ),
             ),
@@ -58,7 +62,10 @@ class OnboardingScreen extends ConsumerWidget {
                   _Section(title: '2. Your vehicle', child: _VehicleSection(vehicle: o.vehicle)),
                   _Section(title: '3. Documents', child: _Documents(overview: o)),
                   const _Section(title: '4. Monthly subscription', child: _SubscriptionSection()),
-                  HorideButton(kind: HorideButtonKind.quietDanger, label: 'Delete my account', onPressed: () async {
+                  HorideButton(
+                    kind: HorideButtonKind.quietDanger,
+                    label: 'Delete my account',
+                    onPressed: () async {
                       final ok = await confirmAccountDeletion(
                         context,
                         whatIsRemoved:
@@ -71,7 +78,8 @@ class OnboardingScreen extends ConsumerWidget {
                       } catch (e) {
                         if (context.mounted) showError(context, e);
                       }
-                    }),
+                    },
+                  ),
                 ],
               ),
             ),
@@ -130,7 +138,11 @@ class _NameFormState extends ConsumerState<_NameForm> {
           textCapitalization: TextCapitalization.words,
           decoration: const InputDecoration(labelText: 'Full name, as on your National ID'),
         ),
-        HorideButton(kind: HorideButtonKind.secondary, label: 'Save name', onPressed: _busy
+        HorideButton(
+          kind: HorideButtonKind.secondary,
+          label: 'Save name',
+          onPressed:
+              _busy
                   ? null
                   : () async {
                     if (_name.text.trim().isEmpty) return;
@@ -143,7 +155,8 @@ class _NameFormState extends ConsumerState<_NameForm> {
                     } finally {
                       if (mounted) setState(() => _busy = false);
                     }
-                  }),
+                  },
+        ),
       ],
     );
   }

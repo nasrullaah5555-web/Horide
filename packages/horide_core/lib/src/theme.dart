@@ -88,8 +88,14 @@ class HorideTheme {
         ),
         labelSmall: text.labelSmall?.copyWith(fontSize: HorideFontSize.caption),
         bodySmall: text.bodySmall?.copyWith(fontSize: HorideFontSize.small, color: muted),
-        bodyLarge: text.bodyLarge?.copyWith(fontSize: HorideFontSize.bodyLarge, height: HorideLineHeight.body),
-        bodyMedium: text.bodyMedium?.copyWith(fontSize: HorideFontSize.body, height: HorideLineHeight.body),
+        bodyLarge: text.bodyLarge?.copyWith(
+          fontSize: HorideFontSize.bodyLarge,
+          height: HorideLineHeight.body,
+        ),
+        bodyMedium: text.bodyMedium?.copyWith(
+          fontSize: HorideFontSize.body,
+          height: HorideLineHeight.body,
+        ),
       ),
       appBarTheme: AppBarTheme(
         backgroundColor: background,

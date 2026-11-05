@@ -65,13 +65,14 @@ class PositionDot extends StatelessWidget {
             ),
             boxShadow: const [BoxShadow(color: HorideColors.shadow, blurRadius: HorideSpace.sm)],
           ),
-          child: icon == null
-              ? null
-              : Icon(
-                  icon,
-                  size: HorideFontSize.small,
-                  color: live ? HorideColors.white : HorideColors.stale,
-                ),
+          child:
+              icon == null
+                  ? null
+                  : Icon(
+                    icon,
+                    size: HorideFontSize.small,
+                    color: live ? HorideColors.white : HorideColors.stale,
+                  ),
         ),
       ),
     );

@@ -54,7 +54,12 @@ class _PhoneScreenState extends ConsumerState<PhoneScreen> {
     return Scaffold(
       body: SafeArea(
         child: ListView(
-          padding: const EdgeInsets.fromLTRB(HorideSpace.xl, HorideSpace.xxl, HorideSpace.xl, HorideSpace.xl),
+          padding: const EdgeInsets.fromLTRB(
+            HorideSpace.xl,
+            HorideSpace.xxl,
+            HorideSpace.xl,
+            HorideSpace.xl,
+          ),
           children: [
             const SignPanel(title: 'Horide Driver', subtitle: 'Drive in Jijiga'),
             const Gap(HorideSpace.xxxl),

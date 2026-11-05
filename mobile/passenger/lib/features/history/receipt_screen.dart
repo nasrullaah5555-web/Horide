@@ -4,7 +4,6 @@ import 'package:go_router/go_router.dart';
 import 'package:horide_core/horide_core.dart';
 
 import '../../core/passenger_api.dart';
-import '../../core/ui.dart';
 
 final receiptProvider = FutureProvider.autoDispose.family<Receipt, String>(
   (ref, id) => ref.watch(passengerApiProvider).receipt(id),
@@ -45,7 +44,11 @@ class ReceiptScreen extends ConsumerWidget {
                   style: TextStyle(color: Theme.of(context).colorScheme.onSurfaceVariant),
                 ),
                 const Gap(HorideSpace.xl),
-                HorideButton(kind: HorideButtonKind.secondary, label: 'Report a problem with this trip', onPressed: () => context.push('/complaint?tripId=$tripId')),
+                HorideButton(
+                  kind: HorideButtonKind.secondary,
+                  label: 'Report a problem with this trip',
+                  onPressed: () => context.push('/complaint?tripId=$tripId'),
+                ),
               ],
             ),
       ),

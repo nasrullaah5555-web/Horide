@@ -74,8 +74,7 @@ Future<LatLng?> currentPosition() async {
     if (permission == LocationPermission.denied) {
       permission = await Geolocator.requestPermission();
     }
-    if (permission == LocationPermission.denied ||
-        permission == LocationPermission.deniedForever) {
+    if (permission == LocationPermission.denied || permission == LocationPermission.deniedForever) {
       return null;
     }
     final p = await Geolocator.getCurrentPosition(
@@ -158,12 +157,13 @@ class _PlacePickerState extends State<PlacePicker> {
               const Gap(HorideSpace.md),
               HorideButton(
                 label: widget.confirmLabel,
-                onPressed: () => Navigator.of(context).pop(
-                  Place(
-                    toPoint(_map.camera.center),
-                    _text.text.trim().isEmpty ? null : _text.text.trim(),
-                  ),
-                ),
+                onPressed:
+                    () => Navigator.of(context).pop(
+                      Place(
+                        toPoint(_map.camera.center),
+                        _text.text.trim().isEmpty ? null : _text.text.trim(),
+                      ),
+                    ),
               ),
             ],
           ),

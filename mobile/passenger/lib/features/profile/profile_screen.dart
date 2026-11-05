@@ -108,9 +108,16 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen> {
                   const Gap(HorideSpace.sm),
                   HorideButton(label: 'Save', onPressed: _busy ? null : _save),
                   const Gap(HorideSpace.xxl),
-                  HorideButton(kind: HorideButtonKind.secondary, label: 'Sign out', onPressed: () => ref.read(sessionProvider.notifier).signOut()),
+                  HorideButton(
+                    kind: HorideButtonKind.secondary,
+                    label: 'Sign out',
+                    onPressed: () => ref.read(sessionProvider.notifier).signOut(),
+                  ),
                   const Gap(HorideSpace.xxl),
-                  HorideButton(kind: HorideButtonKind.quietDanger, label: 'Delete my account', onPressed: () async {
+                  HorideButton(
+                    kind: HorideButtonKind.quietDanger,
+                    label: 'Delete my account',
+                    onPressed: () async {
                       final ok = await confirmAccountDeletion(
                         context,
                         whatIsRemoved:
@@ -122,7 +129,8 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen> {
                       } catch (e) {
                         if (context.mounted) showError(context, e);
                       }
-                    }),
+                    },
+                  ),
                 ],
               ),
     );

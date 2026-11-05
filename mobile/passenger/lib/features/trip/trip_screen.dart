@@ -8,7 +8,6 @@ import 'package:go_router/go_router.dart';
 import 'package:horide_core/horide_core.dart';
 import 'package:url_launcher/url_launcher.dart';
 
-import '../../core/map.dart';
 import '../../core/passenger_api.dart';
 import '../../core/ui.dart';
 import 'trip_controller.dart';
@@ -65,7 +64,11 @@ class _TripScreenState extends ConsumerState<TripScreen> {
                   : 'We will stop looking for a driver.',
             ),
             actions: [
-              HorideButton(kind: HorideButtonKind.quiet, label: 'Keep ride', onPressed: () => Navigator.pop(d, false)),
+              HorideButton(
+                kind: HorideButtonKind.quiet,
+                label: 'Keep ride',
+                onPressed: () => Navigator.pop(d, false),
+              ),
               HorideButton(label: 'Cancel ride', onPressed: () => Navigator.pop(d, true)),
             ],
           ),
@@ -99,7 +102,11 @@ class _TripScreenState extends ConsumerState<TripScreen> {
                 'Your driver continues to the old destination unless you approve.',
               ),
               actions: [
-                HorideButton(kind: HorideButtonKind.quiet, label: 'Keep old', onPressed: () => Navigator.pop(d, false)),
+                HorideButton(
+                  kind: HorideButtonKind.quiet,
+                  label: 'Keep old',
+                  onPressed: () => Navigator.pop(d, false),
+                ),
                 HorideButton(label: 'Approve', onPressed: () => Navigator.pop(d, true)),
               ],
             ),
@@ -150,7 +157,11 @@ class _TripScreenState extends ConsumerState<TripScreen> {
                     mainAxisSize: MainAxisSize.min,
                     children: [
                       const Text('Could not load your trip.'),
-                      HorideButton(kind: HorideButtonKind.quiet, label: 'Try again', onPressed: () => ref.invalidate(activeTripProvider)),
+                      HorideButton(
+                        kind: HorideButtonKind.quiet,
+                        label: 'Try again',
+                        onPressed: () => ref.invalidate(activeTripProvider),
+                      ),
                     ],
                   )
                   : const CircularProgressIndicator(),
@@ -169,7 +180,12 @@ class _TripScreenState extends ConsumerState<TripScreen> {
             options: MapOptions(
               initialCameraFit: CameraFit.coordinates(
                 coordinates: [toLatLng(trip.pickup.point), toLatLng(trip.destination.point)],
-                padding: const EdgeInsets.fromLTRB(HorideSpace.xxxl, HorideSpace.xxxl, HorideSpace.xxxl, HorideSpace.xxxl),
+                padding: const EdgeInsets.fromLTRB(
+                  HorideSpace.xxxl,
+                  HorideSpace.xxxl,
+                  HorideSpace.xxxl,
+                  HorideSpace.xxxl,
+                ),
               ),
             ),
             children: [
@@ -199,7 +215,12 @@ class _TripScreenState extends ConsumerState<TripScreen> {
               padding: const EdgeInsets.all(HorideSpace.md),
               child: Align(
                 alignment: Alignment.topRight,
-                child: HorideButton(kind: HorideButtonKind.emergency, icon: Icons.sos, label: 'Emergency', onPressed: () => _emergency(trip)),
+                child: HorideButton(
+                  kind: HorideButtonKind.emergency,
+                  icon: Icons.sos,
+                  label: 'Emergency',
+                  onPressed: () => _emergency(trip),
+                ),
               ),
             ),
           ),
@@ -235,57 +256,68 @@ class _TripScreenState extends ConsumerState<TripScreen> {
     };
 
     return HorideBottomPanel(
+      children: [
+        SignPanel(
+          title: title,
+          subtitle: subtitle,
+          tone: tone,
+          trailing:
+              trip.status == TripStatus.searching || trip.status == TripStatus.requested
+                  ? const PanelSpinner()
+                  : null,
+        ),
+        if (driver != null && trip.status.hasDriver) ...[
+          const Gap(HorideSpace.md),
+          _DriverCard(driver: driver),
+          const Gap(HorideSpace.sm),
+          StatusText(
+            loc == null
+                ? 'Driver location not available yet.'
+                : live
+                ? 'Live location'
+                : 'Location not updated for ${_ago(loc.ageSeconds)}. The driver may have a weak connection.',
+            ok: live,
+          ),
+        ],
+        const Gap(HorideSpace.md),
+        InfoRow(
+          trip.lockedFare != null ? 'Fixed price' : 'Price',
+          '${formatEtb(trip.fare)}  (${paymentLabel(trip.paymentMethod)}, pay the driver)',
+          bold: true,
+        ),
+        const Gap(HorideSpace.sm),
+        if (trip.status.isFinal)
+          HorideButton(
+            label: 'Back to map',
+            onPressed: () {
+              ref.read(activeTripProvider.notifier).clear();
+              context.go('/');
+            },
+          )
+        else
+          Row(
             children: [
-              SignPanel(
-                title: title,
-                subtitle: subtitle,
-                tone: tone,
-                trailing:
-                    trip.status == TripStatus.searching || trip.status == TripStatus.requested
-                        ? const PanelSpinner()
-                        : null,
-              ),
-              if (driver != null && trip.status.hasDriver) ...[
-                const Gap(HorideSpace.md),
-                _DriverCard(driver: driver),
-                const Gap(HorideSpace.sm),
-                StatusText(
-                  loc == null
-                      ? 'Driver location not available yet.'
-                      : live
-                      ? 'Live location'
-                      : 'Location not updated for ${_ago(loc.ageSeconds)}. The driver may have a weak connection.',
-                  ok: live,
+              if (trip.status.hasDriver)
+                Expanded(
+                  child: HorideButton(
+                    kind: HorideButtonKind.secondary,
+                    label: 'Change destination',
+                    onPressed: _busy ? null : () => _changeDestination(trip),
+                  ),
                 ),
-              ],
-              const Gap(HorideSpace.md),
-              InfoRow(
-                trip.lockedFare != null ? 'Fixed price' : 'Price',
-                '${formatEtb(trip.fare)}  (${paymentLabel(trip.paymentMethod)}, pay the driver)',
-                bold: true,
-              ),
-              const Gap(HorideSpace.sm),
-              if (trip.status.isFinal)
-                HorideButton(label: 'Back to map', onPressed: () {
-                    ref.read(activeTripProvider.notifier).clear();
-                    context.go('/');
-                  })
-              else
-                Row(
-                  children: [
-                    if (trip.status.hasDriver)
-                      Expanded(
-                        child: HorideButton(kind: HorideButtonKind.secondary, label: 'Change destination', onPressed: _busy ? null : () => _changeDestination(trip)),
-                      ),
-                    if (trip.status.hasDriver && trip.status != TripStatus.inProgress)
-                      const Gap(HorideSpace.md),
-                    if (trip.status != TripStatus.inProgress)
-                      Expanded(
-                        child: HorideButton(kind: HorideButtonKind.danger, label: 'Cancel ride', onPressed: _busy ? null : () => _cancel(trip)),
-                      ),
-                  ],
+              if (trip.status.hasDriver && trip.status != TripStatus.inProgress)
+                const Gap(HorideSpace.md),
+              if (trip.status != TripStatus.inProgress)
+                Expanded(
+                  child: HorideButton(
+                    kind: HorideButtonKind.danger,
+                    label: 'Cancel ride',
+                    onPressed: _busy ? null : () => _cancel(trip),
+                  ),
                 ),
             ],
+          ),
+      ],
     );
   }
 

@@ -53,3 +53,8 @@ Thumbs.db
 
 # Next.js
 apps/admin/next-env.d.ts
+
+# Flutter build output
+**/build/
+**/.flutter-plugins-dependencies
+**/pubspec.lock.bak

@@ -1,0 +1,74 @@
+name: Mobile
+
+# Flutter can't be installed in the development workspace (ADR-014), so this workflow is the
+# compile check for the mobile code: format, static analysis and unit/widget tests.
+on:
+  push:
+    branches: [main]
+    paths: ['mobile/**', 'packages/**', '.github/workflows/mobile.yml']
+  pull_request:
+    paths: ['mobile/**', 'packages/**', '.github/workflows/mobile.yml']
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: mobile-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  flutter:
+    name: ${{ matrix.package }}
+    runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        package: [packages/horide_core, mobile/passenger, mobile/driver]
+    defaults:
+      run:
+        working-directory: ${{ matrix.package }}
+    steps:
+      - uses: actions/checkout@v4
+      - name: Skip if the package doesn't exist yet
+        id: exists
+        working-directory: .
+        run: test -f "${{ matrix.package }}/pubspec.yaml" && echo "yes=true" >> "$GITHUB_OUTPUT" || echo "yes=false" >> "$GITHUB_OUTPUT"
+      - uses: subosito/flutter-action@v2
+        if: steps.exists.outputs.yes == 'true'
+        with:
+          channel: stable
+          cache: true
+      - if: steps.exists.outputs.yes == 'true'
+        run: flutter --version
+      - if: steps.exists.outputs.yes == 'true'
+        run: flutter pub get
+      # The development workspace has no Dart SDK, so formatting is applied here. If anything
+      # changes, the job fails and uploads a patch that is applied in the repository.
+      - name: Format
+        id: format
+        if: steps.exists.outputs.yes == 'true'
+        continue-on-error: true
+        run: |
+          dart format lib test
+          if ! git diff --quiet -- .; then
+            git diff -- . > "$RUNNER_TEMP/format.patch"
+            echo "::error::Code is not formatted. Apply the format-patch artifact."
+            exit 1
+          fi
+      - name: Upload format patch
+        if: steps.format.outcome == 'failure'
+        uses: actions/upload-artifact@v4
+        with:
+          name: format-patch-${{ strategy.job-index }}
+          path: ${{ runner.temp }}/format.patch
+          if-no-files-found: ignore
+      - name: Analyze
+        if: steps.exists.outputs.yes == 'true' && !cancelled()
+        run: flutter analyze --fatal-infos
+      - name: Test
+        if: steps.exists.outputs.yes == 'true' && !cancelled()
+        run: flutter test
+      - name: Fail if code was not formatted
+        if: steps.format.outcome == 'failure'
+        run: exit 1

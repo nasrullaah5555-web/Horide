@@ -1,0 +1,15 @@
+/// Shared code for the Horide passenger and driver apps.
+library;
+
+export 'src/api/api_client.dart';
+export 'src/api/auth_api.dart';
+export 'src/api/token_store.dart';
+export 'src/config.dart';
+export 'src/emergency.dart';
+export 'src/models/models.dart';
+export 'src/money.dart';
+export 'src/phone.dart';
+export 'src/realtime.dart';
+export 'src/theme.dart';
+export 'src/widgets/connection_banner.dart';
+export 'src/widgets/sign_panel.dart';

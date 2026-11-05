@@ -1,0 +1,35 @@
+name: Mobile scaffold (manual)
+
+# One-off helper: generates the Android and iOS project folders with `flutter create` (which
+# can't run in the development workspace) and uploads them as an artifact to be committed.
+# `flutter create` on an existing project only adds missing files; it never overwrites lib/.
+on:
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  scaffold:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: subosito/flutter-action@v2
+        with:
+          channel: stable
+      - name: Generate platform folders
+        run: |
+          flutter --version
+          (cd mobile/passenger && flutter create --project-name horide_passenger --org et.horide --platforms android,ios .)
+          (cd mobile/driver && flutter create --project-name horide_driver --org et.horide --platforms android,ios .)
+      - uses: actions/upload-artifact@v4
+        with:
+          name: platform-folders
+          path: |
+            mobile/passenger/android
+            mobile/passenger/ios
+            mobile/driver/android
+            mobile/driver/ios
+            mobile/passenger/.metadata
+            mobile/driver/.metadata
+          include-hidden-files: true

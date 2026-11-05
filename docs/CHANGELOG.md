@@ -20,6 +20,12 @@
 - Destination change with server re-pricing and passenger approval; live updates over Socket.IO; ride payment records with confirmation, disputes and finance resolution; ratings, complaints and emergency alerts with admin handling.
 - In-app notifications with push adapter, device registration and admin broadcasts; admin dashboard counts, daily reports, live driver map, passenger and trip management.
 - Admin dashboard (apps/admin) covering every staff workflow, with menus and actions limited to each person's roles; dev demo data script and screenshot check.
+- Mobile apps (Flutter, Android + iOS from one codebase), compiled and tested in CI only, not yet run on a device:
+  - Shared `horide_core` package: API client with single-flight token refresh, secure token storage, models matching the backend, design system, offline banner, emergency sheet.
+  - Passenger app: phone login, map-pin pickup, destination picker, server prices for car and Bajaj, cash/eBirr, booking, live trip with driver details and plate, stale-location warning, destination change with price approval, cancel, emergency, payment confirmation or dispute, driver rating, history, receipts, complaints, profile.
+  - Driver app: phone login, onboarding (name, vehicle, document photos, review status), subscription status, online/offline through the server, battery-aware location reporting with offline buffering, ride offers with countdown, trip steps, navigation via the phone's maps app, payment recording, passenger rating, earnings summary.
+- CI: Flutter format/analyze/test for all three packages, automatic `dart format` commits, unsigned Android build on every mobile change, iOS build on demand.
+- Account deletion from both apps and the API; hourly purge of old trip GPS history, OTP challenges and ended sessions (migration 0006).
 
 ### Security
 - Per-user/IP rate limits with stricter limits on OTP, quotes, bookings, location, uploads and admin login; production refuses to disable them.

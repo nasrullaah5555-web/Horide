@@ -75,4 +75,11 @@ class AuthApi {
     }
     await client.tokens.clear();
   }
+
+  /// Permanently deletes the account on the server (personal data removed; trip and payment
+  /// records kept anonymously), then forgets the session on this phone.
+  Future<void> deleteAccount() async {
+    await client.post('/account/delete', {'confirm': true});
+    await client.tokens.clear();
+  }
 }

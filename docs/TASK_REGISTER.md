@@ -73,11 +73,15 @@ Jijiga service zone (approximate polygon, marked DEV), illustrative fares, test 
 
 ## Phase 5 — Mobile (compiled only in CI / on owner laptop — ADR-014)
 
-**T-037 horide_core package** — API client, models, secure token storage, design system, connectivity handling.
-**T-038 Passenger: auth, map home, quote, booking**
-**T-039 Passenger: tracking, payment, rating, history, complaints, SOS**
-**T-040 Driver: auth, onboarding, documents, subscription status**
-**T-041 Driver: online/offline, background location, offers, trip flow, payments, earnings**
+**T-037 horide_core package** — IMPLEMENTED – COMPILED IN CI, NOT RUN ON A DEVICE — API client, models, secure token storage, design system, connectivity handling.
+**T-038 Passenger: auth, map home, quote, booking** — IMPLEMENTED – COMPILED IN CI, NOT RUN ON A DEVICE
+**T-039 Passenger: tracking, payment, rating, history, complaints, SOS** — IMPLEMENTED – COMPILED IN CI, NOT RUN ON A DEVICE
+**T-040 Driver: auth, onboarding, documents, subscription status** — IMPLEMENTED – COMPILED IN CI, NOT RUN ON A DEVICE
+**T-041 Driver: online/offline, background location, offers, trip flow, payments, earnings** — IMPLEMENTED – COMPILED IN CI, NOT RUN ON A DEVICE
+
+Device testing of T-037–T-041 (Android phone or emulator, and iPhone) is owner action OA-21. Push notifications wait for OA-11 (Firebase); until then the apps use the live connection and polling.
+
+**T-048 Account deletion and data retention** — DONE (backend tested; app buttons compiled in CI only) · Required by Google Play / App Store and SECURITY_PLAN §6.
 
 ## Phase 6 — Website
 

@@ -4,6 +4,7 @@ import 'package:horide_core/horide_core.dart';
 import 'package:image_picker/image_picker.dart';
 
 import '../../core/driver_api.dart';
+import '../../core/providers.dart';
 import '../../core/ui.dart';
 import '../home/home_screen.dart';
 
@@ -60,6 +61,24 @@ class OnboardingScreen extends ConsumerWidget {
                   _Section(title: '2. Your vehicle', child: _VehicleSection(vehicle: o.vehicle)),
                   _Section(title: '3. Documents', child: _Documents(overview: o)),
                   const _Section(title: '4. Monthly subscription', child: _SubscriptionSection()),
+                  TextButton(
+                    style: TextButton.styleFrom(foregroundColor: HorideColors.signal),
+                    onPressed: () async {
+                      final ok = await confirmAccountDeletion(
+                        context,
+                        whatIsRemoved:
+                            'Your phone number, name, documents and location will be removed, '
+                            'and your vehicle can no longer be used for rides.',
+                      );
+                      if (!ok) return;
+                      try {
+                        await ref.read(sessionProvider.notifier).deleteAccount();
+                      } catch (e) {
+                        if (context.mounted) showError(context, e);
+                      }
+                    },
+                    child: const Text('Delete my account'),
+                  ),
                 ],
               ),
             ),

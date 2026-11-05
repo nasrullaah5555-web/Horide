@@ -179,6 +179,8 @@ class DriverApi {
     if (ebirrReference != null && ebirrReference.isNotEmpty) 'ebirrReference': ebirrReference,
   });
 
+  Future<Map<String, dynamic>> receipt(String tripId) => _c.get('/trips/$tripId/receipt');
+
   Future<Map<String, dynamic>> disputePayment(String tripId, String note) =>
       _c.post('/trips/$tripId/payment/dispute', {'note': note});
 

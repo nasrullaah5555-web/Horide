@@ -20,7 +20,7 @@ import { useApi } from '@/lib/use-api';
 interface Detail {
   driver: {
     id: string;
-    phone: string;
+    phone: string | null;
     status: string;
     suspended_reason: string | null;
     full_name: string | null;
@@ -104,7 +104,7 @@ export default function DriverDetailPage({ params }: { params: Promise<{ id: str
       </p>
       <PageHeader
         title={driver.full_name ?? 'Name not entered yet'}
-        description={`${driver.phone}, joined ${date(driver.created_at)}`}
+        description={`${driver.phone ?? 'Deleted account'}, joined ${date(driver.created_at)}`}
         actions={
           <>
             {verify &&

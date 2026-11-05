@@ -57,3 +57,10 @@ Not yet verified: CI on GitHub (first run happens after this push).
 | 2026-11-04 | T-004 | First GitHub Actions run on `main` (run 41909539260) | Passed: backend job (lint, typecheck, 34 tests against PostGIS, build) and security job |
 | 2026-11-04 | T-004 | Dependabot PR runs | Failed: gitleaks needed `pull-requests: read`. Fixed; Dependabot now groups minor/patch and skips majors |
 | 2026-11-05 | T-004 | CI secret scan after T-013 | Failed: 3 findings, all intentional public values (dev placeholder key, fake test secret, RFC 6238 test vector). Allowlisted by exact value, not by file. Local gitleaks: history clean; a planted fake key in `test/` is still detected |
+
+| 2026-11-05 | T-037–T-041 | GitHub Actions `Mobile` (Flutter 3.47.9 stable, Dart 3.13.7): `dart format`, `flutter analyze --fatal-infos`, `flutter test` for horide_core, passenger, driver | No analysis issues in any package; 28 + 2 + 3 tests passed (run 41962410066) |
+| 2026-11-05 | T-037–T-041 | GitHub Actions `Mobile build` run 41962696337: `flutter build apk --debug` (passenger, driver) and `flutter build ios --debug --no-codesign` on macOS (passenger, driver) | All 4 built (debug APKs about 160 MB each; debug builds include every CPU type and are not representative of release size). Unsigned; NOT installed or run on any phone or emulator |
+| 2026-11-05 | T-048 | `test/account.e2e-spec.ts` + updated auth test | Passed: confirmation required, passenger data removed and sessions ended, same phone registers as a new account, refused during an open trip (found and fixed: first version only checked trips that already had a driver), driver documents removed with their files, vehicle disabled, database constraints on deleted accounts, retention purge removes old OTPs and ended sessions and keeps the current one |
+| 2026-11-05 | T-048 | Migration 0006 rolled down and up by every test file's reset | Found and fixed: rollback failed once deleted accounts existed; down migration now keeps phone nullable in that case |
+| 2026-11-05 | all | Full backend suite | 253/253 passed |
+

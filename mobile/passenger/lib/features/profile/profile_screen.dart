@@ -112,6 +112,24 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen> {
                     onPressed: () => ref.read(sessionProvider.notifier).signOut(),
                     child: const Text('Sign out'),
                   ),
+                  const SizedBox(height: 32),
+                  TextButton(
+                    style: TextButton.styleFrom(foregroundColor: HorideColors.signal),
+                    onPressed: () async {
+                      final ok = await confirmAccountDeletion(
+                        context,
+                        whatIsRemoved:
+                            'Your phone number, name, emergency contact and saved places will be removed.',
+                      );
+                      if (!ok) return;
+                      try {
+                        await ref.read(sessionProvider.notifier).deleteAccount();
+                      } catch (e) {
+                        if (context.mounted) showError(context, e);
+                      }
+                    },
+                    child: const Text('Delete my account'),
+                  ),
                 ],
               ),
     );

@@ -105,7 +105,7 @@ class _TripScreenState extends ConsumerState<TripScreen> {
         ),
       );
     }
-    if (trip.status == TripStatus.completed) return _PaymentScreen(trip: trip);
+    if (trip.status == TripStatus.completed) return PaymentScreen(trip: trip);
 
     final toPickup = trip.status == TripStatus.accepted || trip.status == TripStatus.driverArriving;
     final target = toPickup || trip.status == TripStatus.arrived ? trip.pickup : trip.destination;
@@ -271,21 +271,32 @@ class _TripScreenState extends ConsumerState<TripScreen> {
 }
 
 /// After completion: the passenger pays the driver directly; the driver records how.
-class _PaymentScreen extends ConsumerStatefulWidget {
-  const _PaymentScreen({required this.trip});
+class PaymentScreen extends ConsumerStatefulWidget {
+  const PaymentScreen({super.key, required this.trip, this.fromHistory = false});
+  final bool fromHistory;
   final Trip trip;
 
   @override
-  ConsumerState<_PaymentScreen> createState() => _PaymentScreenState();
+  ConsumerState<PaymentScreen> createState() => _PaymentScreenState();
 }
 
-class _PaymentScreenState extends ConsumerState<_PaymentScreen> {
+class _PaymentScreenState extends ConsumerState<PaymentScreen> {
   late PaymentMethod _method = widget.trip.paymentMethod;
   final _reference = TextEditingController();
   Map<String, dynamic>? _receipt;
   int _stars = 0;
   bool _rated = false;
   bool _busy = false;
+
+  @override
+  void initState() {
+    super.initState();
+    // Already recorded (e.g. opened again from history)? Then show the record, not the form.
+    ref.read(driverApiProvider).receipt(widget.trip.id).then((r) {
+      const recordedStates = {'driver_recorded', 'confirmed', 'resolved'};
+      if (mounted && recordedStates.contains(r['payment_status'])) setState(() => _receipt = r);
+    }, onError: (Object _) {});
+  }
 
   @override
   void dispose() {
@@ -309,7 +320,10 @@ class _PaymentScreenState extends ConsumerState<_PaymentScreen> {
     final trip = widget.trip;
     final recorded = _receipt != null;
     return Scaffold(
-      appBar: AppBar(title: const Text('Trip completed'), automaticallyImplyLeading: false),
+      appBar: AppBar(
+        title: const Text('Trip completed'),
+        automaticallyImplyLeading: widget.fromHistory,
+      ),
       body: ListView(
         padding: const EdgeInsets.all(16),
         children: [
@@ -392,6 +406,10 @@ class _PaymentScreenState extends ConsumerState<_PaymentScreen> {
           const SizedBox(height: 24),
           FilledButton(
             onPressed: () {
+              if (widget.fromHistory) {
+                context.pop();
+                return;
+              }
               ref.read(driverControllerProvider.notifier).closeTrip();
               context.go('/');
             },

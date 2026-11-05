@@ -49,7 +49,7 @@ Global 100 req/min per user, stricter per endpoint (OTP, quotes 20/min, location
 - Register as a data controller with the Ethiopian Communications Authority before processing (OA-07).
 - Cross-border transfer (non-Ethiopian hosting) needs a lawful basis — owner/legal decision (OA-07).
 - Breach notification to the authority within 72 hours of awareness; runbook in DEPLOYMENT_GUIDE.
-- Data minimisation: no email for passengers; trip location history retention 180 days; account deletion endpoint.
+- Data minimisation: no email for passengers; trip location history retention 180 days (hourly purge, `RetentionService`); account deletion in both apps (`POST /account/delete`, removes personal data and driver documents, keeps anonymous trip/payment records). Tested — see TEST_REPORT 2026-11-05 T-048. Legal retention periods for business records: OA-07.
 - Driver identity documents treated as highly sensitive.
 
 ## 7. Mobile (MASVS)

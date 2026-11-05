@@ -18,8 +18,8 @@ Conventions: `uuid` primary keys (`gen_random_uuid()`), `created_at`/`updated_at
 
 ## Identity
 
-**users** — id, phone (E.164, unique), role, status (active/suspended/deleted), suspended_reason, created_at, updated_at.
-Unique (phone, role): one phone may hold one passenger and one driver account.
+**users** — id, phone (E.164; NULL only once deleted), role, status (active/suspended/deleted), suspended_reason, deleted_at, created_at, updated_at.
+Unique (phone, role): one phone may hold one passenger and one driver account. Checks (migration 0006): a deleted account has no phone and has deleted_at; a live account always has a phone. Deleted accounts keep their id so trips, payments and audit records still resolve.
 
 **passenger_profiles** — user_id PK/FK, full_name, emergency_contact_phone.
 
@@ -81,6 +81,16 @@ Partial unique: `driver_id` where status in (accepted, driver_arriving, arrived,
 **emergency_events** — id, trip_id nullable, user_id, position, created_at, handled_by, handled_at, notes.
 **notifications** — id, user_id, type, title, body, data jsonb, read_at, created_at.
 **device_tokens** — id, user_id, fcm_token unique, platform, last_seen_at.
+
+## Data retention (migration 0006, `RetentionService`, hourly)
+
+| Data | Kept for | How removed |
+|---|---|---|
+| Trip GPS history (`trip_locations`) | 180 days | Hourly purge |
+| OTP challenges | 30 days | Hourly purge |
+| Ended sessions (expired or revoked) | 30 days after ending | Hourly purge |
+| Account personal data (phone, name, emergency contact, saved places, push tokens, notifications, live location, driver documents and their files) | Until the person deletes the account | `POST /account/delete` |
+| Trips, payment records, subscriptions, ratings, complaints, audit log | Not yet decided — business/financial records (OA-07) | Kept, attached to the anonymous id |
 
 ## Transactions
 

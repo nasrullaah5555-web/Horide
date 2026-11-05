@@ -17,10 +17,12 @@ export type OtpPurpose = 'login';
 
 export interface UsersTable {
   id: Generated<string>;
-  phone: string;
+  /** NULL only for deleted accounts (migration 0006). */
+  phone: string | null;
   role: UserRole;
   status: Generated<UserStatus>;
   suspended_reason: string | null;
+  deleted_at: Generated<Date | null>;
   created_at: CreatedAt;
   updated_at: Generated<Date>;
 }

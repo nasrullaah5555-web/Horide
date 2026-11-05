@@ -12,5 +12,6 @@ export 'src/phone.dart';
 export 'src/realtime.dart';
 export 'src/theme.dart';
 export 'src/widgets/connection_banner.dart';
+export 'src/widgets/delete_account.dart';
 export 'src/widgets/emergency_sheet.dart';
 export 'src/widgets/sign_panel.dart';

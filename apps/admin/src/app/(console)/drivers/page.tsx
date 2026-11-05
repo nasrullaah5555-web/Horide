@@ -18,7 +18,7 @@ import { useApi } from '@/lib/use-api';
 
 interface DriverRow {
   id: string;
-  phone: string;
+  phone: string | null;
   status: string;
   full_name: string | null;
   approval_status: string;
@@ -108,7 +108,7 @@ function DriversList() {
                         {d.full_name ?? 'Name not entered yet'}
                       </Link>
                     </td>
-                    <td className="tabular-nums">{d.phone}</td>
+                    <td className="tabular-nums">{d.phone ?? 'Deleted'}</td>
                     <td>
                       <StatusBadge status={d.approval_status} />
                     </td>

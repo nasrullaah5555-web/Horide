@@ -32,6 +32,14 @@ class SessionNotifier extends AsyncNotifier<bool> {
 
   void signedIn() => state = const AsyncData(true);
 
+  /// Deletes the account on the server; the error is shown to the person if it fails
+  /// (for example while a trip is still open).
+  Future<void> deleteAccount() async {
+    await ref.read(authApiProvider).deleteAccount();
+    await ref.read(realtimeProvider).disconnect();
+    state = const AsyncData(false);
+  }
+
   Future<void> signOut() async {
     await ref.read(realtimeProvider).disconnect();
     await ref.read(authApiProvider).signOut();

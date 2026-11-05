@@ -325,6 +325,7 @@ async function main(): Promise<void> {
       .where('d.approval_status', '=', 'approved')
       .execute();
     for (const [i, r] of rows.entries()) {
+      if (!r.phone) continue; // deleted account
       const d = await userLogin('driver', r.phone);
       const pos = { lat: 9.35 + i * 0.003, lng: 42.795 + (i % 3) * 0.004 };
       await call('/driver/availability', {

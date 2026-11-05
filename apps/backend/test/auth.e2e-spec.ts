@@ -267,14 +267,15 @@ describe('Phone OTP authentication (e2e)', () => {
       await t.http().get('/auth/me').set('Authorization', 'Bearer abc.def.ghi').expect(401);
     });
 
-    it('a deleted account cannot log in', async () => {
+    it('a deleted account can never be logged into again; the phone gets a new account', async () => {
       const phone = uniquePhone();
       const login = await loginAs(t, 'passenger', phone);
-      await t.db
-        .updateTable('users')
-        .set({ status: 'deleted' })
-        .where('id', '=', login.user.id)
-        .execute();
+      await t
+        .http()
+        .post('/account/delete')
+        .set('Authorization', `Bearer ${login.accessToken}`)
+        .send({ confirm: true })
+        .expect(200);
       await skipCooldown(phone);
       const req = await requestCode(phone).expect(200);
       const res = await t
@@ -285,8 +286,9 @@ describe('Phone OTP authentication (e2e)', () => {
           code: t.sms.lastCodeFor(phone)!,
           role: 'passenger',
         })
-        .expect(403);
-      expect(res.body.error.code).toBe('ACCOUNT_DELETED');
+        .expect(200);
+      expect(res.body.user.id).not.toBe(login.user.id);
+      expect(res.body.user.isNew).toBe(true);
     });
   });
 });

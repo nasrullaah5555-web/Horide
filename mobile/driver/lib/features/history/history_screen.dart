@@ -1,8 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:go_router/go_router.dart';
 import 'package:horide_core/horide_core.dart';
 
 import '../../core/driver_api.dart';
+import '../trip/trip_screen.dart';
 
 final driverHistoryProvider = FutureProvider.autoDispose<List<DriverTripSummary>>(
   (ref) => ref.watch(driverApiProvider).history(),
@@ -80,6 +82,10 @@ class HistoryScreen extends ConsumerWidget {
                       formatEtbShort(t.fare),
                       style: const TextStyle(fontWeight: FontWeight.w800),
                     ),
+                    // Completed trips open the payment record (if it wasn't recorded at the time).
+                    onTap: t.status == TripStatus.completed
+                        ? () => context.push('/history/${t.id}/payment')
+                        : null,
                   ),
               ],
             ),
@@ -111,3 +117,26 @@ class _Total extends StatelessWidget {
     ),
   );
 }
+
+/// Loads one completed trip and shows its payment record screen.
+class HistoryPaymentScreen extends ConsumerWidget {
+  const HistoryPaymentScreen({super.key, required this.tripId});
+  final String tripId;
+
+  @override
+  Widget build(BuildContext context, WidgetRef ref) {
+    final trip = ref.watch(_tripProvider(tripId));
+    return trip.when(
+      loading: () => const Scaffold(body: Center(child: CircularProgressIndicator())),
+      error: (e, _) => Scaffold(
+        appBar: AppBar(),
+        body: Center(child: Text(e is ApiException ? e.message : 'Could not load the trip.')),
+      ),
+      data: (t) => PaymentScreen(trip: t, fromHistory: true),
+    );
+  }
+}
+
+final _tripProvider = FutureProvider.autoDispose.family<Trip, String>(
+  (ref, id) => ref.watch(driverApiProvider).trip(id),
+);

@@ -4,6 +4,7 @@ import * as m0002 from './migrations/0002_fleet_geo_pricing';
 import * as m0003 from './migrations/0003_trips_payments_subscriptions';
 import * as m0004 from './migrations/0004_admin_sessions';
 import * as m0005 from './migrations/0005_trip_dispatch';
+import * as m0006 from './migrations/0006_account_deletion';
 
 /**
  * The list of migrations, in order. Listed explicitly (instead of read from disk) so the
@@ -16,6 +17,7 @@ export const migrations: Record<string, Migration> = {
   '0003_trips_payments_subscriptions': m0003,
   '0004_admin_sessions': m0004,
   '0005_trip_dispatch': m0005,
+  '0006_account_deletion': m0006,
 };
 
 // Migrations work on any schema, so the database type is intentionally untyped here.

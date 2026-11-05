@@ -39,6 +39,10 @@ final routerProvider = Provider<GoRouter>((ref) {
       GoRoute(path: '/trip', builder: (_, __) => const TripScreen()),
       GoRoute(path: '/onboarding', builder: (_, __) => const OnboardingScreen()),
       GoRoute(path: '/history', builder: (_, __) => const HistoryScreen()),
+      GoRoute(
+        path: '/history/:id/payment',
+        builder: (_, state) => HistoryPaymentScreen(tripId: state.pathParameters['id']!),
+      ),
     ],
   );
 });

@@ -75,7 +75,7 @@ export class SessionService {
       }
 
       const tokens = await this.openSession(trx, user.id, role, randomUUID(), deviceInfo);
-      return { ...tokens, user: { ...user, isNew: inserted !== undefined } };
+      return { ...tokens, user: { ...user, phone, isNew: inserted !== undefined } };
     });
   }
 

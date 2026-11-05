@@ -23,7 +23,7 @@
     "@nestjs/platform-express": "^11.2.8",
     "@nestjs/platform-socket.io": "^11.2.8",
     "@nestjs/websockets": "^11.2.8",
-    "express": "^5.2.1",
+    "express": "^5.3.0",
     "helmet": "^8.3.0",
     "kysely": "^0.28.19",
     "nestjs-pino": "^5.3.1",

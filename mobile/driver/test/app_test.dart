@@ -19,7 +19,8 @@ void main() {
     );
     await tester.pumpAndSettle();
     expect(find.text('Your phone number'), findsOneWidget);
-    expect(find.text('Musride Driver'), findsOneWidget);
+    expect(find.byType(MusrideLogo), findsOneWidget);
+    expect(find.text('Driver app · Drive in Jijiga'), findsOneWidget);
     expect(find.byType(TextField), findsOneWidget);
   });
 

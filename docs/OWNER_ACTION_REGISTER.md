@@ -27,6 +27,7 @@ Actions only the owner can perform. Status: OPEN until the owner confirms or the
 | OA-21 | P1 | Install the Horide test apps on a real Android phone (and an iPhone when OA-04 is done) and walk through a full ride with a test passenger and test driver against a test server | Owner | The apps have only been compiled and unit-tested in CI; nobody has used them on a phone yet | Pilot readiness (T-047) | Yes — development continues | OPEN |
 | OA-22 | P1 | Decide the public support phone number, support email, registered company name and office address/hours for drivers; give them to development to publish on the website and in the apps | Owner | Website Contact page and privacy policy show "will be published before launch" | Store listings (both stores require contact details and a privacy policy URL), T-042 | Yes | OPEN |
 | OA-23 | P2 | Confirm the app IDs `et.horide.passenger` and `et.horide.driver` (they can never change after the first store upload), and create the Android upload key as in DEPLOYMENT_GUIDE §10 | Owner | Store uploads | T-046 release | Yes | OPEN |
+| OA-24 | P1 | Free test deployment: create a free Supabase project and a Render account, then follow DEPLOYMENT_GUIDE §11 with `render.staging.yaml` | Supabase, Render | See the API, console and website running on the internet before paying | Real-world check of deployment | Yes | OPEN |
 
 Notes:
 - "WeBirr" (a separate Ethiopian bill-payment gateway) is not eBirr. Do not confuse them during OA-10.

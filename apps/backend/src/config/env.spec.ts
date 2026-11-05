@@ -100,4 +100,40 @@ describe('loadConfig', () => {
       expect(String(e)).toMatch(/STORAGE_PROVIDER/);
     }
   });
+
+  describe('staging (private test deployment)', () => {
+    const staging = {
+      ...base,
+      NODE_ENV: 'staging',
+      DATABASE_SSL: 'true',
+      CORS_ORIGINS: 'https://horide-admin.onrender.com',
+      SMS_PROVIDER: 'console',
+      ROUTING_PROVIDER: 'dev_estimate',
+      STORAGE_PROVIDER: 'local',
+      STAGING_BOOTSTRAP_ADMIN_EMAIL: 'owner@example.com',
+    };
+
+    it('allows development adapters', () => {
+      expect(() => loadConfig(staging)).not.toThrow();
+    });
+
+    it('keeps the production safety rules', () => {
+      expect(() => loadConfig({ ...staging, DATABASE_SSL: 'false' })).toThrow(/DATABASE_SSL/);
+      expect(() => loadConfig({ ...staging, RATE_LIMIT_ENABLED: 'false' })).toThrow(
+        /RATE_LIMIT_ENABLED/,
+      );
+      expect(() => loadConfig({ ...staging, CORS_ORIGINS: 'http://x.test' })).toThrow(
+        /CORS_ORIGINS/,
+      );
+      expect(() => loadConfig({ ...staging, OTP_PEPPER: staging.JWT_ACCESS_SECRET })).toThrow(
+        /different/,
+      );
+    });
+
+    it('never allows the bootstrap admin outside staging', () => {
+      expect(() =>
+        loadConfig({ ...productionOk, STAGING_BOOTSTRAP_ADMIN_EMAIL: 'owner@example.com' }),
+      ).toThrow(/STAGING_BOOTSTRAP_ADMIN_EMAIL/);
+    });
+  });
 });

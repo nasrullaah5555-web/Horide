@@ -81,7 +81,11 @@ async function main(): Promise<void> {
   if (config.NODE_ENV === 'production') {
     throw new Error('Refusing to load development seed data in production.');
   }
-  const db = createDatabase({ connectionString: config.DATABASE_URL, ssl: config.DATABASE_SSL });
+  const db = createDatabase({
+    connectionString: config.DATABASE_URL,
+    ssl: config.DATABASE_SSL,
+    ...(config.DATABASE_CA_CERT ? { caCert: config.DATABASE_CA_CERT } : {}),
+  });
   try {
     await seedDevelopment(db);
     console.log('Development seed loaded (zone, illustrative fares, DEV plan).');

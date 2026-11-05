@@ -10,10 +10,14 @@ import { assertMigrationSuccess, createMigrator } from './migrator';
 async function main(): Promise<void> {
   const command = process.argv[2] ?? 'latest';
   const config = loadConfig();
-  if (command === 'down' && config.NODE_ENV === 'production') {
+  if (command === 'down' && (config.NODE_ENV === 'production' || config.NODE_ENV === 'staging')) {
     throw new Error('Refusing to roll back migrations in production. Restore from backup instead.');
   }
-  const db = createDatabase({ connectionString: config.DATABASE_URL, ssl: config.DATABASE_SSL });
+  const db = createDatabase({
+    connectionString: config.DATABASE_URL,
+    ssl: config.DATABASE_SSL,
+    ...(config.DATABASE_CA_CERT ? { caCert: config.DATABASE_CA_CERT } : {}),
+  });
   try {
     const migrator = createMigrator(db);
     const result =

@@ -28,11 +28,19 @@ const PLACEHOLDER_SECRETS = new Set([
 
 export const envSchema = z
   .object({
-    NODE_ENV: z.enum(['development', 'test', 'production']).default('development'),
+    // staging = a private test deployment: production's safety rules, but development adapters
+    // (SMS codes in the server log, estimated distances, files on the server's disk) are allowed.
+    NODE_ENV: z.enum(['development', 'test', 'staging', 'production']).default('development'),
     PORT: z.coerce.number().int().min(1).max(65535).default(3000),
     LOG_LEVEL: z.enum(['fatal', 'error', 'warn', 'info', 'debug', 'trace']).default('info'),
     DATABASE_URL: z.string().url().startsWith('postgres'),
     DATABASE_SSL: boolFromString,
+    // The database provider's CA certificate (PEM, or base64 of the PEM), for providers whose
+    // certificate isn't signed by a public CA (Supabase). Verification is never switched off.
+    DATABASE_CA_CERT: z.string().min(100).optional(),
+    // Staging only: creates this super admin at startup when there are no admins yet, and prints
+    // its one-time sign-in details to the server log (hosts without a shell, e.g. Render free).
+    STAGING_BOOTSTRAP_ADMIN_EMAIL: z.string().email().optional(),
     // Connections per API instance. Keep (instances × this) under the database plan's limit.
     DATABASE_POOL_MAX: z.coerce.number().int().min(2).max(100).default(10),
     CORS_ORIGINS: z
@@ -134,7 +142,14 @@ export const envSchema = z
         }
       }
     }
-    if (env.NODE_ENV !== 'production') return;
+    if (env.STAGING_BOOTSTRAP_ADMIN_EMAIL && env.NODE_ENV !== 'staging') {
+      ctx.addIssue({
+        code: 'custom',
+        path: ['STAGING_BOOTSTRAP_ADMIN_EMAIL'],
+        message: 'only allowed when NODE_ENV=staging',
+      });
+    }
+    if (env.NODE_ENV !== 'production' && env.NODE_ENV !== 'staging') return;
     if (env.ROUTING_OSRM_URL && !env.ROUTING_OSRM_URL.startsWith('https://')) {
       ctx.addIssue({
         code: 'custom',
@@ -177,7 +192,9 @@ export const envSchema = z
         message: 'each secret must be different',
       });
     }
-    for (const [key, banned] of Object.entries(DEV_ONLY_ADAPTERS)) {
+    for (const [key, banned] of Object.entries(
+      env.NODE_ENV === 'staging' ? {} : DEV_ONLY_ADAPTERS,
+    )) {
       const value = env[key as keyof typeof DEV_ONLY_ADAPTERS];
       if ((banned as readonly string[]).includes(value)) {
         ctx.addIssue({

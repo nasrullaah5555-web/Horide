@@ -18,6 +18,7 @@ export const DATABASE = Symbol('DATABASE');
         createDatabase({
           connectionString: config.DATABASE_URL,
           ssl: config.DATABASE_SSL,
+          ...(config.DATABASE_CA_CERT ? { caCert: config.DATABASE_CA_CERT } : {}),
           maxConnections: config.DATABASE_POOL_MAX,
         }),
     },

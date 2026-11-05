@@ -88,7 +88,7 @@ export class AdminAuthController {
     );
     res.cookie(ADMIN_COOKIE, result.sessionToken, {
       httpOnly: true, // JavaScript in the page can never read the session token
-      secure: this.config.NODE_ENV === 'production',
+      secure: this.config.NODE_ENV === 'production' || this.config.NODE_ENV === 'staging',
       sameSite: 'strict',
       path: '/admin',
       expires: result.expiresAt,

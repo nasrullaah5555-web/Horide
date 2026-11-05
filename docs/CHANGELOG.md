@@ -34,6 +34,7 @@
 - Pilot runbook: go/no-go checklist, daily operations, incident and breach procedures, support process.
 - Passenger app: saved places as one-tap destinations (save, use, hold to remove).
 - One design-token file (`design/tokens.json`) drives the apps, console and website; shared button and panel components; CI rejects hardcoded colours, sizes and button styles.
+- Free private test deployment: `render.staging.yaml` (Render free + Supabase free), `NODE_ENV=staging`, database CA certificate support, first staff account printed to the log in staging only.
 
 ### Security
 - Client IP read through a configurable number of proxy hops (`TRUST_PROXY_HOPS`; 2 behind Cloudflare + Render) so per-IP limits are neither shared nor forgeable.

@@ -150,3 +150,34 @@ cd mobile/passenger
 flutter build ipa --release --obfuscate --split-debug-info=build/symbols --dart-define=HORIDE_API_URL=https://api.<domain>
 ```
 Then upload with Xcode's Organizer or Transporter to TestFlight. Set the team and the bundle IDs above in Xcode (Runner → Signing & Capabilities) the first time.
+
+## 11. Free private test deployment (staging)
+
+For trying the whole system on the internet before paying for anything: Supabase free + Render free, using `render.staging.yaml`. **Not for real users.** In staging (`NODE_ENV=staging`) the API keeps production's safety rules (verified SSL to the database, random secrets, https-only browser origins, rate limits, secure cookies), but allows the development adapters:
+
+- sign-in codes are written to the API's log instead of being sent by SMS;
+- distances are straight-line estimates (marked "estimate" in the app);
+- uploaded documents are stored on the server's temporary disk and lost on restart;
+- free servers sleep after 15 minutes without visitors; the next request takes about a minute.
+
+Cost: free. Supabase pauses a free project after a week without use (resume it in the dashboard).
+
+### Steps
+
+1. **Supabase**: create a project (region Frankfurt). Choose a database password of letters and digits only (other characters must be URL-encoded in the connection string). Then:
+   - Database → Extensions: turn on `postgis` (the others are created by the migrations).
+   - Connect → copy the **Session pooler** connection string (it works over IPv4, which Render needs). Put your password in it.
+   - Project Settings → Database → SSL configuration → **Download certificate**.
+2. **Render**: New → Blueprint → choose the repository → set the Blueprint file path to `render.staging.yaml`. Render generates the four secrets itself and asks for:
+   - `DATABASE_URL`: the Session pooler string.
+   - `DATABASE_CA_CERT`: open the downloaded certificate in a text editor and paste all of it (including the BEGIN and END lines). If the field won't take several lines, paste the output of `base64 -w0 prod-ca-2021.crt` instead (macOS: `base64 -i prod-ca-2021.crt`).
+   - `STAGING_BOOTSTRAP_ADMIN_EMAIL`: your email.
+   - `CORS_ORIGINS` and `HORIDE_API_URL`: leave a placeholder (`https://example.org`) for now.
+3. When the three services exist, note their addresses (`https://horide-staging-api-xxxx.onrender.com` and so on). Set:
+   - API → Environment → `CORS_ORIGINS` = `https://<console address>,https://<website address>`.
+   - Console → Environment → `HORIDE_API_URL` = `https://<api address>`, then **Manual Deploy → Clear build cache & deploy** (the address is read when the console is built).
+4. Check `https://<api address>/health` shows `{"status":"ok","database":"up"}`.
+5. API → Logs: find the block "STAGING: first staff account created". It shows the email, a temporary password and an authenticator key, **once**. Add the key to an authenticator app, sign in to the console, and change the password under Account.
+6. Open the website address and click through every page.
+
+The API refuses to start with a clear list in its log if anything is missing or wrong. The certificate check is real: without the right certificate, or with the wrong host, the database connection is refused (tested locally, TEST_REPORT).

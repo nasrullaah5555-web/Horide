@@ -1,0 +1,71 @@
+name: Mobile build
+
+# Proves the apps build as real Android and iOS apps (Gradle, manifests, CocoaPods, Xcode), which
+# `flutter analyze` and `flutter test` don't check. These builds are UNSIGNED and are not
+# releases: signing needs the owner's keys and accounts (OWNER_ACTION_REGISTER OA-04, OA-05).
+#
+# Android runs on every mobile change. iOS needs a macOS runner, which uses 10x the private-repo
+# Actions minutes, so it only runs when started by hand (Actions → Mobile build → Run workflow).
+on:
+  push:
+    branches: [main]
+    paths: ['mobile/**', 'packages/**', '.github/workflows/mobile-build.yml']
+  workflow_dispatch:
+    inputs:
+      ios:
+        description: Also build iOS (macOS runner, uses more Actions minutes)
+        type: boolean
+        default: true
+
+permissions:
+  contents: read
+
+concurrency:
+  group: mobile-build-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  android:
+    name: Android debug APK (${{ matrix.app }})
+    runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        app: [passenger, driver]
+    defaults:
+      run:
+        working-directory: mobile/${{ matrix.app }}
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: '17'
+      - uses: subosito/flutter-action@v2
+        with:
+          channel: stable
+          cache: true
+      - run: flutter pub get
+      - run: flutter build apk --debug
+      - name: APK size
+        run: ls -la build/app/outputs/flutter-apk/
+
+  ios:
+    name: iOS build, no signing (${{ matrix.app }})
+    if: github.event_name == 'workflow_dispatch' && inputs.ios
+    runs-on: macos-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        app: [passenger, driver]
+    defaults:
+      run:
+        working-directory: mobile/${{ matrix.app }}
+    steps:
+      - uses: actions/checkout@v4
+      - uses: subosito/flutter-action@v2
+        with:
+          channel: stable
+          cache: true
+      - run: flutter pub get
+      - run: flutter build ios --debug --no-codesign

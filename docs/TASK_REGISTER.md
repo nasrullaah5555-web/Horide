@@ -85,6 +85,8 @@ Device testing of T-037–T-041 (Android phone or emulator, and iPhone) is owner
 
 **T-049 Production adapters** — IMPLEMENTED – NOT VERIFIED AGAINST THE REAL SERVICES (ADR-017) · S3 private storage (tested on S3 emulator), Google Routes and OSRM routing, FCM HTTP v1 push with dead-token cleanup, AfroMessage SMS. Real checks: OA-08, OA-09, OA-11, OA-12.
 
+**T-050 Constant design system** — DONE for code and web (apps compiled in CI only) · one token file for apps, console and website; shared components; CI check rejects hardcoded design values (ADR-018, DESIGN_SYSTEM.md).
+
 ## Phase 6 — Website
 
 **T-042 Public website** — DONE (privacy policy and terms are DRAFTS pending legal review, OA-07; contact details pending OA-22) · home, how it works, drivers, safety, privacy, terms, contact, account deletion page (required by Google Play).

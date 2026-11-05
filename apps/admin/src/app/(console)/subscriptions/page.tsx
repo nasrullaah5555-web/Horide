@@ -164,11 +164,13 @@ function RecordPayment({
       </label>
       <div className="md:col-span-2">
         <ErrorNotice error={error} />
-        {done && <p className="mb-3 rounded-md bg-sign-soft px-4 py-3 text-sign-deep">{done}</p>}
+        {done && (
+          <p className="mb-3 rounded-control bg-sign-soft px-4 py-3 text-sign-deep">{done}</p>
+        )}
         <Button type="submit" disabled={busy}>
           {busy ? 'Recording…' : `Record ${plan ? etb(plan.price) : ''} payment`}
         </Button>
-        <p className="mt-2 text-sm text-muted">
+        <p className="mt-2 text-small text-muted">
           Only record money you have actually received. If the driver already has time left, the new
           period starts when it ends.
         </p>
@@ -295,7 +297,7 @@ function Subscriptions() {
           <Panel
             title="This driver’s payments"
             actions={
-              <Link className="text-sm font-semibold hover:underline" href="/subscriptions">
+              <Link className="text-small font-semibold hover:underline" href="/subscriptions">
                 Show all drivers
               </Link>
             }
@@ -379,7 +381,7 @@ function Subscriptions() {
                       >
                         {s.full_name ?? 'No name'}
                       </Link>
-                      <span className="block text-sm text-muted">{s.phone}</span>
+                      <span className="block text-small text-muted">{s.phone}</span>
                     </td>
                     <td>{s.plan_name}</td>
                     <td>{date(s.starts_at)}</td>

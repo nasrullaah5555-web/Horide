@@ -31,22 +31,23 @@ export default function LoginPage() {
     }
   };
 
-  const field = 'mt-1 w-full rounded-md border border-line bg-white px-3 py-2.5 text-[16px]';
+  const field =
+    'mt-1 w-full rounded-control border border-line bg-white px-3 py-2.5 text-body-large';
 
   return (
     <main className="grid min-h-screen md:grid-cols-[1fr_minmax(380px,480px)]">
       <section className="hidden flex-col justify-between bg-navy p-12 text-white md:flex">
-        <p className="text-2xl font-extrabold">Horide</p>
+        <p className="text-headline font-extrabold">Horide</p>
         <div className="max-w-md">
-          <div className="inline-block rounded-xl border-4 border-white bg-sign px-6 py-4">
-            <p className="text-sm font-semibold text-white/85">Jijiga</p>
-            <p className="text-4xl font-extrabold leading-none">Operations console</p>
+          <div className="inline-block rounded-card border-4 border-white bg-sign px-6 py-4">
+            <p className="text-small font-semibold text-white/85">Jijiga</p>
+            <p className="text-display font-extrabold leading-none">Operations console</p>
           </div>
           <p className="mt-6 text-white/75">
             For Horide staff only. Every sign-in and every change is recorded.
           </p>
         </div>
-        <p className="text-sm text-white/50">
+        <p className="text-small text-white/50">
           Lost your authenticator? Ask a super admin to reset your account.
         </p>
       </section>
@@ -54,7 +55,7 @@ export default function LoginPage() {
       <section className="flex items-center justify-center px-6 py-12">
         <form onSubmit={submit} className="w-full max-w-sm space-y-5" noValidate={false}>
           <div>
-            <h1 className="text-[28px] font-extrabold tracking-tight">Sign in</h1>
+            <h1 className="text-display font-extrabold tracking-tight">Sign in</h1>
             <p className="text-muted">
               Use your staff email, password and the 6-digit code from your authenticator app.
             </p>
@@ -84,7 +85,7 @@ export default function LoginPage() {
           <label className="block">
             <span className="font-semibold">Authenticator code</span>
             <input
-              className={`${field} tracking-[0.3em]`}
+              className={`${field} tracking-widest`}
               inputMode="numeric"
               autoComplete="one-time-code"
               pattern="\d{6}"
@@ -95,14 +96,14 @@ export default function LoginPage() {
             />
           </label>
           {error && (
-            <p role="alert" className="rounded-md bg-signal-soft px-4 py-3 text-signal">
+            <p role="alert" className="rounded-control bg-signal-soft px-4 py-3 text-signal">
               {error}
             </p>
           )}
           <button
             type="submit"
             disabled={busy}
-            className="w-full rounded-md bg-navy py-3 text-[16px] font-bold text-white hover:bg-navy-soft disabled:opacity-60"
+            className="w-full rounded-control bg-navy py-3 text-body-large font-bold text-white hover:bg-navy-soft disabled:opacity-60"
           >
             {busy ? 'Signing in…' : 'Sign in'}
           </button>

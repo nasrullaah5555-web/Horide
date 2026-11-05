@@ -68,7 +68,7 @@ function NewPrice({
     [v.base, v.perKm, v.min, v.round].every((n) => Number.isFinite(n) && n >= 0) && v.round > 0;
   const field = (key: keyof typeof f, label: string) => (
     <label className="block">
-      <span className="mb-1 block text-sm font-semibold">{label}</span>
+      <span className="mb-1 block text-small font-semibold">{label}</span>
       <input
         required
         type="number"
@@ -117,13 +117,13 @@ function NewPrice({
         {field('cancellationFee', 'Cancellation fee (ETB)')}
       </div>
       {valid && (
-        <p className="text-sm text-muted">
+        <p className="text-small text-muted">
           With these prices: 2 km costs {previewFare(2, v).toFixed(2)} ETB, 5 km costs{' '}
           {previewFare(5, v).toFixed(2)} ETB, 10 km costs {previewFare(10, v).toFixed(2)} ETB.
         </p>
       )}
       <label className="block">
-        <span className="mb-1 block text-sm font-semibold">
+        <span className="mb-1 block text-small font-semibold">
           Why are prices changing? (recorded in the audit log)
         </span>
         <input
@@ -139,7 +139,7 @@ function NewPrice({
       <Button type="submit" disabled={busy || !valid}>
         {busy ? 'Saving…' : `Save new ${humanize(category).toLowerCase()} prices`}
       </Button>
-      <p className="text-sm text-muted">
+      <p className="text-small text-muted">
         New prices apply to new price quotes only. Trips already quoted or under way keep the price
         they were given.
       </p>
@@ -240,7 +240,7 @@ export default function PricingPage() {
           <div className="p-4">
             <LiveMap zones={zoneList} height={420} />
           </div>
-          <ul className="border-t border-line px-5 py-3 text-sm">
+          <ul className="border-t border-line px-5 py-3 text-small">
             {zoneList.map((z) => (
               <li key={z.id}>
                 <span className="font-semibold">{z.name}</span>
@@ -248,7 +248,7 @@ export default function PricingPage() {
               </li>
             ))}
           </ul>
-          <p className="border-t border-line px-5 py-3 text-sm text-muted">
+          <p className="border-t border-line px-5 py-3 text-small text-muted">
             Pickups and destinations outside the green area are refused. Changing the boundary needs
             surveyed coordinates and is done by the technical team.
           </p>

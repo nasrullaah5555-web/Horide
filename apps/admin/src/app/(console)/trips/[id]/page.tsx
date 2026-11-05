@@ -171,12 +171,12 @@ export default function TripDetailPage({ params }: { params: Promise<{ id: strin
                 <span className="text-muted">by {humanize(payment.method)}</span>
               </p>
               {payment.ebirr_reference && (
-                <p className="mt-1 text-sm">
+                <p className="mt-1 text-small">
                   eBirr reference: {payment.ebirr_reference} (as typed by the driver, not verified)
                 </p>
               )}
               {payment.resolution_note && (
-                <p className="mt-1 text-sm">Resolution: {payment.resolution_note}</p>
+                <p className="mt-1 text-small">Resolution: {payment.resolution_note}</p>
               )}
             </div>
           )}
@@ -188,17 +188,17 @@ export default function TripDetailPage({ params }: { params: Promise<{ id: strin
               <li key={e.id} className="relative border-l-2 border-line pb-4 pl-5 last:pb-0">
                 <span
                   aria-hidden
-                  className="absolute -left-[7px] top-1.5 h-3 w-3 rounded-full bg-sign ring-2 ring-white"
+                  className="absolute -left-[7px] top-1.5 h-3 w-3 rounded-pill bg-sign ring-2 ring-white"
                 />
                 <p className="font-semibold">{eventLabel(e)}</p>
-                <p className="text-sm text-muted">
+                <p className="text-small text-muted">
                   {dateTime(e.created_at)}, by {humanize(e.actor_type)}
                 </p>
               </li>
             ))}
           </ol>
           {offers.length > 0 && (
-            <div className="border-t border-line px-5 py-4 text-sm text-muted">
+            <div className="border-t border-line px-5 py-4 text-small text-muted">
               Offered to {offers.length} driver{offers.length === 1 ? '' : 's'} in{' '}
               {Math.max(...offers.map((o) => o.wave))} round
               {Math.max(...offers.map((o) => o.wave)) === 1 ? '' : 's'}.

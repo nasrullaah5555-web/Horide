@@ -25,13 +25,10 @@ class HistoryScreen extends ConsumerWidget {
           error:
               (e, _) => ListView(
                 children: [
-                  const SizedBox(height: 120),
+                  const Gap(HorideSpace.xxxl),
                   Center(child: Text(e is ApiException ? e.message : 'Could not load your trips.')),
                   Center(
-                    child: TextButton(
-                      onPressed: () => ref.invalidate(historyProvider),
-                      child: const Text('Try again'),
-                    ),
+                    child: HorideButton(kind: HorideButtonKind.quiet, label: 'Try again', onPressed: () => ref.invalidate(historyProvider)),
                   ),
                 ],
               ),
@@ -40,13 +37,13 @@ class HistoryScreen extends ConsumerWidget {
                   list.isEmpty
                       ? ListView(
                         children: const [
-                          SizedBox(height: 120),
+                          const Gap(HorideSpace.xxxl),
                           Center(child: Text('No trips yet.')),
                         ],
                       )
                       : ListView.separated(
                         itemCount: list.length,
-                        separatorBuilder: (_, __) => const Divider(height: 1),
+                        separatorBuilder: (_, __) => const Divider(),
                         itemBuilder: (_, i) {
                           final t = list[i];
                           final done = t.status == TripStatus.completed;
@@ -56,7 +53,7 @@ class HistoryScreen extends ConsumerWidget {
                             subtitle: Text('${_date(t.requestedAt)}  •  ${_statusText(t.status)}'),
                             trailing: Text(
                               formatEtbShort(t.fare),
-                              style: const TextStyle(fontWeight: FontWeight.w800),
+                              style: const TextStyle(fontWeight: HorideFontWeight.heavy),
                             ),
                             onTap: done ? () => context.push('/history/${t.id}') : null,
                           );

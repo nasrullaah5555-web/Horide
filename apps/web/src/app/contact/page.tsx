@@ -6,7 +6,7 @@ export const metadata: Metadata = { title: 'Contact' };
 export default function Contact() {
   return (
     <Page title="Contact" lead="Questions, problems with a trip, or joining as a driver.">
-      <dl className="space-y-5 rounded-xl border border-line bg-white p-6">
+      <dl className="space-y-5 rounded-card border border-line bg-white p-6">
         <div>
           <dt className="font-extrabold">Support phone</dt>
           <dd>

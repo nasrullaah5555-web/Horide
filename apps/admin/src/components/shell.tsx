@@ -57,9 +57,9 @@ export function Shell({ children }: { children: ReactNode }) {
     <div className="min-h-screen md:grid md:grid-cols-[232px_1fr]">
       <aside className="flex flex-col bg-navy text-white md:sticky md:top-0 md:h-screen md:overflow-y-auto">
         <div className="flex items-center justify-between px-5 py-5">
-          <Link href="/" className="text-xl font-extrabold tracking-tight">
+          <Link href="/" className="text-title-large font-extrabold tracking-tight">
             Horide
-            <span className="ml-2 align-middle text-xs font-semibold text-white/60">
+            <span className="ml-2 align-middle text-caption font-semibold text-white/60">
               Jijiga console
             </span>
           </Link>
@@ -73,14 +73,14 @@ export function Shell({ children }: { children: ReactNode }) {
             if (!visible.length) return null;
             return (
               <div key={group} className="min-w-max">
-                <p className="px-3 pb-1 text-xs font-semibold text-white/50">{group}</p>
+                <p className="px-3 pb-1 text-caption font-semibold text-white/50">{group}</p>
                 <ul>
                   {visible.map((item) => (
                     <li key={item.href}>
                       <Link
                         href={item.href}
                         aria-current={isActive(item.href) ? 'page' : undefined}
-                        className={`relative block rounded-md px-3 py-2 text-[15px] ${
+                        className={`relative block rounded-control px-3 py-2 text-body ${
                           isActive(item.href)
                             ? 'bg-white/10 font-semibold'
                             : 'text-white/80 hover:bg-white/5 hover:text-white'
@@ -89,7 +89,7 @@ export function Shell({ children }: { children: ReactNode }) {
                         {isActive(item.href) && (
                           <span
                             aria-hidden
-                            className="absolute inset-y-1.5 left-0 w-1 rounded-full bg-sign"
+                            className="absolute inset-y-1.5 left-0 w-1 rounded-pill bg-sign"
                           />
                         )}
                         {item.label}
@@ -101,7 +101,7 @@ export function Shell({ children }: { children: ReactNode }) {
             );
           })}
         </nav>
-        <div className="border-t border-white/10 px-5 py-4 text-sm">
+        <div className="border-t border-white/10 px-5 py-4 text-small">
           <p className="font-semibold">{admin.fullName}</p>
           <p className="text-white/60">{admin.roles.join(', ')}</p>
           <div className="mt-2 flex gap-4">

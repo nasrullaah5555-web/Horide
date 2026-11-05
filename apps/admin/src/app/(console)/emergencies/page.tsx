@@ -39,7 +39,7 @@ export default function EmergenciesPage() {
               type="checkbox"
               checked={showAll}
               onChange={(e) => setShowAll(e.target.checked)}
-              className="h-4 w-4 accent-[#14283e]"
+              className="h-4 w-4 accent-navy"
             />
             Include handled alerts
           </label>
@@ -61,7 +61,7 @@ export default function EmergenciesPage() {
                 }`}
               >
                 <div>
-                  <p className="text-lg font-bold">
+                  <p className="text-title font-bold">
                     {humanize(e.role)}{' '}
                     <a
                       className="tabular-nums underline-offset-2 hover:underline"
@@ -73,7 +73,7 @@ export default function EmergenciesPage() {
                   <p className="text-muted">
                     Raised {dateTime(e.created_at)} ({ago(e.created_at)})
                   </p>
-                  <p className="mt-1 text-sm">
+                  <p className="mt-1 text-small">
                     {e.lat !== null && e.lng !== null ? (
                       <a
                         className="font-semibold underline-offset-2 hover:underline"
@@ -99,7 +99,7 @@ export default function EmergenciesPage() {
                     )}
                   </p>
                   {e.notes && (
-                    <p className="mt-2 rounded-md bg-ground px-3 py-2">Handled: {e.notes}</p>
+                    <p className="mt-2 rounded-control bg-ground px-3 py-2">Handled: {e.notes}</p>
                   )}
                 </div>
                 {!e.handled_at && can('emergencies.write') && (

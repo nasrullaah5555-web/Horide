@@ -92,3 +92,11 @@ Context: SMS, routing, document storage and push each need an account the owner 
 Decision: implement each adapter against the provider's public API and test it with a local stand-in: S3 storage against the moto S3 emulator; Google Routes, OSRM, FCM HTTP v1 and AfroMessage against fake HTTP servers that check the request format. FCM signs its own OAuth assertion with Node's crypto (no SDK). Each adapter's code comment and COMPLETED_TASKS say "not verified against the real service". Configuration refuses to start if an adapter is selected without its credentials. Failures surface as plain errors (routing down → 503 "prices unavailable", never a guessed price).
 
 Consequences: when an account exists, going live is configuration plus one real check per service (listed in OWNER_ACTION_REGISTER). AfroMessage was written from public SDKs because the official developer page couldn't be opened from the development environment; it carries the highest risk of a mismatch.
+
+## ADR-018 One design-token file for every part of Horide, enforced in CI
+
+Context: the owner requires every layout, button and colour to be constant across the project. Before this, the apps, console and website each had their own copies of the colours and many one-off sizes (over 300 hardcoded values found).
+
+Decision: `design/tokens.json` is the single source. `scripts/gen-tokens.mjs` generates Dart constants for the apps, a CSS/Tailwind theme for the console and website, and a TypeScript colour map. Screens are built from shared components (`HorideButton` and friends in `horide_core`; `.sign` classes in `packages/design-tokens/components.css`). `scripts/check-design.mjs` fails CI on any hardcoded colour, size, font size, corner, padding or custom button outside the token and component files.
+
+Consequences: a look change is one edit plus `pnpm tokens`. Some spacing values were rounded to the nearest step of the scale (e.g. 10 → 12, 6 → 8), which slightly changes a few layouts on purpose. Tailwind's spacing scale (4 px steps) stays allowed on the web because it is itself a fixed scale.

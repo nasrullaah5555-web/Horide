@@ -162,7 +162,7 @@ export default function DriverDetailPage({ params }: { params: Promise<{ id: str
       <ErrorNotice error={actionError} />
 
       <div
-        className={`mb-6 rounded-lg px-5 py-4 ring-1 ${eligibility.eligible ? 'bg-sign-soft text-sign-deep ring-sign/30' : 'bg-amber-soft text-amber ring-amber/30'}`}
+        className={`mb-6 rounded-control px-5 py-4 ring-1 ${eligibility.eligible ? 'bg-sign-soft text-sign-deep ring-sign/30' : 'bg-amber-soft text-amber ring-amber/30'}`}
       >
         {eligibility.eligible ? (
           <p className="font-semibold">
@@ -200,7 +200,7 @@ export default function DriverDetailPage({ params }: { params: Promise<{ id: str
                   className="flex flex-wrap items-start justify-between gap-3 border-b border-line px-5 py-4 last:border-b-0"
                 >
                   <div>
-                    <p className="text-lg font-bold">{v.plate_number}</p>
+                    <p className="text-title font-bold">{v.plate_number}</p>
                     <p className="text-muted">
                       {humanize(v.category)}: {v.colour} {v.make} {v.model}
                       {v.year ? `, ${v.year}` : ''}
@@ -209,7 +209,7 @@ export default function DriverDetailPage({ params }: { params: Promise<{ id: str
                       <StatusBadge status={v.approval_status} />
                     </div>
                     {v.rejection_reason && (
-                      <p className="mt-1 text-sm text-signal">Rejected: {v.rejection_reason}</p>
+                      <p className="mt-1 text-small text-signal">Rejected: {v.rejection_reason}</p>
                     )}
                   </div>
                   {verify && v.approval_status === 'pending' && (
@@ -243,7 +243,7 @@ export default function DriverDetailPage({ params }: { params: Promise<{ id: str
                 >
                   <div>
                     <p className="font-bold">{humanize(d.type)}</p>
-                    <p className="text-sm text-muted">
+                    <p className="text-small text-muted">
                       Uploaded {dateTime(d.created_at)}, {Math.round(d.size_bytes / 1024)} KB
                       {d.expires_on ? `, expires ${date(d.expires_on)}` : ''}
                     </p>
@@ -251,13 +251,13 @@ export default function DriverDetailPage({ params }: { params: Promise<{ id: str
                       <StatusBadge status={d.status} />
                     </div>
                     {d.rejection_reason && (
-                      <p className="mt-1 text-sm text-signal">Rejected: {d.rejection_reason}</p>
+                      <p className="mt-1 text-small text-signal">Rejected: {d.rejection_reason}</p>
                     )}
                   </div>
                   <div className="flex flex-wrap gap-2">
                     {can('documents.read') && (
                       <a
-                        className="rounded-md bg-white px-4 py-2 font-semibold ring-1 ring-line hover:bg-ground"
+                        className="rounded-control bg-white px-4 py-2 font-semibold ring-1 ring-line hover:bg-ground"
                         href={`/admin/documents/${d.id}/file`}
                       >
                         Download
@@ -282,7 +282,7 @@ export default function DriverDetailPage({ params }: { params: Promise<{ id: str
             </ul>
           )}
           {can('documents.read') && (
-            <p className="border-t border-line px-5 py-3 text-sm text-muted">
+            <p className="border-t border-line px-5 py-3 text-small text-muted">
               Every download is recorded in the audit log with your name.
             </p>
           )}

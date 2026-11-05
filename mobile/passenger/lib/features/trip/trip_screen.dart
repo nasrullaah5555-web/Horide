@@ -65,11 +65,8 @@ class _TripScreenState extends ConsumerState<TripScreen> {
                   : 'We will stop looking for a driver.',
             ),
             actions: [
-              TextButton(onPressed: () => Navigator.pop(d, false), child: const Text('Keep ride')),
-              FilledButton(
-                onPressed: () => Navigator.pop(d, true),
-                child: const Text('Cancel ride'),
-              ),
+              HorideButton(kind: HorideButtonKind.quiet, label: 'Keep ride', onPressed: () => Navigator.pop(d, false)),
+              HorideButton(label: 'Cancel ride', onPressed: () => Navigator.pop(d, true)),
             ],
           ),
     );
@@ -102,8 +99,8 @@ class _TripScreenState extends ConsumerState<TripScreen> {
                 'Your driver continues to the old destination unless you approve.',
               ),
               actions: [
-                TextButton(onPressed: () => Navigator.pop(d, false), child: const Text('Keep old')),
-                FilledButton(onPressed: () => Navigator.pop(d, true), child: const Text('Approve')),
+                HorideButton(kind: HorideButtonKind.quiet, label: 'Keep old', onPressed: () => Navigator.pop(d, false)),
+                HorideButton(label: 'Approve', onPressed: () => Navigator.pop(d, true)),
               ],
             ),
       );
@@ -153,10 +150,7 @@ class _TripScreenState extends ConsumerState<TripScreen> {
                     mainAxisSize: MainAxisSize.min,
                     children: [
                       const Text('Could not load your trip.'),
-                      TextButton(
-                        onPressed: () => ref.invalidate(activeTripProvider),
-                        child: const Text('Try again'),
-                      ),
+                      HorideButton(kind: HorideButtonKind.quiet, label: 'Try again', onPressed: () => ref.invalidate(activeTripProvider)),
                     ],
                   )
                   : const CircularProgressIndicator(),
@@ -175,21 +169,25 @@ class _TripScreenState extends ConsumerState<TripScreen> {
             options: MapOptions(
               initialCameraFit: CameraFit.coordinates(
                 coordinates: [toLatLng(trip.pickup.point), toLatLng(trip.destination.point)],
-                padding: const EdgeInsets.fromLTRB(60, 120, 60, 360),
+                padding: const EdgeInsets.fromLTRB(HorideSpace.xxxl, HorideSpace.xxxl, HorideSpace.xxxl, HorideSpace.xxxl),
               ),
             ),
             children: [
               ...baseMapLayers(),
               MarkerLayer(
                 markers: [
-                  _pin(trip.pickup.point, HorideColors.sign, 'Pickup'),
-                  _pin(trip.destination.point, HorideColors.navy, 'Destination'),
+                  pinMarker(trip.pickup.point, HorideColors.sign, 'Pickup'),
+                  pinMarker(trip.destination.point, HorideColors.navy, 'Destination'),
                   if (loc != null)
                     Marker(
                       point: toLatLng(loc.point),
-                      width: 44,
-                      height: 44,
-                      child: _DriverDot(live: live),
+                      width: PositionDot.size,
+                      height: PositionDot.size,
+                      child: PositionDot(
+                        live: live,
+                        icon: Icons.directions_car,
+                        label: live ? 'Driver, live position' : 'Driver, last known position',
+                      ),
                     ),
                 ],
               ),
@@ -198,18 +196,10 @@ class _TripScreenState extends ConsumerState<TripScreen> {
           ),
           SafeArea(
             child: Padding(
-              padding: const EdgeInsets.all(12),
+              padding: const EdgeInsets.all(HorideSpace.md),
               child: Align(
                 alignment: Alignment.topRight,
-                child: FilledButton.icon(
-                  style: FilledButton.styleFrom(
-                    backgroundColor: HorideColors.signal,
-                    minimumSize: const Size(0, kLargeTouchTarget),
-                  ),
-                  onPressed: () => _emergency(trip),
-                  icon: const Icon(Icons.sos),
-                  label: const Text('Emergency'),
-                ),
+                child: HorideButton(kind: HorideButtonKind.emergency, icon: Icons.sos, label: 'Emergency', onPressed: () => _emergency(trip)),
               ),
             ),
           ),
@@ -219,16 +209,7 @@ class _TripScreenState extends ConsumerState<TripScreen> {
     );
   }
 
-  Marker _pin(LatLngPoint p, Color colour, String label) => Marker(
-    point: toLatLng(p),
-    width: 30,
-    height: 44,
-    alignment: Alignment.topCenter,
-    child: MapPin(colour: colour, label: label),
-  );
-
   Widget _panel(BuildContext context, Trip trip, DriverLocation? loc, bool live) {
-    final theme = Theme.of(context);
     final driver = trip.driver;
     final (title, subtitle, tone) = switch (trip.status) {
       TripStatus.requested || TripStatus.searching => (
@@ -253,17 +234,7 @@ class _TripScreenState extends ConsumerState<TripScreen> {
       TripStatus.completed => ('Arrived', null, SignTone.go),
     };
 
-    return Material(
-      color: theme.colorScheme.surface,
-      borderRadius: const BorderRadius.vertical(top: Radius.circular(18)),
-      elevation: 8,
-      child: SafeArea(
-        top: false,
-        child: Padding(
-          padding: const EdgeInsets.fromLTRB(16, 16, 16, 12),
-          child: Column(
-            mainAxisSize: MainAxisSize.min,
-            crossAxisAlignment: CrossAxisAlignment.stretch,
+    return HorideBottomPanel(
             children: [
               SignPanel(
                 title: title,
@@ -271,70 +242,50 @@ class _TripScreenState extends ConsumerState<TripScreen> {
                 tone: tone,
                 trailing:
                     trip.status == TripStatus.searching || trip.status == TripStatus.requested
-                        ? const SizedBox(
-                          width: 26,
-                          height: 26,
-                          child: CircularProgressIndicator(color: Colors.white, strokeWidth: 3),
-                        )
+                        ? const PanelSpinner()
                         : null,
               ),
               if (driver != null && trip.status.hasDriver) ...[
-                const SizedBox(height: 12),
+                const Gap(HorideSpace.md),
                 _DriverCard(driver: driver),
-                const SizedBox(height: 6),
-                Text(
+                const Gap(HorideSpace.sm),
+                StatusText(
                   loc == null
                       ? 'Driver location not available yet.'
                       : live
                       ? 'Live location'
                       : 'Location not updated for ${_ago(loc.ageSeconds)}. The driver may have a weak connection.',
-                  style: TextStyle(
-                    color: live ? HorideColors.signDeep : HorideColors.amber,
-                    fontWeight: FontWeight.w700,
-                  ),
+                  ok: live,
                 ),
               ],
-              const SizedBox(height: 10),
+              const Gap(HorideSpace.md),
               InfoRow(
                 trip.lockedFare != null ? 'Fixed price' : 'Price',
                 '${formatEtb(trip.fare)}  (${paymentLabel(trip.paymentMethod)}, pay the driver)',
                 bold: true,
               ),
-              const SizedBox(height: 8),
+              const Gap(HorideSpace.sm),
               if (trip.status.isFinal)
-                FilledButton(
-                  onPressed: () {
+                HorideButton(label: 'Back to map', onPressed: () {
                     ref.read(activeTripProvider.notifier).clear();
                     context.go('/');
-                  },
-                  child: const Text('Back to map'),
-                )
+                  })
               else
                 Row(
                   children: [
                     if (trip.status.hasDriver)
                       Expanded(
-                        child: OutlinedButton(
-                          onPressed: _busy ? null : () => _changeDestination(trip),
-                          child: const Text('Change destination'),
-                        ),
+                        child: HorideButton(kind: HorideButtonKind.secondary, label: 'Change destination', onPressed: _busy ? null : () => _changeDestination(trip)),
                       ),
                     if (trip.status.hasDriver && trip.status != TripStatus.inProgress)
-                      const SizedBox(width: 10),
+                      const Gap(HorideSpace.md),
                     if (trip.status != TripStatus.inProgress)
                       Expanded(
-                        child: OutlinedButton(
-                          style: OutlinedButton.styleFrom(foregroundColor: HorideColors.signal),
-                          onPressed: _busy ? null : () => _cancel(trip),
-                          child: const Text('Cancel ride'),
-                        ),
+                        child: HorideButton(kind: HorideButtonKind.danger, label: 'Cancel ride', onPressed: _busy ? null : () => _cancel(trip)),
                       ),
                   ],
                 ),
             ],
-          ),
-        ),
-      ),
     );
   }
 
@@ -352,15 +303,8 @@ class _DriverCard extends StatelessWidget {
     final phone = driver.phone;
     return Row(
       children: [
-        CircleAvatar(
-          radius: 26,
-          backgroundColor: HorideColors.navy,
-          child: Text(
-            (driver.name?.isNotEmpty ?? false) ? driver.name![0].toUpperCase() : '?',
-            style: const TextStyle(color: Colors.white, fontSize: 22, fontWeight: FontWeight.w800),
-          ),
-        ),
-        const SizedBox(width: 12),
+        InitialAvatar(driver.name),
+        const Gap(HorideSpace.md),
         Expanded(
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
@@ -370,63 +314,19 @@ class _DriverCard extends StatelessWidget {
                 '${driver.vehicle.description}  •  ${driver.ratingCount == 0 ? 'New driver' : '${driver.rating} ★ (${driver.ratingCount})'}',
                 style: TextStyle(color: theme.colorScheme.onSurfaceVariant),
               ),
-              const SizedBox(height: 4),
+              const Gap(HorideSpace.xs),
               // The plate is the passenger's check that this is the right car.
-              Container(
-                padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 2),
-                decoration: BoxDecoration(
-                  border: Border.all(color: theme.colorScheme.onSurface, width: 2),
-                  borderRadius: BorderRadius.circular(4),
-                ),
-                child: Text(
-                  driver.vehicle.plate,
-                  style: const TextStyle(fontWeight: FontWeight.w800, letterSpacing: 1.5),
-                ),
-              ),
+              PlateBadge(driver.vehicle.plate),
             ],
           ),
         ),
         if (phone != null)
-          IconButton.filledTonal(
-            tooltip: 'Call driver',
-            constraints: const BoxConstraints(
-              minWidth: kLargeTouchTarget,
-              minHeight: kLargeTouchTarget,
-            ),
+          HorideRoundButton(
+            icon: Icons.call,
+            label: 'Call driver',
             onPressed: () => launchUrl(Uri(scheme: 'tel', path: phone)),
-            icon: const Icon(Icons.call),
           ),
       ],
-    );
-  }
-}
-
-/// The driver's position. Grey and hollow when stale, so an old position never looks live.
-class _DriverDot extends StatelessWidget {
-  const _DriverDot({required this.live});
-  final bool live;
-
-  @override
-  Widget build(BuildContext context) {
-    return Semantics(
-      label: live ? 'Driver, live position' : 'Driver, last known position',
-      child: Center(
-        child: Container(
-          width: 30,
-          height: 30,
-          decoration: BoxDecoration(
-            color: live ? HorideColors.navy : Colors.white,
-            shape: BoxShape.circle,
-            border: Border.all(color: live ? Colors.white : HorideColors.muted, width: 4),
-            boxShadow: const [BoxShadow(color: Color(0x4014283E), blurRadius: 6)],
-          ),
-          child: Icon(
-            Icons.directions_car,
-            size: 14,
-            color: live ? Colors.white : HorideColors.muted,
-          ),
-        ),
-      ),
     );
   }
 }

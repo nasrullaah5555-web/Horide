@@ -33,14 +33,14 @@ function Sign({
   }[tone];
   const body = (
     <div
-      className={`${colours} rounded-xl border-[3px] border-white px-5 py-4 text-white shadow-[0_0_0_1px_rgb(20_40_62/0.15)]`}
+      className={`${colours} rounded-card border-3 border-white px-5 py-4 text-white shadow-sign`}
     >
-      <p className="text-[44px] font-extrabold leading-none tabular-nums">{value}</p>
+      <p className="text-hero font-extrabold leading-none tabular-nums">{value}</p>
       <p className="mt-2 font-semibold text-white/90">{label}</p>
     </div>
   );
   return href ? (
-    <Link href={href} className="block rounded-xl">
+    <Link href={href} className="block rounded-card">
       {body}
     </Link>
   ) : (
@@ -66,7 +66,7 @@ function AttentionRow({
         {label}
       </Link>
       <span
-        className={`min-w-10 rounded-md px-2 py-0.5 text-center font-bold ${count > 0 ? 'bg-amber-soft text-amber' : 'text-muted'}`}
+        className={`min-w-10 rounded-control px-2 py-0.5 text-center font-bold ${count > 0 ? 'bg-amber-soft text-amber' : 'text-muted'}`}
       >
         {count}
       </span>
@@ -174,21 +174,21 @@ export default function OverviewPage() {
             <Panel title="Last 14 days">
               <div className="grid grid-cols-3 gap-4 border-b border-line px-5 py-4">
                 <div>
-                  <p className="text-2xl font-extrabold">{c.trips_7d ?? 0}</p>
-                  <p className="text-sm text-muted">Requests, 7 days</p>
+                  <p className="text-headline font-extrabold">{c.trips_7d ?? 0}</p>
+                  <p className="text-small text-muted">Requests, 7 days</p>
                 </div>
                 <div>
-                  <p className="text-2xl font-extrabold">{c.completed_7d ?? 0}</p>
-                  <p className="text-sm text-muted">Completed, 7 days</p>
+                  <p className="text-headline font-extrabold">{c.completed_7d ?? 0}</p>
+                  <p className="text-small text-muted">Completed, 7 days</p>
                 </div>
                 <div>
-                  <p className="text-2xl font-extrabold">{c.unfulfilled_7d ?? 0}</p>
-                  <p className="text-sm text-muted">No driver found, 7 days</p>
+                  <p className="text-headline font-extrabold">{c.unfulfilled_7d ?? 0}</p>
+                  <p className="text-small text-muted">No driver found, 7 days</p>
                 </div>
               </div>
               {report.data && (
                 <figure className="px-5 py-4">
-                  <figcaption className="mb-3 flex gap-5 text-sm text-muted">
+                  <figcaption className="mb-3 flex gap-5 text-small text-muted">
                     <span className="flex items-center gap-2">
                       <span className="inline-block h-3 w-3 rounded-sm bg-sign" /> Completed
                     </span>
@@ -201,7 +201,7 @@ export default function OverviewPage() {
                     {report.data.days.map((d) => (
                       <li
                         key={d.day}
-                        className="grid grid-cols-[64px_1fr_40px] items-center gap-3 text-sm"
+                        className="grid grid-cols-[64px_1fr_40px] items-center gap-3 text-small"
                       >
                         <span className="text-muted">{d.day.slice(5)}</span>
                         <span

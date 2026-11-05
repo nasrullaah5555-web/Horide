@@ -64,7 +64,7 @@ class _ComplaintScreenState extends ConsumerState<ComplaintScreen> {
           _sent
               ? const Center(
                 child: Padding(
-                  padding: EdgeInsets.all(24),
+                  padding: EdgeInsets.all(HorideSpace.xl),
                   child: Text(
                     'Thank you. Horide support will review your report.\n\n'
                     'If you are in danger, use the Emergency button or call 991.',
@@ -73,11 +73,11 @@ class _ComplaintScreenState extends ConsumerState<ComplaintScreen> {
                 ),
               )
               : ListView(
-                padding: const EdgeInsets.all(16),
+                padding: const EdgeInsets.all(HorideSpace.lg),
                 children: [
                   if (widget.tripId != null)
                     const Padding(
-                      padding: EdgeInsets.only(bottom: 12),
+                      padding: EdgeInsets.only(bottom: HorideSpace.md),
                       child: Text('This report will be linked to your trip.'),
                     ),
                   Wrap(
@@ -92,7 +92,7 @@ class _ComplaintScreenState extends ConsumerState<ComplaintScreen> {
                         ),
                     ],
                   ),
-                  const SizedBox(height: 16),
+                  const Gap(HorideSpace.lg),
                   TextField(
                     controller: _text,
                     maxLength: 2000,
@@ -100,8 +100,8 @@ class _ComplaintScreenState extends ConsumerState<ComplaintScreen> {
                     maxLines: 8,
                     decoration: const InputDecoration(hintText: 'Tell us what happened'),
                   ),
-                  const SizedBox(height: 8),
-                  FilledButton(onPressed: _busy ? null : _send, child: const Text('Send report')),
+                  const Gap(HorideSpace.sm),
+                  HorideButton(label: 'Send report', onPressed: _busy ? null : _send),
                 ],
               ),
     );

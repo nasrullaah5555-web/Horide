@@ -77,11 +77,13 @@ function Payments() {
                 <div>
                   <p className="flex flex-wrap items-center gap-3">
                     <StatusBadge status={p.status} />
-                    <span className="text-lg font-bold tabular-nums">{etb(p.amount)}</span>
+                    <span className="text-title font-bold tabular-nums">{etb(p.amount)}</span>
                     <span className="text-muted">{humanize(p.method)}</span>
-                    {p.ebirr_reference && <span className="text-sm">Ref. {p.ebirr_reference}</span>}
+                    {p.ebirr_reference && (
+                      <span className="text-small">Ref. {p.ebirr_reference}</span>
+                    )}
                   </p>
-                  <p className="mt-1 text-sm text-muted">
+                  <p className="mt-1 text-small text-muted">
                     Trip completed {dateTime(p.completed_at)}.{' '}
                     {can('trips.read') && (
                       <Link
@@ -92,7 +94,7 @@ function Payments() {
                       </Link>
                     )}
                   </p>
-                  <ul className="mt-2 space-y-1 text-sm">
+                  <ul className="mt-2 space-y-1 text-small">
                     {p.confirmations.map((c) => (
                       <li key={c.party}>
                         <span className="font-semibold">{humanize(c.party)}</span>{' '}

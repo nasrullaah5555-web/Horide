@@ -87,15 +87,15 @@ class _CodeScreenState extends ConsumerState<CodeScreen> {
       appBar: AppBar(),
       body: SafeArea(
         child: ListView(
-          padding: const EdgeInsets.fromLTRB(24, 8, 24, 24),
+          padding: const EdgeInsets.fromLTRB(HorideSpace.xl, HorideSpace.sm, HorideSpace.xl, HorideSpace.xl),
           children: [
             Text('Enter the code', style: theme.textTheme.headlineMedium),
-            const SizedBox(height: 8),
+            const Gap(HorideSpace.sm),
             Text(
               'Sent by SMS to ${widget.args.phone}.',
               style: TextStyle(color: theme.colorScheme.onSurfaceVariant),
             ),
-            const SizedBox(height: 24),
+            const Gap(HorideSpace.xl),
             TextField(
               controller: _code,
               autofocus: true,
@@ -104,21 +104,26 @@ class _CodeScreenState extends ConsumerState<CodeScreen> {
               maxLength: 6,
               inputFormatters: [FilteringTextInputFormatter.digitsOnly],
               textAlign: TextAlign.center,
-              style: const TextStyle(fontSize: 30, fontWeight: FontWeight.w800, letterSpacing: 12),
+              style: const TextStyle(
+                fontSize: HorideFontSize.code,
+                fontWeight: HorideFontWeight.heavy,
+                letterSpacing: HorideLetterSpacing.code,
+              ),
               decoration: const InputDecoration(counterText: ''),
               onChanged: (v) {
                 if (v.length == 6) _verify();
               },
             ),
-            const SizedBox(height: 24),
-            FilledButton(
+            const Gap(HorideSpace.xl),
+            HorideButton(
+              label: _busy ? 'Checking…' : 'Continue',
               onPressed: _busy ? null : _verify,
-              child: Text(_busy ? 'Checking…' : 'Continue'),
             ),
-            const SizedBox(height: 12),
-            TextButton(
+            const Gap(HorideSpace.md),
+            HorideButton(
+              kind: HorideButtonKind.quiet,
+              label: _resendIn > 0 ? 'Send a new code in $_resendIn s' : 'Send a new code',
               onPressed: _resendIn > 0 ? null : _resend,
-              child: Text(_resendIn > 0 ? 'Send a new code in $_resendIn s' : 'Send a new code'),
             ),
           ],
         ),

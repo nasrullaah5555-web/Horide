@@ -18,6 +18,7 @@ A working, tested ride-hailing platform for a closed pilot in Jijiga: passenger 
 | OWNER_ACTION_REGISTER.md | What only the owner can do |
 | TEST_REPORT.md | Real test results only |
 | DEPLOYMENT_GUIDE.md | How to deploy, back up, restore, release the apps |
+| DESIGN_SYSTEM.md | The single source of colours, sizes and components, and how it is enforced |
 | PILOT_RUNBOOK.md | Go/no-go, daily operations, incidents, breaches, support |
 | CHANGELOG.md | Version history |
 

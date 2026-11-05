@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 
-import '../theme.dart';
+import '../design/components.dart';
+import '../design/tokens.g.dart';
 
 /// Asks twice before deleting an account. Returns true only if the person typed DELETE.
 Future<bool> confirmAccountDeletion(BuildContext context, {required String whatIsRemoved}) async {
@@ -17,12 +18,12 @@ Future<bool> confirmAccountDeletion(BuildContext context, {required String whatI
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
                     Text(whatIsRemoved),
-                    const SizedBox(height: 8),
+                    const Gap(HorideSpace.sm),
                     const Text(
                       'Trip and payment records are kept without your name or phone number, as business '
                       'records. This cannot be undone.',
                     ),
-                    const SizedBox(height: 12),
+                    const Gap(HorideSpace.md),
                     TextField(
                       controller: typed,
                       autocorrect: false,
@@ -33,14 +34,17 @@ Future<bool> confirmAccountDeletion(BuildContext context, {required String whatI
                   ],
                 ),
                 actions: [
-                  TextButton(
+                  HorideButton(
+                    kind: HorideButtonKind.quiet,
+                    compact: true,
+                    label: 'Keep account',
                     onPressed: () => Navigator.pop(d, false),
-                    child: const Text('Keep account'),
                   ),
-                  FilledButton(
-                    style: FilledButton.styleFrom(backgroundColor: HorideColors.signal),
+                  HorideButton(
+                    kind: HorideButtonKind.quietDanger,
+                    compact: true,
+                    label: 'Delete',
                     onPressed: typed.text.trim() == 'DELETE' ? () => Navigator.pop(d, true) : null,
-                    child: const Text('Delete'),
                   ),
                 ],
               ),

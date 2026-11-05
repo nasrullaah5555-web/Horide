@@ -1,0 +1,38 @@
+/*
+ * Shared web components for the staff console and the website. Built only from tokens.css, so a
+ * change in design/tokens.json changes both sites (and the apps) together.
+ */
+
+html {
+  color: var(--color-navy);
+  background: var(--color-ground);
+}
+
+:focus-visible {
+  outline: var(--stroke-sign-border) solid var(--color-sign);
+  outline-offset: var(--space-xxs);
+}
+
+/* The road-sign panel: same as SignPanel in the apps. */
+.sign {
+  background: var(--color-sign);
+  color: var(--color-white);
+  border: var(--stroke-sign-border) solid var(--color-white);
+  border-radius: var(--radius-sign);
+  box-shadow: var(--shadow-sign);
+}
+.sign-navy {
+  background: var(--color-navy-soft);
+}
+.sign-alert {
+  background: var(--color-signal);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    transition-duration: 0ms !important;
+    animation-duration: 0ms !important;
+  }
+}

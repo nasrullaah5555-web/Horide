@@ -16,7 +16,7 @@ export function PageHeader({
   return (
     <header className="mb-6 flex flex-wrap items-end justify-between gap-4">
       <div>
-        <h1 className="text-[28px] font-extrabold leading-tight tracking-tight">{title}</h1>
+        <h1 className="text-display font-extrabold leading-tight tracking-tight">{title}</h1>
         {description && <p className="mt-1 max-w-[70ch] text-muted">{description}</p>}
       </div>
       {actions && <div className="flex flex-wrap gap-2">{actions}</div>}
@@ -31,7 +31,7 @@ const TONES: Record<Tone, string> = {
   good: 'bg-sign-soft text-sign-deep ring-sign/30',
   warn: 'bg-amber-soft text-amber ring-amber/30',
   danger: 'bg-signal-soft text-signal ring-signal/30',
-  info: 'bg-[#e8eef5] text-navy-soft ring-navy/15',
+  info: 'bg-info text-navy-soft ring-navy/15',
 };
 
 const STATUS_TONE: Record<string, Tone> = {
@@ -63,7 +63,7 @@ export function StatusBadge({ status }: { status: string }) {
   const tone = STATUS_TONE[status] ?? 'neutral';
   return (
     <span
-      className={`inline-block whitespace-nowrap rounded-full px-2.5 py-0.5 text-[13px] font-semibold ring-1 ${TONES[tone]}`}
+      className={`inline-block whitespace-nowrap rounded-pill px-2.5 py-0.5 text-small font-semibold ring-1 ${TONES[tone]}`}
     >
       {humanize(status)}
     </span>
@@ -85,7 +85,7 @@ export function Button({
   return (
     <button
       {...props}
-      className={`rounded-md px-4 py-2 text-[15px] font-semibold ${styles} ${props.className ?? ''}`}
+      className={`rounded-control px-4 py-2 text-body font-semibold ${styles} ${props.className ?? ''}`}
     >
       {children}
     </button>
@@ -102,10 +102,10 @@ export function Panel({
   actions?: ReactNode;
 }) {
   return (
-    <section className="rounded-lg bg-white ring-1 ring-line">
+    <section className="rounded-control bg-white ring-1 ring-line">
       {title && (
         <div className="flex items-center justify-between border-b border-line px-5 py-3">
-          <h2 className="text-[17px] font-bold">{title}</h2>
+          <h2 className="text-title font-bold">{title}</h2>
           {actions}
         </div>
       )}
@@ -117,7 +117,7 @@ export function Panel({
 export function ErrorNotice({ error }: { error: ApiError | Error | null }) {
   if (!error) return null;
   return (
-    <p role="alert" className="mb-4 rounded-md bg-signal-soft px-4 py-3 text-signal">
+    <p role="alert" className="mb-4 rounded-control bg-signal-soft px-4 py-3 text-signal">
       {error.message}
     </p>
   );
@@ -179,9 +179,12 @@ export function ConfirmAction({
       >
         {label}
       </Button>
-      <dialog ref={ref} className="m-auto w-[min(480px,92vw)] rounded-lg p-0 text-navy shadow-xl">
+      <dialog
+        ref={ref}
+        className="m-auto w-[min(480px,92vw)] rounded-control p-0 text-navy shadow-xl"
+      >
         <form onSubmit={submit} className="space-y-4 p-6">
-          <h2 className="text-xl font-bold">{title}</h2>
+          <h2 className="text-title-large font-bold">{title}</h2>
           {body && <p className="text-muted">{body}</p>}
           {reasonLabel && (
             <label className="block">
@@ -193,7 +196,7 @@ export function ConfirmAction({
                 value={reason}
                 onChange={(e) => setReason(e.target.value)}
                 rows={3}
-                className="w-full rounded-md border border-line px-3 py-2"
+                className="w-full rounded-control border border-line px-3 py-2"
               />
             </label>
           )}
@@ -212,4 +215,4 @@ export function ConfirmAction({
   );
 }
 
-export const inputClass = 'rounded-md border border-line bg-white px-3 py-2';
+export const inputClass = 'rounded-control border border-line bg-white px-3 py-2';

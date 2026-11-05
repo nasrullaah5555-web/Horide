@@ -66,7 +66,7 @@ export default function AccountPage() {
                 value={next}
                 onChange={(e) => setNext(e.target.value)}
               />
-              <span className="text-sm text-muted">
+              <span className="text-small text-muted">
                 At least 12 characters. A short sentence you can remember works well.
               </span>
             </label>
@@ -84,7 +84,7 @@ export default function AccountPage() {
             </label>
             <ErrorNotice error={error} />
             {done && (
-              <p className="rounded-md bg-sign-soft px-4 py-3 text-sign-deep">
+              <p className="rounded-control bg-sign-soft px-4 py-3 text-sign-deep">
                 Password changed. Your other signed-in devices have been signed out.
               </p>
             )}

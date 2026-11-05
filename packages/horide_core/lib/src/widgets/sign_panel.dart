@@ -1,11 +1,12 @@
 import 'package:flutter/material.dart';
 
-import '../theme.dart';
+import '../design/components.dart';
+import '../design/tokens.g.dart';
 
 enum SignTone { go, calm, alert }
 
 /// The road-sign panel used for the one most important status on a screen
-/// (e.g. "Driver arriving, 3 min"). Same visual language as the staff console.
+/// (e.g. "Driver arriving, 3 min"). Same visual language as the staff console and website.
 class SignPanel extends StatelessWidget {
   const SignPanel({
     super.key,
@@ -33,12 +34,14 @@ class SignPanel extends StatelessWidget {
       child: DecoratedBox(
         decoration: BoxDecoration(
           color: colour,
-          borderRadius: BorderRadius.circular(14),
-          border: Border.all(color: Colors.white, width: 3),
-          boxShadow: const [BoxShadow(color: Color(0x2614283E), blurRadius: 0, spreadRadius: 1)],
+          borderRadius: BorderRadius.circular(HorideRadius.sign),
+          border: Border.all(color: HorideColors.white, width: HorideStroke.signBorder),
+          boxShadow: const [
+            BoxShadow(color: HorideColors.shadow, spreadRadius: HorideStroke.hairline),
+          ],
         ),
         child: Padding(
-          padding: const EdgeInsets.fromLTRB(18, 14, 18, 14),
+          padding: const EdgeInsets.symmetric(horizontal: HorideSpace.lg, vertical: HorideSpace.md),
           child: Row(
             children: [
               Expanded(
@@ -48,20 +51,20 @@ class SignPanel extends StatelessWidget {
                     Text(
                       title,
                       style: const TextStyle(
-                        color: Colors.white,
-                        fontSize: 24,
-                        fontWeight: FontWeight.w800,
-                        height: 1.1,
+                        color: HorideColors.white,
+                        fontSize: HorideFontSize.headline,
+                        fontWeight: HorideFontWeight.heavy,
+                        height: HorideLineHeight.tight,
                       ),
                     ),
                     if (subtitle != null) ...[
-                      const SizedBox(height: 4),
+                      const Gap(HorideSpace.xs),
                       Text(
                         subtitle!,
-                        style: TextStyle(
-                          color: Colors.white.withValues(alpha: 0.9),
-                          fontSize: 15,
-                          fontWeight: FontWeight.w600,
+                        style: const TextStyle(
+                          color: HorideColors.white,
+                          fontSize: HorideFontSize.body,
+                          fontWeight: HorideFontWeight.medium,
                         ),
                       ),
                     ],

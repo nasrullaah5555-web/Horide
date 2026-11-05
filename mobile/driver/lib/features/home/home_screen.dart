@@ -79,17 +79,7 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
           ),
           Align(
             alignment: Alignment.bottomCenter,
-            child: Material(
-              color: Theme.of(context).colorScheme.surface,
-              borderRadius: const BorderRadius.vertical(top: Radius.circular(18)),
-              elevation: 8,
-              child: SafeArea(
-                top: false,
-                child: Padding(
-                  padding: const EdgeInsets.fromLTRB(16, 16, 16, 12),
-                  child: Column(
-                    mainAxisSize: MainAxisSize.min,
-                    crossAxisAlignment: CrossAxisAlignment.stretch,
+            child: HorideBottomPanel(
                     children: [
                       if (state.offers.isNotEmpty)
                         _OfferCard(offer: state.offers.first)
@@ -103,59 +93,39 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
                           tone: state.online ? SignTone.go : SignTone.calm,
                         ),
                       if (state.message != null) ...[
-                        const SizedBox(height: 10),
-                        _Notice(
+                        const Gap(HorideSpace.md),
+                        HorideNotice(
                           text: state.message!,
                           onClose: ref.read(driverControllerProvider.notifier).dismissMessage,
                         ),
                       ],
                       if (eligibility != null && !eligibility.eligible && !state.online) ...[
-                        const SizedBox(height: 10),
-                        _Notice(
+                        const Gap(HorideSpace.md),
+                        HorideNotice(
                           text: eligibility.reasons
                               .map((r) => Eligibility.reasonText[r] ?? r)
                               .join('\n'),
-                          action: TextButton(
-                            onPressed: () => context.push('/onboarding'),
-                            child: const Text('Open'),
-                          ),
+                          action: HorideButton(kind: HorideButtonKind.quiet, label: 'Open', onPressed: () => context.push('/onboarding')),
                         ),
                       ],
                       if (state.online) ...[
-                        const SizedBox(height: 8),
+                        const Gap(HorideSpace.sm),
                         ValueListenableBuilder<bool>(
                           valueListenable: ref.watch(locationReporterProvider).connected,
                           builder:
-                              (_, ok, __) => Text(
+                              (_, ok, __) => StatusText(
                                 ok
                                     ? 'Location is being shared.'
                                     : 'Location not reaching Horide. Check your signal.',
-                                style: TextStyle(
-                                  color: ok ? HorideColors.signDeep : HorideColors.amber,
-                                  fontWeight: FontWeight.w700,
-                                ),
+                                ok: ok,
                               ),
                         ),
                       ],
-                      const SizedBox(height: 12),
+                      const Gap(HorideSpace.md),
                       if (state.offers.isEmpty)
-                        FilledButton(
-                          style: FilledButton.styleFrom(
-                            backgroundColor: state.online ? HorideColors.navy : HorideColors.sign,
-                          ),
-                          onPressed: _busy ? null : () => _toggle(!state.online),
-                          child: Text(
-                            _busy ? 'Please wait…' : (state.online ? 'Go offline' : 'Go online'),
-                          ),
-                        ),
-                      TextButton(
-                        onPressed: () => ref.read(sessionProvider.notifier).signOut(),
-                        child: const Text('Sign out'),
-                      ),
+                        HorideButton(kind: state.online ? HorideButtonKind.primary : HorideButtonKind.go, label: _busy ? 'Please wait…' : (state.online ? 'Go offline' : 'Go online'), onPressed: _busy ? null : () => _toggle(!state.online)),
+                      HorideButton(kind: HorideButtonKind.quiet, label: 'Sign out', onPressed: () => ref.read(sessionProvider.notifier).signOut()),
                     ],
-                  ),
-                ),
-              ),
             ),
           ),
         ],
@@ -206,72 +176,41 @@ class _OfferCardState extends ConsumerState<_OfferCard> {
               '${vehicleLabel(o.category)}  •  ${paymentLabel(o.paymentMethod)}  •  ${formatKm(o.tripDistanceMetres)} trip',
           trailing: Text(
             '${left}s',
-            style: const TextStyle(color: Colors.white, fontSize: 26, fontWeight: FontWeight.w800),
+            style: const TextStyle(
+              color: HorideColors.white,
+              fontSize: HorideFontSize.headline,
+              fontWeight: HorideFontWeight.heavy,
+            ),
           ),
         ),
-        const SizedBox(height: 10),
+        const Gap(HorideSpace.md),
         Text(
           'Pickup ${formatKm(o.distanceToPickupMetres)} away',
           style: theme.textTheme.titleMedium,
         ),
         Text(o.pickupText ?? 'Point on the map'),
-        const SizedBox(height: 4),
+        const Gap(HorideSpace.xs),
         Text('To: ${o.destinationText ?? 'Point on the map'}'),
-        const SizedBox(height: 12),
+        const Gap(HorideSpace.md),
         Row(
           children: [
             Expanded(
-              child: OutlinedButton(
-                onPressed:
-                    _busy ? null : () => ref.read(driverControllerProvider.notifier).reject(o),
-                child: const Text('Decline'),
-              ),
+              child: HorideButton(kind: HorideButtonKind.secondary, label: 'Decline', onPressed: _busy ? null : () => ref.read(driverControllerProvider.notifier).reject(o)),
             ),
-            const SizedBox(width: 10),
+            const Gap(HorideSpace.md),
             Expanded(
               flex: 2,
-              child: FilledButton(
-                onPressed:
-                    _busy || left == 0
+              child: HorideButton(kind: HorideButtonKind.go, label: 'Accept', onPressed: _busy || left == 0
                         ? null
                         : () async {
                           setState(() => _busy = true);
                           await ref.read(driverControllerProvider.notifier).accept(o);
                           if (mounted) setState(() => _busy = false);
-                        },
-                child: const Text('Accept'),
-              ),
+                        }),
             ),
           ],
         ),
       ],
-    );
-  }
-}
-
-class _Notice extends StatelessWidget {
-  const _Notice({required this.text, this.onClose, this.action});
-  final String text;
-  final VoidCallback? onClose;
-  final Widget? action;
-
-  @override
-  Widget build(BuildContext context) {
-    return Container(
-      padding: const EdgeInsets.fromLTRB(12, 8, 4, 8),
-      decoration: BoxDecoration(
-        color: HorideColors.amber.withValues(alpha: 0.12),
-        border: Border.all(color: HorideColors.amber),
-        borderRadius: BorderRadius.circular(10),
-      ),
-      child: Row(
-        children: [
-          Expanded(child: Text(text)),
-          if (action != null) action!,
-          if (onClose != null)
-            IconButton(tooltip: 'Dismiss', onPressed: onClose, icon: const Icon(Icons.close)),
-        ],
-      ),
     );
   }
 }
@@ -289,15 +228,9 @@ class CurrentLocationLayer extends ConsumerWidget {
       markers: [
         Marker(
           point: toLatLng(LatLngPoint(last.latitude, last.longitude)),
-          width: 26,
-          height: 26,
-          child: const DecoratedBox(
-            decoration: BoxDecoration(
-              color: HorideColors.navy,
-              shape: BoxShape.circle,
-              border: Border.fromBorderSide(BorderSide(color: Colors.white, width: 4)),
-            ),
-          ),
+          width: PositionDot.size,
+          height: PositionDot.size,
+          child: const PositionDot(live: true, label: 'You'),
         ),
       ],
     );

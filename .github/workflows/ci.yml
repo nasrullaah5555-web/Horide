@@ -84,6 +84,17 @@ jobs:
         env:
           NEXT_TELEMETRY_DISABLED: '1'
 
+  design:
+    name: Design constants (tokens up to date, no hardcoded values)
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+      - run: node scripts/gen-tokens.mjs --check
+      - run: node scripts/check-design.mjs
+
   security:
     name: Secrets and dependency scan
     runs-on: ubuntu-latest

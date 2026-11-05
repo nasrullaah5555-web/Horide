@@ -85,10 +85,10 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen> {
           _loading
               ? const Center(child: CircularProgressIndicator())
               : ListView(
-                padding: const EdgeInsets.all(16),
+                padding: const EdgeInsets.all(HorideSpace.lg),
                 children: [
                   if (_phone != null) InfoRow('Phone', _phone!),
-                  const SizedBox(height: 12),
+                  const Gap(HorideSpace.md),
                   TextField(
                     controller: _name,
                     maxLength: 120,
@@ -105,17 +105,12 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen> {
                       labelText: 'Emergency contact phone (optional)',
                     ),
                   ),
-                  const SizedBox(height: 8),
-                  FilledButton(onPressed: _busy ? null : _save, child: const Text('Save')),
-                  const SizedBox(height: 32),
-                  OutlinedButton(
-                    onPressed: () => ref.read(sessionProvider.notifier).signOut(),
-                    child: const Text('Sign out'),
-                  ),
-                  const SizedBox(height: 32),
-                  TextButton(
-                    style: TextButton.styleFrom(foregroundColor: HorideColors.signal),
-                    onPressed: () async {
+                  const Gap(HorideSpace.sm),
+                  HorideButton(label: 'Save', onPressed: _busy ? null : _save),
+                  const Gap(HorideSpace.xxl),
+                  HorideButton(kind: HorideButtonKind.secondary, label: 'Sign out', onPressed: () => ref.read(sessionProvider.notifier).signOut()),
+                  const Gap(HorideSpace.xxl),
+                  HorideButton(kind: HorideButtonKind.quietDanger, label: 'Delete my account', onPressed: () async {
                       final ok = await confirmAccountDeletion(
                         context,
                         whatIsRemoved:
@@ -127,9 +122,7 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen> {
                       } catch (e) {
                         if (context.mounted) showError(context, e);
                       }
-                    },
-                    child: const Text('Delete my account'),
-                  ),
+                    }),
                 ],
               ),
     );

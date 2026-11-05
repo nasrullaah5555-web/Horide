@@ -54,7 +54,7 @@ export default function ComplaintsPage() {
               type="checkbox"
               checked={showAll}
               onChange={(e) => setShowAll(e.target.checked)}
-              className="h-4 w-4 accent-[#14283e]"
+              className="h-4 w-4 accent-navy"
             />
             Include resolved
           </label>
@@ -77,10 +77,10 @@ export default function ComplaintsPage() {
                     <span className={`font-bold ${c.category === 'safety' ? 'text-signal' : ''}`}>
                       {humanize(c.category)}
                     </span>
-                    <span className="text-sm text-muted">{dateTime(c.created_at)}</span>
+                    <span className="text-small text-muted">{dateTime(c.created_at)}</span>
                     {c.trip_id && can('trips.read') && (
                       <Link
-                        className="text-sm font-semibold hover:underline"
+                        className="text-small font-semibold hover:underline"
                         href={`/trips/${c.trip_id}`}
                       >
                         Open the trip
@@ -89,7 +89,7 @@ export default function ComplaintsPage() {
                   </div>
                   <p className="mt-2 max-w-[75ch] whitespace-pre-wrap">{c.description}</p>
                   {c.resolution && (
-                    <p className="mt-2 rounded-md bg-ground px-3 py-2">
+                    <p className="mt-2 rounded-control bg-ground px-3 py-2">
                       Resolution: {c.resolution}
                     </p>
                   )}

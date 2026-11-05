@@ -97,7 +97,7 @@ export default function PassengersPage() {
                     <td>
                       <StatusBadge status={p.status} />
                       {p.suspended_reason && (
-                        <p className="mt-1 max-w-56 text-sm text-muted">{p.suspended_reason}</p>
+                        <p className="mt-1 max-w-56 text-small text-muted">{p.suspended_reason}</p>
                       )}
                     </td>
                     <td>

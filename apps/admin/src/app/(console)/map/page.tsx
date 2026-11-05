@@ -33,15 +33,15 @@ export default function MapPage() {
         }
       />
       <ErrorNotice error={error} />
-      <div className="mb-3 flex flex-wrap gap-5 text-sm">
+      <div className="mb-3 flex flex-wrap gap-5 text-small">
         <span className="flex items-center gap-2">
-          <span className="inline-block h-3 w-3 rounded-full bg-sign" /> Available
+          <span className="inline-block h-3 w-3 rounded-pill bg-sign" /> Available
         </span>
         <span className="flex items-center gap-2">
-          <span className="inline-block h-3 w-3 rounded-full bg-navy" /> On a ride
+          <span className="inline-block h-3 w-3 rounded-pill bg-navy" /> On a ride
         </span>
         <span className="flex items-center gap-2">
-          <span className="inline-block h-3 w-3 rounded-full bg-[#8a97a6]" /> Position is stale
+          <span className="inline-block h-3 w-3 rounded-pill bg-stale" /> Position is stale
         </span>
       </div>
       <LiveMap drivers={drivers} />

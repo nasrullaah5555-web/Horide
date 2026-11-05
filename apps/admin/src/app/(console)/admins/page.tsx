@@ -16,6 +16,7 @@ import { api, ApiError } from '@/lib/api';
 import { dateTime, humanize } from '@/lib/format';
 import { useSession } from '@/lib/session';
 import { useApi } from '@/lib/use-api';
+import { colors } from '@/lib/tokens.g';
 
 const ROLES = {
   support: 'Complaints, emergencies, trips. No money, prices or staff accounts.',
@@ -50,7 +51,7 @@ function RolePicker({ value, onChange }: { value: Role[]; onChange: (r: Role[]) 
         <label key={r} className="flex items-start gap-3">
           <input
             type="checkbox"
-            className="mt-1 h-4 w-4 accent-[#14283e]"
+            className="mt-1 h-4 w-4 accent-navy"
             checked={value.includes(r)}
             onChange={(e) =>
               onChange(e.target.checked ? [...value, r] : value.filter((x) => x !== r))
@@ -58,7 +59,7 @@ function RolePicker({ value, onChange }: { value: Role[]; onChange: (r: Role[]) 
           />
           <span>
             <span className="font-semibold">{humanize(r)}</span>
-            <span className="block text-sm text-muted">{ROLES[r]}</span>
+            <span className="block text-small text-muted">{ROLES[r]}</span>
           </span>
         </label>
       ))}
@@ -73,11 +74,11 @@ function OneTimeCredentials({ created, onClose }: { created: Created; onClose: (
     QRCode.toDataURL(created.otpauthUrl, {
       margin: 1,
       width: 220,
-      color: { dark: '#14283e', light: '#ffffff' },
+      color: { dark: colors.navy, light: colors.white },
     }).then(setQr, () => setQr(null));
   }, [created.otpauthUrl]);
   return (
-    <div className="space-y-4 rounded-lg bg-white p-5 ring-2 ring-amber">
+    <div className="space-y-4 rounded-control bg-white p-5 ring-2 ring-amber">
       <p className="font-bold">
         Give these details to {created.email} in person. They will not be shown again.
       </p>
@@ -87,11 +88,11 @@ function OneTimeCredentials({ created, onClose }: { created: Created; onClose: (
         {qr && <img src={qr} alt="Authenticator setup QR code" width={220} height={220} />}
         <dl className="space-y-3">
           <div>
-            <dt className="text-sm text-muted">Temporary password</dt>
-            <dd className="text-lg font-bold tracking-wide">{created.temporaryPassword}</dd>
+            <dt className="text-small text-muted">Temporary password</dt>
+            <dd className="text-title font-bold tracking-wide">{created.temporaryPassword}</dd>
           </div>
           <div>
-            <dt className="text-sm text-muted">
+            <dt className="text-small text-muted">
               Authenticator key (if the QR code can’t be scanned)
             </dt>
             <dd className="break-all font-semibold tracking-wide">
@@ -100,7 +101,7 @@ function OneTimeCredentials({ created, onClose }: { created: Created; onClose: (
           </div>
         </dl>
       </div>
-      <p className="text-sm text-muted">
+      <p className="text-small text-muted">
         They scan the code with an authenticator app (Google Authenticator, Microsoft Authenticator
         or Aegis), sign in, then change the password.
       </p>
@@ -150,7 +151,7 @@ export default function StaffPage() {
                     {a.full_name}{' '}
                     {a.id === admin.id && <span className="font-normal text-muted">(you)</span>}
                   </p>
-                  <p className="text-sm text-muted">
+                  <p className="text-small text-muted">
                     {a.email}, last sign-in {a.last_login_at ? dateTime(a.last_login_at) : 'never'}
                   </p>
                   <p className="mt-2 flex flex-wrap items-center gap-2">
@@ -186,7 +187,7 @@ export default function StaffPage() {
                           Cancel
                         </Button>
                       </div>
-                      <p className="text-sm text-muted">
+                      <p className="text-small text-muted">
                         The person is signed out and gets the new roles when they sign in again.
                       </p>
                     </form>

@@ -2,7 +2,8 @@ import 'package:flutter/material.dart';
 import 'package:url_launcher/url_launcher.dart';
 
 import '../emergency.dart';
-import '../theme.dart';
+import '../design/components.dart';
+import '../design/tokens.g.dart';
 
 /// Emergency help, used by both apps.
 ///
@@ -55,29 +56,26 @@ class _EmergencySheetState extends State<_EmergencySheet> {
     final theme = Theme.of(context);
     return SafeArea(
       child: Padding(
-        padding: const EdgeInsets.fromLTRB(16, 0, 16, 16),
+        padding: const EdgeInsets.fromLTRB(HorideSpace.lg, 0, HorideSpace.lg, HorideSpace.lg),
         child: Column(
           mainAxisSize: MainAxisSize.min,
           crossAxisAlignment: CrossAxisAlignment.stretch,
           children: [
             Text('Emergency', style: theme.textTheme.headlineSmall),
-            const SizedBox(height: 4),
+            const Gap(HorideSpace.xs),
             const Text('If you are in danger, call now.'),
-            const SizedBox(height: 12),
+            const Gap(HorideSpace.md),
             for (final n in emergencyNumbers)
               Padding(
-                padding: const EdgeInsets.only(bottom: 8),
-                child: FilledButton.icon(
-                  style: FilledButton.styleFrom(
-                    backgroundColor: HorideColors.signal,
-                    minimumSize: const Size.fromHeight(kLargeTouchTarget),
-                  ),
+                padding: const EdgeInsets.only(bottom: HorideSpace.sm),
+                child: HorideButton(
+                  kind: HorideButtonKind.emergency,
+                  icon: Icons.call,
+                  label: '${n.service}  ${n.number}',
                   onPressed: () => launchUrl(Uri(scheme: 'tel', path: n.number)),
-                  icon: const Icon(Icons.call),
-                  label: Text('${n.service}  ${n.number}'),
                 ),
               ),
-            const SizedBox(height: 6),
+            const Gap(HorideSpace.sm),
             Row(
               children: [
                 Icon(switch (_alert) {
@@ -85,7 +83,7 @@ class _EmergencySheetState extends State<_EmergencySheet> {
                   _AlertState.sent => Icons.check_circle,
                   _AlertState.failed => Icons.error_outline,
                 }, color: _alert == _AlertState.failed ? HorideColors.signal : HorideColors.sign),
-                const SizedBox(width: 8),
+                const Gap(HorideSpace.sm),
                 Expanded(
                   child: Text(switch (_alert) {
                     _AlertState.sending => 'Alerting Horide with your trip and location...',
@@ -94,7 +92,12 @@ class _EmergencySheetState extends State<_EmergencySheet> {
                   }),
                 ),
                 if (_alert == _AlertState.failed)
-                  TextButton(onPressed: _send, child: const Text('Retry')),
+                  HorideButton(
+                    kind: HorideButtonKind.quiet,
+                    compact: true,
+                    label: 'Retry',
+                    onPressed: _send,
+                  ),
               ],
             ),
           ],

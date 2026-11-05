@@ -3,6 +3,7 @@
 import 'leaflet/dist/leaflet.css';
 import L from 'leaflet';
 import { useEffect, useRef } from 'react';
+import { colors } from '@/lib/tokens.g';
 
 export interface MapDriver {
   driver_id: string;
@@ -26,8 +27,8 @@ const JIJIGA: L.LatLngExpression = [9.35, 42.8];
 
 /** Colours: sign green = free and live, navy = on a ride, grey = position is stale. */
 function style(d: MapDriver): L.CircleMarkerOptions {
-  const colour = !d.isLive ? '#8a97a6' : d.on_trip ? '#14283e' : '#19a974';
-  return { radius: 8, color: '#ffffff', weight: 2, fillColor: colour, fillOpacity: 1 };
+  const colour = !d.isLive ? colors.stale : d.on_trip ? colors.navy : colors.sign;
+  return { radius: 8, color: colors.white, weight: 2, fillColor: colour, fillOpacity: 1 };
 }
 
 /**
@@ -71,7 +72,7 @@ export default function LiveMap({
     for (const z of zones) {
       const shape = L.geoJSON(z.geojson, {
         style: {
-          color: z.active ? '#19a974' : '#8a97a6',
+          color: z.active ? colors.sign : colors.stale,
           weight: 2,
           fillOpacity: 0.05,
           dashArray: z.active ? undefined : '6 6',
@@ -100,7 +101,7 @@ export default function LiveMap({
     <div
       ref={el}
       style={{ height }}
-      className="w-full overflow-hidden rounded-lg ring-1 ring-line"
+      className="w-full overflow-hidden rounded-control ring-1 ring-line"
       role="application"
       aria-label="Map of Jijiga"
     />

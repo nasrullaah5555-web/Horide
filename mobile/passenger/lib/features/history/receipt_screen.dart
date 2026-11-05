@@ -26,10 +26,10 @@ class ReceiptScreen extends ConsumerWidget {
                 Center(child: Text(e is ApiException ? e.message : 'Could not load the receipt.')),
         data:
             (r) => ListView(
-              padding: const EdgeInsets.all(16),
+              padding: const EdgeInsets.all(HorideSpace.lg),
               children: [
                 SignPanel(title: formatEtb(r.finalFare), subtitle: 'Paid by ${_method(r.method)}'),
-                const SizedBox(height: 16),
+                const Gap(HorideSpace.lg),
                 InfoRow('From', r.pickupText ?? 'Point on the map'),
                 InfoRow('To', r.destinationText ?? 'Point on the map'),
                 InfoRow('Distance', formatKm(r.distanceMetres)),
@@ -39,16 +39,13 @@ class ReceiptScreen extends ConsumerWidget {
                 if (r.plate != null) InfoRow('Plate', r.plate!),
                 InfoRow('Payment', r.paymentStatus.replaceAll('_', ' ')),
                 if (r.ebirrReference != null) InfoRow('eBirr reference', r.ebirrReference!),
-                const SizedBox(height: 12),
+                const Gap(HorideSpace.md),
                 Text(
                   r.note,
                   style: TextStyle(color: Theme.of(context).colorScheme.onSurfaceVariant),
                 ),
-                const SizedBox(height: 20),
-                OutlinedButton(
-                  onPressed: () => context.push('/complaint?tripId=$tripId'),
-                  child: const Text('Report a problem with this trip'),
-                ),
+                const Gap(HorideSpace.xl),
+                HorideButton(kind: HorideButtonKind.secondary, label: 'Report a problem with this trip', onPressed: () => context.push('/complaint?tripId=$tripId')),
               ],
             ),
       ),

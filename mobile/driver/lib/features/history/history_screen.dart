@@ -38,14 +38,14 @@ class HistoryScreen extends ConsumerWidget {
           return RefreshIndicator(
             onRefresh: () => ref.refresh(driverHistoryProvider.future),
             child: ListView(
-              padding: const EdgeInsets.all(16),
+              padding: const EdgeInsets.all(HorideSpace.lg),
               children: [
                 Row(
                   children: [
                     Expanded(
                       child: _Total(label: 'Today', santim: sumFares(todays), trips: todays.length),
                     ),
-                    const SizedBox(width: 10),
+                    const Gap(HorideSpace.md),
                     Expanded(
                       child: _Total(
                         label: 'This week',
@@ -55,15 +55,15 @@ class HistoryScreen extends ConsumerWidget {
                     ),
                   ],
                 ),
-                const SizedBox(height: 6),
+                const Gap(HorideSpace.sm),
                 Text(
                   'Based on your last ${list.length} trips. Fares are paid to you directly.',
                   style: TextStyle(color: Theme.of(context).colorScheme.onSurfaceVariant),
                 ),
-                const SizedBox(height: 12),
+                const Gap(HorideSpace.md),
                 if (list.isEmpty)
                   const Center(
-                    child: Padding(padding: EdgeInsets.all(32), child: Text('No trips yet.')),
+                    child: Padding(padding: EdgeInsets.all(HorideSpace.xxl), child: Text('No trips yet.')),
                   ),
                 for (final t in list)
                   ListTile(
@@ -80,7 +80,7 @@ class HistoryScreen extends ConsumerWidget {
                     ),
                     trailing: Text(
                       formatEtbShort(t.fare),
-                      style: const TextStyle(fontWeight: FontWeight.w800),
+                      style: const TextStyle(fontWeight: HorideFontWeight.heavy),
                     ),
                     // Completed trips open the payment record (if it wasn't recorded at the time).
                     onTap:
@@ -106,7 +106,7 @@ class _Total extends StatelessWidget {
   @override
   Widget build(BuildContext context) => Card(
     child: Padding(
-      padding: const EdgeInsets.all(14),
+      padding: const EdgeInsets.all(HorideSpace.lg),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [

@@ -30,10 +30,7 @@ class OnboardingScreen extends ConsumerWidget {
                 mainAxisSize: MainAxisSize.min,
                 children: [
                   Text(e is ApiException ? e.message : 'Could not load your account.'),
-                  TextButton(
-                    onPressed: () => ref.invalidate(overviewProvider),
-                    child: const Text('Try again'),
-                  ),
+                  HorideButton(kind: HorideButtonKind.quiet, label: 'Try again', onPressed: () => ref.invalidate(overviewProvider)),
                 ],
               ),
             ),
@@ -41,7 +38,7 @@ class OnboardingScreen extends ConsumerWidget {
             (o) => RefreshIndicator(
               onRefresh: () => ref.refresh(overviewProvider.future),
               child: ListView(
-                padding: const EdgeInsets.all(16),
+                padding: const EdgeInsets.all(HorideSpace.lg),
                 children: [
                   SignPanel(
                     title: o.eligibility.eligible ? 'Ready to drive' : 'Not ready yet',
@@ -53,7 +50,7 @@ class OnboardingScreen extends ConsumerWidget {
                                 .join('\n'),
                     tone: o.eligibility.eligible ? SignTone.go : SignTone.calm,
                   ),
-                  const SizedBox(height: 20),
+                  const Gap(HorideSpace.xl),
                   _Section(
                     title: '1. Your name',
                     child: _NameForm(initial: o.fullName, locked: o.approvalStatus == 'approved'),
@@ -61,9 +58,7 @@ class OnboardingScreen extends ConsumerWidget {
                   _Section(title: '2. Your vehicle', child: _VehicleSection(vehicle: o.vehicle)),
                   _Section(title: '3. Documents', child: _Documents(overview: o)),
                   const _Section(title: '4. Monthly subscription', child: _SubscriptionSection()),
-                  TextButton(
-                    style: TextButton.styleFrom(foregroundColor: HorideColors.signal),
-                    onPressed: () async {
+                  HorideButton(kind: HorideButtonKind.quietDanger, label: 'Delete my account', onPressed: () async {
                       final ok = await confirmAccountDeletion(
                         context,
                         whatIsRemoved:
@@ -76,9 +71,7 @@ class OnboardingScreen extends ConsumerWidget {
                       } catch (e) {
                         if (context.mounted) showError(context, e);
                       }
-                    },
-                    child: const Text('Delete my account'),
-                  ),
+                    }),
                 ],
               ),
             ),
@@ -94,12 +87,12 @@ class _Section extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) => Padding(
-    padding: const EdgeInsets.only(bottom: 24),
+    padding: const EdgeInsets.only(bottom: HorideSpace.xl),
     child: Column(
       crossAxisAlignment: CrossAxisAlignment.stretch,
       children: [
         Text(title, style: Theme.of(context).textTheme.titleLarge),
-        const SizedBox(height: 8),
+        const Gap(HorideSpace.sm),
         child,
       ],
     ),
@@ -137,9 +130,7 @@ class _NameFormState extends ConsumerState<_NameForm> {
           textCapitalization: TextCapitalization.words,
           decoration: const InputDecoration(labelText: 'Full name, as on your National ID'),
         ),
-        OutlinedButton(
-          onPressed:
-              _busy
+        HorideButton(kind: HorideButtonKind.secondary, label: 'Save name', onPressed: _busy
                   ? null
                   : () async {
                     if (_name.text.trim().isEmpty) return;
@@ -152,9 +143,7 @@ class _NameFormState extends ConsumerState<_NameForm> {
                     } finally {
                       if (mounted) setState(() => _busy = false);
                     }
-                  },
-          child: const Text('Save name'),
-        ),
+                  }),
       ],
     );
   }
@@ -237,7 +226,7 @@ class _VehicleSectionState extends ConsumerState<_VehicleSection> {
           selected: {_category},
           onSelectionChanged: (s) => setState(() => _category = s.first),
         ),
-        const SizedBox(height: 8),
+        const Gap(HorideSpace.sm),
         TextField(
           controller: _make,
           maxLength: 40,
@@ -265,7 +254,7 @@ class _VehicleSectionState extends ConsumerState<_VehicleSection> {
           textCapitalization: TextCapitalization.characters,
           decoration: const InputDecoration(labelText: 'Plate number'),
         ),
-        FilledButton(onPressed: _busy ? null : _save, child: const Text('Add vehicle')),
+        HorideButton(label: 'Add vehicle', onPressed: _busy ? null : _save),
       ],
     );
   }
@@ -352,9 +341,9 @@ class _DocumentsState extends ConsumerState<_Documents> {
                 trailing:
                     _uploading == entry.key
                         ? const SizedBox(
-                          width: 24,
-                          height: 24,
-                          child: CircularProgressIndicator(strokeWidth: 3),
+                          width: HorideSize.spinner,
+                          height: HorideSize.spinner,
+                          child: CircularProgressIndicator(strokeWidth: HorideStroke.signBorder),
                         )
                         : doc?.status == 'approved'
                         ? const Icon(Icons.check_circle, color: HorideColors.sign)
@@ -377,7 +366,7 @@ class _DocumentsState extends ConsumerState<_Documents> {
               );
             },
           ),
-        const SizedBox(height: 6),
+        const Gap(HorideSpace.sm),
         Text(
           'Your documents are stored privately and only Horide verification staff can see them.',
           style: TextStyle(color: Theme.of(context).colorScheme.onSurfaceVariant),
@@ -413,7 +402,7 @@ class _SubscriptionSection extends ConsumerWidget {
                 const Text(
                   'Your subscription ends soon. Renew it to keep receiving rides. A trip in progress '
                   'is never interrupted.',
-                  style: TextStyle(color: HorideColors.amber, fontWeight: FontWeight.w700),
+                  style: TextStyle(color: HorideColors.amber, fontWeight: HorideFontWeight.bold),
                 ),
             ],
           ],

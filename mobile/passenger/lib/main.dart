@@ -6,6 +6,7 @@ import 'app.dart';
 
 void main() {
   WidgetsFlutterBinding.ensureInitialized();
+  configureMaps(appId: 'et.horide.passenger');
   final problem = HorideConfig.releaseProblem;
   runApp(problem != null ? ConfigErrorApp(problem) : const ProviderScope(child: HorideApp()));
 }

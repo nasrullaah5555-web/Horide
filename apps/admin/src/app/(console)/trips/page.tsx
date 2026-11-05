@@ -128,7 +128,9 @@ function TripsList() {
                     <td>{humanize(t.category)}</td>
                     <td className="whitespace-nowrap text-right tabular-nums">
                       {etb(t.final_fare ?? t.quoted_fare)}
-                      <span className="block text-sm text-muted">{humanize(t.payment_method)}</span>
+                      <span className="block text-small text-muted">
+                        {humanize(t.payment_method)}
+                      </span>
                     </td>
                   </tr>
                 ))}

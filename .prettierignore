@@ -5,3 +5,7 @@ packages/
 **/dist/
 **/.next/
 **/coverage/
+
+# Generated from design/tokens.json
+apps/admin/src/lib/tokens.g.ts
+packages/design-tokens/tokens.css

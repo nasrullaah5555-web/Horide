@@ -1,0 +1,74 @@
+/* GENERATED from design/tokens.json by scripts/gen-tokens.mjs. Do not edit by hand. */
+
+@theme {
+  --font-sans: 'Overpass', ui-sans-serif, system-ui, sans-serif;
+  --color-navy: #14283e;
+  --color-navy-soft: #23405f;
+  --color-sign: #19a974;
+  --color-sign-deep: #12805a;
+  --color-sign-soft: #e3f5ee;
+  --color-ground: #f3f5f7;
+  --color-white: #ffffff;
+  --color-line: #dde3ea;
+  --color-muted: #5b6b7d;
+  --color-stale: #8a97a6;
+  --color-info: #e8eef5;
+  --color-amber: #b7791f;
+  --color-amber-soft: #fbf1e1;
+  --color-signal: #c0392b;
+  --color-signal-soft: #fbe9e7;
+  --color-night: #0e1c2c;
+  --color-night-surface: #172a40;
+  --color-night-line: #2a4260;
+  --color-night-muted: #a9b6c4;
+  --color-shadow: #14283e40;
+  --color-scrim: #14283e80;
+  --color-row-hover: #f8fafb;
+  --radius-sm: 4px;
+  --radius-control: 10px;
+  --radius-card: 12px;
+  --radius-sign: 14px;
+  --radius-panel: 18px;
+  --radius-pill: 999px;
+  --text-caption: 0.75rem;
+  --text-small: 0.8125rem;
+  --text-body: 0.9375rem;
+  --text-body-large: 1rem;
+  --text-button: 1.0625rem;
+  --text-title: 1.125rem;
+  --text-title-large: 1.25rem;
+  --text-headline: 1.5rem;
+  --text-display: 1.75rem;
+  --text-hero: 2.75rem;
+  --text-code: 1.875rem;
+  --text-reading: 1.0625rem;
+  --leading-tight: 1.1;
+  --leading-body: 1.45;
+  --shadow-sign: 0 0 0 1px #14283e40;
+}
+:root {
+  --space-xxs: 2px;
+  --space-xs: 4px;
+  --space-sm: 8px;
+  --space-md: 12px;
+  --space-lg: 16px;
+  --space-xl: 24px;
+  --space-xxl: 32px;
+  --space-xxxl: 48px;
+  --size-touch-target: 56px;
+  --size-icon-small: 18px;
+  --size-icon: 24px;
+  --size-icon-large: 30px;
+  --size-avatar: 52px;
+  --size-pin: 26px;
+  --size-pin-stem: 14px;
+  --size-marker: 30px;
+  --size-spinner: 24px;
+  --size-star: 38px;
+  --stroke-hairline: 1px;
+  --stroke-control: 1.5px;
+  --stroke-focus: 2px;
+  --stroke-selected: 2.5px;
+  --stroke-sign-border: 3px;
+  --stroke-marker: 4px;
+}

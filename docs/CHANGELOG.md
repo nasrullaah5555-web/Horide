@@ -33,6 +33,7 @@
 - Mobile release setup: final app IDs, release signing from a git-ignored key file or CI secrets, obfuscated release bundles in CI, Horide launcher icons; release builds refuse a non-https server address.
 - Pilot runbook: go/no-go checklist, daily operations, incident and breach procedures, support process.
 - Passenger app: saved places as one-tap destinations (save, use, hold to remove).
+- One design-token file (`design/tokens.json`) drives the apps, console and website; shared button and panel components; CI rejects hardcoded colours, sizes and button styles.
 
 ### Security
 - Client IP read through a configurable number of proxy hops (`TRUST_PROXY_HOPS`; 2 behind Cloudflare + Render) so per-IP limits are neither shared nor forgeable.

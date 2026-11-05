@@ -3,7 +3,8 @@ import 'dart:async';
 import 'package:connectivity_plus/connectivity_plus.dart';
 import 'package:flutter/material.dart';
 
-import '../theme.dart';
+import '../design/components.dart';
+import '../design/tokens.g.dart';
 
 /// A strip at the top of the screen when the phone has no network, so people know why nothing
 /// is updating instead of thinking the app is broken. Disappears when the connection returns.
@@ -57,17 +58,20 @@ class _ConnectionBannerState extends State<ConnectionBanner> {
                       child: Semantics(
                         liveRegion: true,
                         child: const Padding(
-                          padding: EdgeInsets.symmetric(horizontal: 16, vertical: 10),
+                          padding: EdgeInsets.symmetric(
+                            horizontal: HorideSpace.lg,
+                            vertical: HorideSpace.md,
+                          ),
                           child: Row(
                             children: [
-                              Icon(Icons.wifi_off, color: Colors.white, size: 20),
-                              SizedBox(width: 10),
+                              Icon(Icons.wifi_off, color: HorideColors.white, size: HorideSize.iconSmall),
+                              Gap(HorideSpace.md),
                               Expanded(
                                 child: Text(
                                   'No internet. We will update when you are back online.',
                                   style: TextStyle(
-                                    color: Colors.white,
-                                    fontWeight: FontWeight.w600,
+                                    color: HorideColors.white,
+                                    fontWeight: HorideFontWeight.medium,
                                   ),
                                 ),
                               ),

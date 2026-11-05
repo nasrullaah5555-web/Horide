@@ -29,26 +29,26 @@ export default function Home() {
           <div className="mx-auto grid max-w-5xl gap-10 px-4 py-16 md:grid-cols-[1.3fr_1fr] md:items-center">
             <div>
               <p className="font-bold uppercase tracking-widest text-sign">Jijiga</p>
-              <h1 className="mt-2 text-5xl font-extrabold leading-[1.05] tracking-tight">
+              <h1 className="mt-2 text-hero font-extrabold leading-tight tracking-tight">
                 A car or Bajaj,
                 <br />
                 at a fixed price.
               </h1>
-              <p className="mt-4 max-w-md text-lg text-white/80">
+              <p className="mt-4 max-w-md text-title text-white/80">
                 Horide connects passengers with local drivers. You see the price first and pay the
                 driver directly.
               </p>
-              <p className="mt-6 inline-block rounded-lg border border-white/30 px-4 py-2 font-semibold text-white/90">
+              <p className="mt-6 inline-block rounded-control border border-white/30 px-4 py-2 font-semibold text-white/90">
                 The Horide apps are being tested and are not in the app stores yet.
               </p>
             </div>
             {/* A sign, not a screenshot: the apps haven't launched, so no store badges or fake screens. */}
             <div aria-hidden className="sign p-6">
-              <p className="text-sm font-bold uppercase tracking-widest text-white/80">
+              <p className="text-small font-bold uppercase tracking-widest text-white/80">
                 Example trip
               </p>
-              <p className="mt-2 text-3xl font-extrabold">Home → Market</p>
-              <p className="mt-3 text-lg font-semibold text-white/90">
+              <p className="mt-2 text-display font-extrabold">Home → Market</p>
+              <p className="mt-3 text-title font-semibold text-white/90">
                 Price shown before booking. Paid to the driver.
               </p>
             </div>
@@ -58,8 +58,8 @@ export default function Home() {
         <section className="mx-auto max-w-5xl px-4 py-14">
           <div className="grid gap-6 sm:grid-cols-2">
             {points.map((p) => (
-              <div key={p.title} className="rounded-xl border border-line bg-white p-6">
-                <h2 className="text-xl font-extrabold">{p.title}</h2>
+              <div key={p.title} className="rounded-card border border-line bg-white p-6">
+                <h2 className="text-title-large font-extrabold">{p.title}</h2>
                 <p className="mt-2 text-navy-soft">{p.text}</p>
               </div>
             ))}
@@ -67,13 +67,13 @@ export default function Home() {
           <div className="mt-10 flex flex-wrap gap-4">
             <Link
               href="/how-it-works/"
-              className="rounded-lg bg-sign px-5 py-3 font-bold text-white hover:bg-sign-deep"
+              className="rounded-control bg-sign px-5 py-3 font-bold text-white hover:bg-sign-deep"
             >
               How it works
             </Link>
             <Link
               href="/drive/"
-              className="rounded-lg border-2 border-navy px-5 py-3 font-bold hover:bg-white"
+              className="rounded-control border-2 border-navy px-5 py-3 font-bold hover:bg-white"
             >
               Drive with Horide
             </Link>

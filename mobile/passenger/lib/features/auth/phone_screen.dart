@@ -54,30 +54,35 @@ class _PhoneScreenState extends ConsumerState<PhoneScreen> {
     return Scaffold(
       body: SafeArea(
         child: ListView(
-          padding: const EdgeInsets.fromLTRB(24, 32, 24, 24),
+          padding: const EdgeInsets.fromLTRB(HorideSpace.xl, HorideSpace.xxl, HorideSpace.xl, HorideSpace.xl),
           children: [
             const SignPanel(title: 'Horide', subtitle: 'Rides in Jijiga'),
-            const SizedBox(height: 40),
+            const Gap(HorideSpace.xxxl),
             Text('Your phone number', style: theme.textTheme.headlineMedium),
-            const SizedBox(height: 8),
+            const Gap(HorideSpace.sm),
             Text(
               'We will send you a 6-digit code by SMS.',
               style: TextStyle(color: theme.colorScheme.onSurfaceVariant),
             ),
-            const SizedBox(height: 24),
+            const Gap(HorideSpace.xl),
             TextField(
               controller: _phone,
               keyboardType: TextInputType.phone,
               autofillHints: const [AutofillHints.telephoneNumber],
               inputFormatters: [FilteringTextInputFormatter.allow(RegExp(r'[0-9+ ]'))],
-              style: const TextStyle(fontSize: 22, fontWeight: FontWeight.w700, letterSpacing: 1),
+              style: const TextStyle(
+                fontSize: HorideFontSize.titleLarge,
+                fontWeight: HorideFontWeight.bold,
+                letterSpacing: HorideLetterSpacing.phone,
+              ),
               decoration: InputDecoration(hintText: '09XX XXX XXX', errorText: _error),
               onSubmitted: (_) => _submit(),
             ),
-            const SizedBox(height: 24),
-            FilledButton(
+            const Gap(HorideSpace.xl),
+            HorideButton(
+              kind: HorideButtonKind.go,
+              label: _busy ? 'Sending code…' : 'Send code',
               onPressed: _busy ? null : _submit,
-              child: Text(_busy ? 'Sending code…' : 'Send code'),
             ),
           ],
         ),

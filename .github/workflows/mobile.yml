@@ -5,9 +5,9 @@ name: Mobile
 on:
   push:
     branches: [main]
-    paths: ['mobile/**', 'packages/**', '.github/workflows/mobile.yml']
+    paths: ['mobile/**', 'packages/horide_core/**', '.github/workflows/mobile.yml']
   pull_request:
-    paths: ['mobile/**', 'packages/**', '.github/workflows/mobile.yml']
+    paths: ['mobile/**', 'packages/horide_core/**', '.github/workflows/mobile.yml']
   workflow_dispatch:
 
 permissions:
@@ -43,9 +43,10 @@ jobs:
         run: flutter --version
       - if: steps.exists.outputs.yes == 'true'
         run: flutter pub get
-      # Format locally so analysis sees the same code the format job will commit.
+      # Apply automatic fixes and formatting locally so analysis sees the same code the format
+      # job will commit.
       - if: steps.exists.outputs.yes == 'true'
-        run: dart format lib test
+        run: dart fix --apply && dart format lib test
       - name: Analyze
         if: steps.exists.outputs.yes == 'true' && !cancelled()
         run: flutter analyze --fatal-infos
@@ -72,7 +73,7 @@ jobs:
         run: |
           for pkg in packages/horide_core mobile/passenger mobile/driver; do
             if [ -f "$pkg/pubspec.yaml" ]; then
-              (cd "$pkg" && flutter pub get >/dev/null && dart format lib test)
+              (cd "$pkg" && flutter pub get >/dev/null && dart fix --apply && dart format lib test)
             fi
           done
       - name: Commit formatting (push to main) or fail (pull request)

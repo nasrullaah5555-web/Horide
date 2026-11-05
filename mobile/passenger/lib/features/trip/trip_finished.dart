@@ -73,11 +73,8 @@ class _TripFinishedScreenState extends ConsumerState<TripFinishedScreen> {
               ),
             ),
             actions: [
-              TextButton(onPressed: () => Navigator.pop(d), child: const Text('Back')),
-              FilledButton(
-                onPressed: () => Navigator.pop(d, note.text.trim()),
-                child: const Text('Send'),
-              ),
+              HorideButton(kind: HorideButtonKind.quiet, label: 'Back', onPressed: () => Navigator.pop(d)),
+              HorideButton(label: 'Send', onPressed: () => Navigator.pop(d, note.text.trim())),
             ],
           ),
     );
@@ -106,22 +103,22 @@ class _TripFinishedScreenState extends ConsumerState<TripFinishedScreen> {
     return Scaffold(
       appBar: AppBar(title: const Text('Trip finished'), automaticallyImplyLeading: false),
       body: ListView(
-        padding: const EdgeInsets.all(16),
+        padding: const EdgeInsets.all(HorideSpace.lg),
         children: [
           SignPanel(
             title: formatEtb(trip.fare),
             subtitle: 'Pay your driver by ${paymentLabel(trip.paymentMethod)}',
           ),
-          const SizedBox(height: 8),
+          const Gap(HorideSpace.sm),
           Text(
             'Horide does not take ride payments. Pay the driver directly, then confirm here.',
             style: TextStyle(color: theme.colorScheme.onSurfaceVariant),
           ),
-          const SizedBox(height: 16),
+          const Gap(HorideSpace.lg),
           Text('Payment', style: theme.textTheme.titleMedium),
-          const SizedBox(height: 6),
+          const Gap(HorideSpace.sm),
           if (receipt == null)
-            OutlinedButton(onPressed: _loadReceipt, child: const Text('Load payment details'))
+            HorideButton(kind: HorideButtonKind.secondary, label: 'Load payment details', onPressed: _loadReceipt)
           else ...[
             InfoRow(
               'Status',
@@ -130,11 +127,9 @@ class _TripFinishedScreenState extends ConsumerState<TripFinishedScreen> {
                   : _statusText(receipt.paymentStatus),
             ),
             if (receipt.ebirrReference != null) InfoRow('eBirr reference', receipt.ebirrReference!),
-            const SizedBox(height: 8),
+            const Gap(HorideSpace.sm),
             if (!passengerAnswered) ...[
-              FilledButton(
-                onPressed:
-                    _busy
+              HorideButton(label: 'I have paid the driver', onPressed: _busy
                         ? null
                         : () => _do((api) async {
                           final r = await api.confirmPayment(trip.id);
@@ -144,40 +139,21 @@ class _TripFinishedScreenState extends ConsumerState<TripFinishedScreen> {
                               _confirmed = true;
                             });
                           }
-                        }),
-                child: const Text('I have paid the driver'),
-              ),
-              const SizedBox(height: 8),
+                        })),
+              const Gap(HorideSpace.sm),
             ],
             if (status != 'disputed' && status != 'resolved')
-              OutlinedButton(
-                onPressed: _busy ? null : _dispute,
-                child: const Text('Report a payment problem'),
-              ),
+              HorideButton(kind: HorideButtonKind.secondary, label: 'Report a payment problem', onPressed: _busy ? null : _dispute),
           ],
-          const SizedBox(height: 24),
+          const Gap(HorideSpace.xl),
           Text('Rate your driver', style: theme.textTheme.titleMedium),
           if (_rated)
             const Padding(
-              padding: EdgeInsets.symmetric(vertical: 12),
+              padding: EdgeInsets.symmetric(vertical: HorideSpace.md),
               child: Text('Thank you for rating your driver.'),
             )
           else ...[
-            Row(
-              mainAxisAlignment: MainAxisAlignment.center,
-              children: [
-                for (var i = 1; i <= 5; i++)
-                  IconButton(
-                    tooltip: '$i star${i == 1 ? '' : 's'}',
-                    iconSize: 38,
-                    onPressed: () => setState(() => _stars = i),
-                    icon: Icon(
-                      i <= _stars ? Icons.star : Icons.star_border,
-                      color: HorideColors.amber,
-                    ),
-                  ),
-              ],
-            ),
+            StarRating(value: _stars, onChanged: (i) => setState(() => _stars = i)),
             TextField(
               controller: _comment,
               maxLength: 500,
@@ -194,8 +170,8 @@ class _TripFinishedScreenState extends ConsumerState<TripFinishedScreen> {
               child: const Text('Send rating'),
             ),
           ],
-          const SizedBox(height: 24),
-          FilledButton(onPressed: _close, child: const Text('Done')),
+          const Gap(HorideSpace.xl),
+          HorideButton(label: 'Done', onPressed: _close),
         ],
       ),
     );

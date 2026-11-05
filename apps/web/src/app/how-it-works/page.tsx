@@ -37,23 +37,23 @@ export default function HowItWorks() {
     <Page title="How it works" lead="Booking a ride takes a few taps.">
       <ol className="space-y-4">
         {steps.map(([title, text], i) => (
-          <li key={title} className="flex gap-4 rounded-xl border border-line bg-white p-5">
-            <span className="sign flex h-11 w-11 shrink-0 items-center justify-center text-lg font-extrabold">
+          <li key={title} className="flex gap-4 rounded-card border border-line bg-white p-5">
+            <span className="sign flex h-11 w-11 shrink-0 items-center justify-center text-title font-extrabold">
               {i + 1}
             </span>
             <div>
-              <h2 className="text-lg font-extrabold">{title}</h2>
+              <h2 className="text-title font-extrabold">{title}</h2>
               <p className="text-navy-soft">{text}</p>
             </div>
           </li>
         ))}
       </ol>
-      <h2 className="mt-10 text-2xl font-extrabold">If your destination changes</h2>
+      <h2 className="mt-10 text-headline font-extrabold">If your destination changes</h2>
       <p className="mt-2 text-navy-soft">
         Change it in the app during the trip. Horide works out the new price and you approve it
         before anything changes. If you don’t approve, the original price stays.
       </p>
-      <h2 className="mt-8 text-2xl font-extrabold">Prices</h2>
+      <h2 className="mt-8 text-headline font-extrabold">Prices</h2>
       <p className="mt-2 text-navy-soft">
         Each fare is a starting amount plus a price per kilometre of road, different for cars and
         Bajaj. The prices for Jijiga will be published here before launch.

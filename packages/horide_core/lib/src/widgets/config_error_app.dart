@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 
+import '../design/tokens.g.dart';
 import '../theme.dart';
 
 /// Shown instead of the app when the build is misconfigured (see HorideConfig.releaseProblem).
@@ -14,7 +15,7 @@ class ConfigErrorApp extends StatelessWidget {
       home: Scaffold(
         body: SafeArea(
           child: Padding(
-            padding: const EdgeInsets.all(24),
+            padding: const EdgeInsets.all(HorideSpace.xl),
             child: Center(child: Text(problem, textAlign: TextAlign.center)),
           ),
         ),

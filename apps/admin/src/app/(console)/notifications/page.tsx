@@ -88,23 +88,27 @@ export default function AnnouncementsPage() {
                 value={body}
                 onChange={(e) => setBody(e.target.value)}
               />
-              <span className="text-sm text-muted">
+              <span className="text-small text-muted">
                 {500 - body.length} characters left. Write in plain, short English.
               </span>
             </label>
             <ErrorNotice error={error} />
-            {sent && <p className="rounded-md bg-sign-soft px-4 py-3 text-sign-deep">{sent}</p>}
+            {sent && (
+              <p className="rounded-control bg-sign-soft px-4 py-3 text-sign-deep">{sent}</p>
+            )}
             <Button type="submit">Review and send</Button>
           </form>
         </Panel>
       </div>
       <dialog
         ref={confirmRef}
-        className="m-auto w-[min(520px,92vw)] rounded-lg p-0 text-navy shadow-xl"
+        className="m-auto w-[min(520px,92vw)] rounded-control p-0 text-navy shadow-xl"
       >
         <div className="space-y-4 p-6">
-          <h2 className="text-xl font-bold">Send to {AUDIENCES[audience].toLowerCase()}?</h2>
-          <div className="rounded-md bg-ground px-4 py-3">
+          <h2 className="text-title-large font-bold">
+            Send to {AUDIENCES[audience].toLowerCase()}?
+          </h2>
+          <div className="rounded-control bg-ground px-4 py-3">
             <p className="font-bold">{title}</p>
             <p className="whitespace-pre-wrap">{body}</p>
           </div>

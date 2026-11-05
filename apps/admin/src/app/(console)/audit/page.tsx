@@ -133,16 +133,16 @@ export default function AuditPage() {
                       <td>
                         {humanize(e.entity_type)}
                         {e.entity_id && (
-                          <span className="block max-w-40 truncate text-sm text-muted">
+                          <span className="block max-w-40 truncate text-small text-muted">
                             {e.entity_id}
                           </span>
                         )}
                       </td>
-                      <td className="text-sm text-muted">{e.ip ?? '—'}</td>
+                      <td className="text-small text-muted">{e.ip ?? '—'}</td>
                       <td>
                         {(e.before !== null || e.after !== null) && (
                           <button
-                            className="text-sm font-semibold underline-offset-2 hover:underline"
+                            className="text-small font-semibold underline-offset-2 hover:underline"
                             onClick={() => setOpen(open === e.id ? null : e.id)}
                           >
                             {open === e.id ? 'Hide details' : 'Details'}
@@ -155,14 +155,14 @@ export default function AuditPage() {
                         <td colSpan={6} className="bg-ground">
                           <div className="grid gap-4 md:grid-cols-2">
                             <div>
-                              <p className="text-sm font-semibold">Before</p>
-                              <pre className="overflow-x-auto whitespace-pre-wrap text-sm">
+                              <p className="text-small font-semibold">Before</p>
+                              <pre className="overflow-x-auto whitespace-pre-wrap text-small">
                                 {JSON.stringify(e.before, null, 2)}
                               </pre>
                             </div>
                             <div>
-                              <p className="text-sm font-semibold">After</p>
-                              <pre className="overflow-x-auto whitespace-pre-wrap text-sm">
+                              <p className="text-small font-semibold">After</p>
+                              <pre className="overflow-x-auto whitespace-pre-wrap text-small">
                                 {JSON.stringify(e.after, null, 2)}
                               </pre>
                             </div>

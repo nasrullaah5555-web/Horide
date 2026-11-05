@@ -75,11 +75,7 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
           FlutterMap(
             mapController: _map,
             options: const MapOptions(initialCenter: jijiga, initialZoom: 14),
-            children: [
-              ...baseMapLayers(),
-              const CurrentLocationLayer(),
-              mapAttribution(),
-            ],
+            children: [...baseMapLayers(), const CurrentLocationLayer(), mapAttribution()],
           ),
           Align(
             alignment: Alignment.bottomCenter,
@@ -100,14 +96,18 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
                       else
                         SignPanel(
                           title: state.online ? 'Online' : 'Offline',
-                          subtitle: state.online
-                              ? 'Waiting for ride requests'
-                              : 'Go online to receive ride requests',
+                          subtitle:
+                              state.online
+                                  ? 'Waiting for ride requests'
+                                  : 'Go online to receive ride requests',
                           tone: state.online ? SignTone.go : SignTone.calm,
                         ),
                       if (state.message != null) ...[
                         const SizedBox(height: 10),
-                        _Notice(text: state.message!, onClose: ref.read(driverControllerProvider.notifier).dismissMessage),
+                        _Notice(
+                          text: state.message!,
+                          onClose: ref.read(driverControllerProvider.notifier).dismissMessage,
+                        ),
                       ],
                       if (eligibility != null && !eligibility.eligible && !state.online) ...[
                         const SizedBox(height: 10),
@@ -125,13 +125,16 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
                         const SizedBox(height: 8),
                         ValueListenableBuilder<bool>(
                           valueListenable: ref.watch(locationReporterProvider).connected,
-                          builder: (_, ok, __) => Text(
-                            ok ? 'Location is being shared.' : 'Location not reaching Horide. Check your signal.',
-                            style: TextStyle(
-                              color: ok ? HorideColors.signDeep : HorideColors.amber,
-                              fontWeight: FontWeight.w700,
-                            ),
-                          ),
+                          builder:
+                              (_, ok, __) => Text(
+                                ok
+                                    ? 'Location is being shared.'
+                                    : 'Location not reaching Horide. Check your signal.',
+                                style: TextStyle(
+                                  color: ok ? HorideColors.signDeep : HorideColors.amber,
+                                  fontWeight: FontWeight.w700,
+                                ),
+                              ),
                         ),
                       ],
                       const SizedBox(height: 12),
@@ -199,14 +202,18 @@ class _OfferCardState extends ConsumerState<_OfferCard> {
       children: [
         SignPanel(
           title: formatEtb(o.fare),
-          subtitle: '${vehicleLabel(o.category)}  •  ${paymentLabel(o.paymentMethod)}  •  ${formatKm(o.tripDistanceMetres)} trip',
+          subtitle:
+              '${vehicleLabel(o.category)}  •  ${paymentLabel(o.paymentMethod)}  •  ${formatKm(o.tripDistanceMetres)} trip',
           trailing: Text(
             '${left}s',
             style: const TextStyle(color: Colors.white, fontSize: 26, fontWeight: FontWeight.w800),
           ),
         ),
         const SizedBox(height: 10),
-        Text('Pickup ${formatKm(o.distanceToPickupMetres)} away', style: theme.textTheme.titleMedium),
+        Text(
+          'Pickup ${formatKm(o.distanceToPickupMetres)} away',
+          style: theme.textTheme.titleMedium,
+        ),
         Text(o.pickupText ?? 'Point on the map'),
         const SizedBox(height: 4),
         Text('To: ${o.destinationText ?? 'Point on the map'}'),
@@ -215,7 +222,8 @@ class _OfferCardState extends ConsumerState<_OfferCard> {
           children: [
             Expanded(
               child: OutlinedButton(
-                onPressed: _busy ? null : () => ref.read(driverControllerProvider.notifier).reject(o),
+                onPressed:
+                    _busy ? null : () => ref.read(driverControllerProvider.notifier).reject(o),
                 child: const Text('Decline'),
               ),
             ),
@@ -223,13 +231,14 @@ class _OfferCardState extends ConsumerState<_OfferCard> {
             Expanded(
               flex: 2,
               child: FilledButton(
-                onPressed: _busy || left == 0
-                    ? null
-                    : () async {
-                        setState(() => _busy = true);
-                        await ref.read(driverControllerProvider.notifier).accept(o);
-                        if (mounted) setState(() => _busy = false);
-                      },
+                onPressed:
+                    _busy || left == 0
+                        ? null
+                        : () async {
+                          setState(() => _busy = true);
+                          await ref.read(driverControllerProvider.notifier).accept(o);
+                          if (mounted) setState(() => _busy = false);
+                        },
                 child: const Text('Accept'),
               ),
             ),

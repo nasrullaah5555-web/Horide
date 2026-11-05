@@ -2,7 +2,9 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:horide_core/horide_core.dart';
 
 /// Shared services. Overridden in tests with fakes.
-final tokenStoreProvider = Provider<TokenStore>((ref) => SecureTokenStore(keyPrefix: 'horide.driver'));
+final tokenStoreProvider = Provider<TokenStore>(
+  (ref) => SecureTokenStore(keyPrefix: 'horide.driver'),
+);
 
 final apiClientProvider = Provider<ApiClient>((ref) {
   final client = ApiClient(baseUrl: HorideConfig.apiUrl, tokens: ref.watch(tokenStoreProvider));

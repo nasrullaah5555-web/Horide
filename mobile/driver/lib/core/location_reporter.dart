@@ -43,35 +43,32 @@ class LocationReporter {
   }
 
   static Future<Position> currentFix() => Geolocator.getCurrentPosition(
-        locationSettings: const LocationSettings(
-          accuracy: LocationAccuracy.high,
-          timeLimit: Duration(seconds: 15),
-        ),
-      );
+    locationSettings: const LocationSettings(
+      accuracy: LocationAccuracy.high,
+      timeLimit: Duration(seconds: 15),
+    ),
+  );
 
   static Map<String, dynamic> toPoint(Position p) => {
-        'lat': p.latitude,
-        'lng': p.longitude,
-        // The phone's GPS time; the server rejects points too far in the future or the past.
-        'recordedAt': p.timestamp.toUtc().toIso8601String(),
-        if (p.accuracy > 0) 'accuracyM': p.accuracy,
-        if (p.heading >= 0 && p.heading <= 360) 'heading': p.heading,
-        if (p.speed >= 0) 'speedKmh': p.speed * 3.6,
-      };
+    'lat': p.latitude,
+    'lng': p.longitude,
+    // The phone's GPS time; the server rejects points too far in the future or the past.
+    'recordedAt': p.timestamp.toUtc().toIso8601String(),
+    if (p.accuracy > 0) 'accuracyM': p.accuracy,
+    if (p.heading >= 0 && p.heading <= 360) 'heading': p.heading,
+    if (p.speed >= 0) 'speedKmh': p.speed * 3.6,
+  };
 
   void start({required bool onTrip}) {
     if (running && onTrip == _onTrip) return;
     _onTrip = onTrip;
     _sub?.cancel();
     _flush?.cancel();
-    _sub = Geolocator.getPositionStream(locationSettings: _settings(onTrip)).listen(
-      (p) {
-        last = p;
-        _buffer.add(toPoint(p));
-        if (_buffer.length > maxBuffer) _buffer.removeAt(0); // oldest points matter least
-      },
-      onError: (Object _) => connected.value = false,
-    );
+    _sub = Geolocator.getPositionStream(locationSettings: _settings(onTrip)).listen((p) {
+      last = p;
+      _buffer.add(toPoint(p));
+      if (_buffer.length > maxBuffer) _buffer.removeAt(0); // oldest points matter least
+    }, onError: (Object _) => connected.value = false);
     _flush = Timer.periodic(Duration(seconds: onTrip ? 5 : 15), (_) => _send());
   }
 

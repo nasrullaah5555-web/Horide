@@ -13,21 +13,21 @@ const jijiga = LatLng(HorideConfig.jijigaLat, HorideConfig.jijigaLng);
 /// OpenStreetMap tiles. OSM's public servers are for light use; production needs a tile
 /// provider that allows app traffic (OWNER_ACTION_REGISTER OA-20).
 List<Widget> baseMapLayers() => [
-      TileLayer(
-        urlTemplate: 'https://tile.openstreetmap.org/{z}/{x}/{y}.png',
-        userAgentPackageName: 'et.horide.driver',
-        maxZoom: 19,
-      ),
-    ];
+  TileLayer(
+    urlTemplate: 'https://tile.openstreetmap.org/{z}/{x}/{y}.png',
+    userAgentPackageName: 'et.horide.driver',
+    maxZoom: 19,
+  ),
+];
 
 Widget mapAttribution() => RichAttributionWidget(
-      attributions: [
-        TextSourceAttribution(
-          'OpenStreetMap contributors',
-          onTap: () => launchUrl(Uri.parse('https://www.openstreetmap.org/copyright')),
-        ),
-      ],
-    );
+  attributions: [
+    TextSourceAttribution(
+      'OpenStreetMap contributors',
+      onTap: () => launchUrl(Uri.parse('https://www.openstreetmap.org/copyright')),
+    ),
+  ],
+);
 
 /// Current position if the passenger allows location; null otherwise (the map still works
 /// by moving the pin by hand).
@@ -91,7 +91,12 @@ class PlacePicker extends StatefulWidget {
   final String confirmLabel;
   final LatLng? start;
 
-  static Future<Place?> open(BuildContext context, {required String title, required String confirmLabel, LatLng? start}) {
+  static Future<Place?> open(
+    BuildContext context, {
+    required String title,
+    required String confirmLabel,
+    LatLng? start,
+  }) {
     return Navigator.of(context).push<Place>(
       MaterialPageRoute(
         fullscreenDialog: true,
@@ -155,9 +160,13 @@ class _PlacePickerState extends State<PlacePicker> {
                   ),
                   const SizedBox(height: 12),
                   FilledButton(
-                    onPressed: () => Navigator.of(context).pop(
-                      Place(toPoint(_map.camera.center), _text.text.trim().isEmpty ? null : _text.text.trim()),
-                    ),
+                    onPressed:
+                        () => Navigator.of(context).pop(
+                          Place(
+                            toPoint(_map.camera.center),
+                            _text.text.trim().isEmpty ? null : _text.text.trim(),
+                          ),
+                        ),
                     child: Text(widget.confirmLabel),
                   ),
                 ],

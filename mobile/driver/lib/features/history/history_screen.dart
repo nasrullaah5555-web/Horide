@@ -23,7 +23,9 @@ class HistoryScreen extends ConsumerWidget {
       appBar: AppBar(title: const Text('Trips and earnings')),
       body: trips.when(
         loading: () => const Center(child: CircularProgressIndicator()),
-        error: (e, _) => Center(child: Text(e is ApiException ? e.message : 'Could not load your trips.')),
+        error:
+            (e, _) =>
+                Center(child: Text(e is ApiException ? e.message : 'Could not load your trips.')),
         data: (list) {
           final now = DateTime.now();
           final today = DateTime(now.year, now.month, now.day);
@@ -38,9 +40,17 @@ class HistoryScreen extends ConsumerWidget {
               children: [
                 Row(
                   children: [
-                    Expanded(child: _Total(label: 'Today', santim: sumFares(todays), trips: todays.length)),
+                    Expanded(
+                      child: _Total(label: 'Today', santim: sumFares(todays), trips: todays.length),
+                    ),
                     const SizedBox(width: 10),
-                    Expanded(child: _Total(label: 'This week', santim: sumFares(weeks), trips: weeks.length)),
+                    Expanded(
+                      child: _Total(
+                        label: 'This week',
+                        santim: sumFares(weeks),
+                        trips: weeks.length,
+                      ),
+                    ),
                   ],
                 ),
                 const SizedBox(height: 6),
@@ -49,7 +59,10 @@ class HistoryScreen extends ConsumerWidget {
                   style: TextStyle(color: Theme.of(context).colorScheme.onSurfaceVariant),
                 ),
                 const SizedBox(height: 12),
-                if (list.isEmpty) const Center(child: Padding(padding: EdgeInsets.all(32), child: Text('No trips yet.'))),
+                if (list.isEmpty)
+                  const Center(
+                    child: Padding(padding: EdgeInsets.all(32), child: Text('No trips yet.')),
+                  ),
                 for (final t in list)
                   ListTile(
                     contentPadding: EdgeInsets.zero,
@@ -63,7 +76,10 @@ class HistoryScreen extends ConsumerWidget {
                         _ => 'In progress',
                       }}',
                     ),
-                    trailing: Text(formatEtbShort(t.fare), style: const TextStyle(fontWeight: FontWeight.w800)),
+                    trailing: Text(
+                      formatEtbShort(t.fare),
+                      style: const TextStyle(fontWeight: FontWeight.w800),
+                    ),
                   ),
               ],
             ),
@@ -82,16 +98,16 @@ class _Total extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) => Card(
-        child: Padding(
-          padding: const EdgeInsets.all(14),
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              Text(label),
-              Text(formatEtbShort(santim.toString()), style: Theme.of(context).textTheme.headlineSmall),
-              Text('$trips trip${trips == 1 ? '' : 's'}'),
-            ],
-          ),
-        ),
-      );
+    child: Padding(
+      padding: const EdgeInsets.all(14),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Text(label),
+          Text(formatEtbShort(santim.toString()), style: Theme.of(context).textTheme.headlineSmall),
+          Text('$trips trip${trips == 1 ? '' : 's'}'),
+        ],
+      ),
+    ),
+  );
 }

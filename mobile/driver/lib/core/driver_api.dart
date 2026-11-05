@@ -37,14 +37,16 @@ class DriverDocument {
 
 class DriverOverview {
   DriverOverview(Map<String, dynamic> j)
-      : profile = j['profile'] as Map<String, dynamic>,
-        vehicles = (j['vehicles'] as List<dynamic>)
-            .map((v) => DriverVehicle(v as Map<String, dynamic>))
-            .toList(),
-        documents = (j['documents'] as List<dynamic>)
-            .map((d) => DriverDocument(d as Map<String, dynamic>))
-            .toList(),
-        eligibility = Eligibility.fromJson(j['eligibility'] as Map<String, dynamic>);
+    : profile = j['profile'] as Map<String, dynamic>,
+      vehicles =
+          (j['vehicles'] as List<dynamic>)
+              .map((v) => DriverVehicle(v as Map<String, dynamic>))
+              .toList(),
+      documents =
+          (j['documents'] as List<dynamic>)
+              .map((d) => DriverDocument(d as Map<String, dynamic>))
+              .toList(),
+      eligibility = Eligibility.fromJson(j['eligibility'] as Map<String, dynamic>);
 
   final Map<String, dynamic> profile;
   final List<DriverVehicle> vehicles;
@@ -100,31 +102,30 @@ class DriverApi {
     required String colour,
     int? year,
     required String plateNumber,
-  }) =>
-      _c.post('/driver/vehicles', {
-        'category': category.name,
-        'make': make,
-        'model': model,
-        'colour': colour,
-        if (year != null) 'year': year,
-        'plateNumber': plateNumber,
-      });
+  }) => _c.post('/driver/vehicles', {
+    'category': category.name,
+    'make': make,
+    'model': model,
+    'colour': colour,
+    if (year != null) 'year': year,
+    'plateNumber': plateNumber,
+  });
 
   Future<void> uploadDocument({
     required String type,
     String? vehicleId,
     required List<int> bytes,
     required String filename,
-  }) =>
-      _c.upload(
-        '/driver/documents',
-        fields: {'type': type, if (vehicleId != null) 'vehicleId': vehicleId},
-        fileField: 'file',
-        bytes: bytes,
-        filename: filename,
-      );
+  }) => _c.upload(
+    '/driver/documents',
+    fields: {'type': type, if (vehicleId != null) 'vehicleId': vehicleId},
+    fileField: 'file',
+    bytes: bytes,
+    filename: filename,
+  );
 
-  Future<Eligibility> eligibility() async => Eligibility.fromJson(await _c.get('/driver/eligibility'));
+  Future<Eligibility> eligibility() async =>
+      Eligibility.fromJson(await _c.get('/driver/eligibility'));
 
   Future<(Subscription?, List<Subscription>)> subscriptions() async {
     final d = await _c.get('/driver/subscriptions');
@@ -173,11 +174,10 @@ class DriverApi {
     String tripId, {
     required PaymentMethod method,
     String? ebirrReference,
-  }) =>
-      _c.post('/trips/$tripId/payment/received', {
-        'method': method.name,
-        if (ebirrReference != null && ebirrReference.isNotEmpty) 'ebirrReference': ebirrReference,
-      });
+  }) => _c.post('/trips/$tripId/payment/received', {
+    'method': method.name,
+    if (ebirrReference != null && ebirrReference.isNotEmpty) 'ebirrReference': ebirrReference,
+  });
 
   Future<Map<String, dynamic>> disputePayment(String tripId, String note) =>
       _c.post('/trips/$tripId/payment/dispute', {'note': note});
@@ -193,9 +193,9 @@ class DriverApi {
   }
 
   Future<void> emergency({String? tripId, LatLngPoint? position}) => _c.post('/emergency', {
-        if (tripId != null) 'tripId': tripId,
-        if (position != null) 'position': position.toJson(),
-      });
+    if (tripId != null) 'tripId': tripId,
+    if (position != null) 'position': position.toJson(),
+  });
 
   Future<void> complain({String? tripId, required String category, required String description}) =>
       _c.post('/complaints', {

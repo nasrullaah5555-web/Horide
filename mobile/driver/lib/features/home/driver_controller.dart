@@ -10,12 +10,7 @@ import '../../core/providers.dart';
 /// What the driver's main screen shows. The server decides every part of it: eligibility,
 /// online status (it refuses to put an ineligible driver online), offers and the trip.
 class DriverState {
-  const DriverState({
-    this.online = false,
-    this.offers = const [],
-    this.trip,
-    this.message,
-  });
+  const DriverState({this.online = false, this.offers = const [], this.trip, this.message});
 
   final bool online;
   final List<RideOffer> offers;
@@ -31,13 +26,12 @@ class DriverState {
     bool clearTrip = false,
     String? message,
     bool clearMessage = false,
-  }) =>
-      DriverState(
-        online: online ?? this.online,
-        offers: offers ?? this.offers,
-        trip: clearTrip ? null : (trip ?? this.trip),
-        message: clearMessage ? null : (message ?? this.message),
-      );
+  }) => DriverState(
+    online: online ?? this.online,
+    offers: offers ?? this.offers,
+    trip: clearTrip ? null : (trip ?? this.trip),
+    message: clearMessage ? null : (message ?? this.message),
+  );
 }
 
 final locationReporterProvider = Provider<LocationReporter>((ref) {
@@ -111,12 +105,15 @@ class DriverController extends Notifier<DriverState> {
       await refresh();
     } on ApiException catch (e) {
       final reasons = (e.details is Map ? (e.details! as Map)['reasons'] : null) as List<dynamic>?;
-      final text = reasons == null || reasons.isEmpty
-          ? e.message
-          : reasons.map((r) => Eligibility.reasonText[r] ?? r.toString()).join('\n');
+      final text =
+          reasons == null || reasons.isEmpty
+              ? e.message
+              : reasons.map((r) => Eligibility.reasonText[r] ?? r.toString()).join('\n');
       state = state.copyWith(message: text);
     } on Object {
-      state = state.copyWith(message: 'Could not get a GPS position. Move to an open area and try again.');
+      state = state.copyWith(
+        message: 'Could not get a GPS position. Move to an open area and try again.',
+      );
     }
   }
 
@@ -196,5 +193,6 @@ class DriverController extends Notifier<DriverState> {
   }
 }
 
-final driverControllerProvider =
-    NotifierProvider<DriverController, DriverState>(DriverController.new);
+final driverControllerProvider = NotifierProvider<DriverController, DriverState>(
+  DriverController.new,
+);

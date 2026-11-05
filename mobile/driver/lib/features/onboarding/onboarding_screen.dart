@@ -23,38 +23,46 @@ class OnboardingScreen extends ConsumerWidget {
       appBar: AppBar(title: const Text('Account and documents')),
       body: overview.when(
         loading: () => const Center(child: CircularProgressIndicator()),
-        error: (e, _) => Center(
-          child: Column(
-            mainAxisSize: MainAxisSize.min,
-            children: [
-              Text(e is ApiException ? e.message : 'Could not load your account.'),
-              TextButton(onPressed: () => ref.invalidate(overviewProvider), child: const Text('Try again')),
-            ],
-          ),
-        ),
-        data: (o) => RefreshIndicator(
-          onRefresh: () => ref.refresh(overviewProvider.future),
-          child: ListView(
-            padding: const EdgeInsets.all(16),
-            children: [
-              SignPanel(
-                title: o.eligibility.eligible ? 'Ready to drive' : 'Not ready yet',
-                subtitle: o.eligibility.eligible
-                    ? 'You can go online.'
-                    : o.eligibility.reasons.map((r) => Eligibility.reasonText[r] ?? r).join('\n'),
-                tone: o.eligibility.eligible ? SignTone.go : SignTone.calm,
+        error:
+            (e, _) => Center(
+              child: Column(
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  Text(e is ApiException ? e.message : 'Could not load your account.'),
+                  TextButton(
+                    onPressed: () => ref.invalidate(overviewProvider),
+                    child: const Text('Try again'),
+                  ),
+                ],
               ),
-              const SizedBox(height: 20),
-              _Section(
-                title: '1. Your name',
-                child: _NameForm(initial: o.fullName, locked: o.approvalStatus == 'approved'),
+            ),
+        data:
+            (o) => RefreshIndicator(
+              onRefresh: () => ref.refresh(overviewProvider.future),
+              child: ListView(
+                padding: const EdgeInsets.all(16),
+                children: [
+                  SignPanel(
+                    title: o.eligibility.eligible ? 'Ready to drive' : 'Not ready yet',
+                    subtitle:
+                        o.eligibility.eligible
+                            ? 'You can go online.'
+                            : o.eligibility.reasons
+                                .map((r) => Eligibility.reasonText[r] ?? r)
+                                .join('\n'),
+                    tone: o.eligibility.eligible ? SignTone.go : SignTone.calm,
+                  ),
+                  const SizedBox(height: 20),
+                  _Section(
+                    title: '1. Your name',
+                    child: _NameForm(initial: o.fullName, locked: o.approvalStatus == 'approved'),
+                  ),
+                  _Section(title: '2. Your vehicle', child: _VehicleSection(vehicle: o.vehicle)),
+                  _Section(title: '3. Documents', child: _Documents(overview: o)),
+                  const _Section(title: '4. Monthly subscription', child: _SubscriptionSection()),
+                ],
               ),
-              _Section(title: '2. Your vehicle', child: _VehicleSection(vehicle: o.vehicle)),
-              _Section(title: '3. Documents', child: _Documents(overview: o)),
-              const _Section(title: '4. Monthly subscription', child: _SubscriptionSection()),
-            ],
-          ),
-        ),
+            ),
       ),
     );
   }
@@ -67,16 +75,16 @@ class _Section extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) => Padding(
-        padding: const EdgeInsets.only(bottom: 24),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.stretch,
-          children: [
-            Text(title, style: Theme.of(context).textTheme.titleLarge),
-            const SizedBox(height: 8),
-            child,
-          ],
-        ),
-      );
+    padding: const EdgeInsets.only(bottom: 24),
+    child: Column(
+      crossAxisAlignment: CrossAxisAlignment.stretch,
+      children: [
+        Text(title, style: Theme.of(context).textTheme.titleLarge),
+        const SizedBox(height: 8),
+        child,
+      ],
+    ),
+  );
 }
 
 class _NameForm extends ConsumerStatefulWidget {
@@ -111,20 +119,21 @@ class _NameFormState extends ConsumerState<_NameForm> {
           decoration: const InputDecoration(labelText: 'Full name, as on your National ID'),
         ),
         OutlinedButton(
-          onPressed: _busy
-              ? null
-              : () async {
-                  if (_name.text.trim().isEmpty) return;
-                  setState(() => _busy = true);
-                  try {
-                    await ref.read(driverApiProvider).setName(_name.text.trim());
-                    ref.invalidate(overviewProvider);
-                  } catch (e) {
-                    if (context.mounted) showError(context, e);
-                  } finally {
-                    if (mounted) setState(() => _busy = false);
-                  }
-                },
+          onPressed:
+              _busy
+                  ? null
+                  : () async {
+                    if (_name.text.trim().isEmpty) return;
+                    setState(() => _busy = true);
+                    try {
+                      await ref.read(driverApiProvider).setName(_name.text.trim());
+                      ref.invalidate(overviewProvider);
+                    } catch (e) {
+                      if (context.mounted) showError(context, e);
+                    } finally {
+                      if (mounted) setState(() => _busy = false);
+                    }
+                  },
           child: const Text('Save name'),
         ),
       ],
@@ -159,12 +168,17 @@ class _VehicleSectionState extends ConsumerState<_VehicleSection> {
 
   Future<void> _save() async {
     if ([_make, _model, _colour, _plate].any((c) => c.text.trim().isEmpty)) {
-      showError(context, const ApiException(400, 'REQUIRED', 'Fill in make, model, colour and plate.'));
+      showError(
+        context,
+        const ApiException(400, 'REQUIRED', 'Fill in make, model, colour and plate.'),
+      );
       return;
     }
     setState(() => _busy = true);
     try {
-      await ref.read(driverApiProvider).addVehicle(
+      await ref
+          .read(driverApiProvider)
+          .addVehicle(
             category: _category,
             make: _make.text.trim(),
             model: _model.text.trim(),
@@ -205,9 +219,21 @@ class _VehicleSectionState extends ConsumerState<_VehicleSection> {
           onSelectionChanged: (s) => setState(() => _category = s.first),
         ),
         const SizedBox(height: 8),
-        TextField(controller: _make, maxLength: 40, decoration: const InputDecoration(labelText: 'Make (e.g. Bajaj, Toyota)')),
-        TextField(controller: _model, maxLength: 40, decoration: const InputDecoration(labelText: 'Model')),
-        TextField(controller: _colour, maxLength: 30, decoration: const InputDecoration(labelText: 'Colour')),
+        TextField(
+          controller: _make,
+          maxLength: 40,
+          decoration: const InputDecoration(labelText: 'Make (e.g. Bajaj, Toyota)'),
+        ),
+        TextField(
+          controller: _model,
+          maxLength: 40,
+          decoration: const InputDecoration(labelText: 'Model'),
+        ),
+        TextField(
+          controller: _colour,
+          maxLength: 30,
+          decoration: const InputDecoration(labelText: 'Colour'),
+        ),
         TextField(
           controller: _year,
           maxLength: 4,
@@ -227,12 +253,12 @@ class _VehicleSectionState extends ConsumerState<_VehicleSection> {
 }
 
 String _status(String s) => switch (s) {
-      'pending' => 'Waiting for Horide review',
-      'approved' => 'Approved',
-      'rejected' => 'Rejected',
-      'expired' => 'Expired',
-      _ => s,
-    };
+  'pending' => 'Waiting for Horide review',
+  'approved' => 'Approved',
+  'rejected' => 'Rejected',
+  'expired' => 'Expired',
+  _ => s,
+};
 
 class _Documents extends ConsumerStatefulWidget {
   const _Documents({required this.overview});
@@ -262,7 +288,9 @@ class _DocumentsState extends ConsumerState<_Documents> {
     if (file == null) return;
     setState(() => _uploading = type);
     try {
-      await ref.read(driverApiProvider).uploadDocument(
+      await ref
+          .read(driverApiProvider)
+          .uploadDocument(
             type: type,
             vehicleId: vehicleDocuments.contains(type) ? vehicle!.id : null,
             bytes: await file.readAsBytes(),
@@ -282,37 +310,54 @@ class _DocumentsState extends ConsumerState<_Documents> {
     return Column(
       children: [
         for (final entry in documentLabels.entries)
-          Builder(builder: (context) {
-            final doc = o.latest(entry.key);
-            final missing = o.eligibility.missingDocuments.contains(entry.key);
-            return ListTile(
-              contentPadding: EdgeInsets.zero,
-              title: Text(entry.value),
-              subtitle: Text(
-                doc == null
-                    ? (missing ? 'Required' : 'Not uploaded')
-                    : doc.status == 'rejected'
-                        ? 'Rejected: ${doc.rejectionReason ?? 'upload a clearer photo'}'
-                        : _status(doc.status),
-                style: TextStyle(
-                  color: doc?.status == 'rejected' || (doc == null && missing) ? HorideColors.signal : null,
+          Builder(
+            builder: (context) {
+              final doc = o.latest(entry.key);
+              final missing = o.eligibility.missingDocuments.contains(entry.key);
+              return ListTile(
+                contentPadding: EdgeInsets.zero,
+                title: Text(entry.value),
+                subtitle: Text(
+                  doc == null
+                      ? (missing ? 'Required' : 'Not uploaded')
+                      : doc.status == 'rejected'
+                      ? 'Rejected: ${doc.rejectionReason ?? 'upload a clearer photo'}'
+                      : _status(doc.status),
+                  style: TextStyle(
+                    color:
+                        doc?.status == 'rejected' || (doc == null && missing)
+                            ? HorideColors.signal
+                            : null,
+                  ),
                 ),
-              ),
-              trailing: _uploading == entry.key
-                  ? const SizedBox(width: 24, height: 24, child: CircularProgressIndicator(strokeWidth: 3))
-                  : doc?.status == 'approved'
-                      ? const Icon(Icons.check_circle, color: HorideColors.sign)
-                      : PopupMenuButton<ImageSource>(
+                trailing:
+                    _uploading == entry.key
+                        ? const SizedBox(
+                          width: 24,
+                          height: 24,
+                          child: CircularProgressIndicator(strokeWidth: 3),
+                        )
+                        : doc?.status == 'approved'
+                        ? const Icon(Icons.check_circle, color: HorideColors.sign)
+                        : PopupMenuButton<ImageSource>(
                           tooltip: 'Upload',
                           icon: const Icon(Icons.upload),
                           onSelected: (s) => _upload(entry.key, s),
-                          itemBuilder: (_) => const [
-                            PopupMenuItem(value: ImageSource.camera, child: Text('Take a photo')),
-                            PopupMenuItem(value: ImageSource.gallery, child: Text('Choose from gallery')),
-                          ],
+                          itemBuilder:
+                              (_) => const [
+                                PopupMenuItem(
+                                  value: ImageSource.camera,
+                                  child: Text('Take a photo'),
+                                ),
+                                PopupMenuItem(
+                                  value: ImageSource.gallery,
+                                  child: Text('Choose from gallery'),
+                                ),
+                              ],
                         ),
-            );
-          }),
+              );
+            },
+          ),
         const SizedBox(height: 6),
         Text(
           'Your documents are stored privately and only Horide verification staff can see them.',

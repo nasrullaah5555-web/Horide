@@ -25,8 +25,18 @@ void main() {
 
   test('earnings add up completed fares in santim without rounding errors', () {
     final trips = [
-      const DriverTripSummary({'id': 'a', 'status': 'completed', 'final_fare': '8050', 'requested_at': '2026-11-05T05:00:00Z'}),
-      const DriverTripSummary({'id': 'b', 'status': 'completed', 'final_fare': '4025', 'requested_at': '2026-11-05T06:00:00Z'}),
+      const DriverTripSummary({
+        'id': 'a',
+        'status': 'completed',
+        'final_fare': '8050',
+        'requested_at': '2026-11-05T05:00:00Z',
+      }),
+      const DriverTripSummary({
+        'id': 'b',
+        'status': 'completed',
+        'final_fare': '4025',
+        'requested_at': '2026-11-05T06:00:00Z',
+      }),
     ];
     expect(HistoryScreen.sumFares(trips), BigInt.from(12075));
     expect(formatEtb(HistoryScreen.sumFares(trips).toString()), contains('120.75'));

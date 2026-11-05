@@ -38,27 +38,32 @@ class _TripScreenState extends ConsumerState<TripScreen> {
     final reason = TextEditingController();
     final text = await showDialog<String>(
       context: context,
-      builder: (d) => AlertDialog(
-        title: const Text('Cancel this trip?'),
-        content: TextField(
-          controller: reason,
-          maxLength: 300,
-          decoration: const InputDecoration(hintText: 'Reason (for example: passenger not found)'),
-        ),
-        actions: [
-          TextButton(onPressed: () => Navigator.pop(d), child: const Text('Keep trip')),
-          FilledButton(
-            onPressed: () => Navigator.pop(d, reason.text.trim()),
-            child: const Text('Cancel trip'),
+      builder:
+          (d) => AlertDialog(
+            title: const Text('Cancel this trip?'),
+            content: TextField(
+              controller: reason,
+              maxLength: 300,
+              decoration: const InputDecoration(
+                hintText: 'Reason (for example: passenger not found)',
+              ),
+            ),
+            actions: [
+              TextButton(onPressed: () => Navigator.pop(d), child: const Text('Keep trip')),
+              FilledButton(
+                onPressed: () => Navigator.pop(d, reason.text.trim()),
+                child: const Text('Cancel trip'),
+              ),
+            ],
           ),
-        ],
-      ),
     );
     reason.dispose();
     if (text == null) return;
     setState(() => _busy = true);
     try {
-      final t = await ref.read(driverApiProvider).cancel(trip.id, text.isEmpty ? 'Cancelled by driver' : text);
+      final t = await ref
+          .read(driverApiProvider)
+          .cancel(trip.id, text.isEmpty ? 'Cancelled by driver' : text);
       ref.read(driverControllerProvider.notifier).showTrip(t);
     } catch (e) {
       if (mounted) showError(context, e);
@@ -83,7 +88,9 @@ class _TripScreenState extends ConsumerState<TripScreen> {
       context,
       alertHoride: () async {
         final p = await currentPosition();
-        await ref.read(driverApiProvider).emergency(tripId: trip.id, position: p == null ? null : toPoint(p));
+        await ref
+            .read(driverApiProvider)
+            .emergency(tripId: trip.id, position: p == null ? null : toPoint(p));
       },
     );
   }
@@ -108,8 +115,14 @@ class _TripScreenState extends ConsumerState<TripScreen> {
       TripStatus.accepted => ('Go to pickup', trip.pickup.text ?? 'Point on the map'),
       TripStatus.driverArriving => ('Driving to pickup', trip.pickup.text ?? 'Point on the map'),
       TripStatus.arrived => ('Waiting for passenger', 'Start the trip when they are in'),
-      TripStatus.inProgress => ('Drive to destination', trip.destination.text ?? 'Point on the map'),
-      TripStatus.cancelled => ('Trip cancelled', trip.cancelledBy == 'driver' ? 'You cancelled.' : 'The passenger cancelled.'),
+      TripStatus.inProgress => (
+        'Drive to destination',
+        trip.destination.text ?? 'Point on the map',
+      ),
+      TripStatus.cancelled => (
+        'Trip cancelled',
+        trip.cancelledBy == 'driver' ? 'You cancelled.' : 'The passenger cancelled.',
+      ),
       TripStatus.expired => ('Trip expired', null),
       _ => ('Trip', null),
     };
@@ -191,7 +204,8 @@ class _TripScreenState extends ConsumerState<TripScreen> {
                             if (passenger.phone != null && !trip.status.isFinal)
                               IconButton.filledTonal(
                                 tooltip: 'Call passenger',
-                                onPressed: () => launchUrl(Uri(scheme: 'tel', path: passenger.phone)),
+                                onPressed:
+                                    () => launchUrl(Uri(scheme: 'tel', path: passenger.phone)),
                                 icon: const Icon(Icons.call),
                               ),
                           ],
@@ -215,13 +229,16 @@ class _TripScreenState extends ConsumerState<TripScreen> {
                           OutlinedButton.icon(
                             onPressed: () => _navigate(target.point),
                             icon: const Icon(Icons.navigation),
-                            label: Text(toPickup ? 'Navigate to pickup' : 'Navigate to destination'),
+                            label: Text(
+                              toPickup ? 'Navigate to pickup' : 'Navigate to destination',
+                            ),
                           ),
                         const SizedBox(height: 8),
                         FilledButton(
-                          onPressed: _busy
-                              ? null
-                              : () => _step(trip, switch (trip.status) {
+                          onPressed:
+                              _busy
+                                  ? null
+                                  : () => _step(trip, switch (trip.status) {
                                     TripStatus.accepted => 'arriving',
                                     TripStatus.driverArriving => 'arrived',
                                     TripStatus.arrived => 'start',
@@ -299,7 +316,10 @@ class _PaymentScreenState extends ConsumerState<_PaymentScreen> {
           SignPanel(title: formatEtb(trip.fare), subtitle: 'Collect from the passenger'),
           const SizedBox(height: 16),
           if (recorded)
-            InfoRow('Payment', 'Recorded (${(_receipt!['payment_status'] as String).replaceAll('_', ' ')})')
+            InfoRow(
+              'Payment',
+              'Recorded (${(_receipt!['payment_status'] as String).replaceAll('_', ' ')})',
+            )
           else ...[
             Text('How did the passenger pay?', style: Theme.of(context).textTheme.titleMedium),
             const SizedBox(height: 8),
@@ -319,13 +339,15 @@ class _PaymentScreenState extends ConsumerState<_PaymentScreen> {
               ),
             const SizedBox(height: 8),
             FilledButton(
-              onPressed: _busy
-                  ? null
-                  : () => _do((api) async {
+              onPressed:
+                  _busy
+                      ? null
+                      : () => _do((api) async {
                         final r = await api.recordPayment(
                           trip.id,
                           method: _method,
-                          ebirrReference: _method == PaymentMethod.ebirr ? _reference.text.trim() : null,
+                          ebirrReference:
+                              _method == PaymentMethod.ebirr ? _reference.text.trim() : null,
                         );
                         if (mounted) setState(() => _receipt = r);
                       }),
@@ -350,16 +372,20 @@ class _PaymentScreenState extends ConsumerState<_PaymentScreen> {
                   IconButton(
                     tooltip: '$i star${i == 1 ? '' : 's'}',
                     iconSize: 38,
-                    onPressed: _busy
-                        ? null
-                        : () {
-                            setState(() => _stars = i);
-                            _do((api) async {
-                              await api.ratePassenger(trip.id, i);
-                              if (mounted) setState(() => _rated = true);
-                            });
-                          },
-                    icon: Icon(i <= _stars ? Icons.star : Icons.star_border, color: HorideColors.amber),
+                    onPressed:
+                        _busy
+                            ? null
+                            : () {
+                              setState(() => _stars = i);
+                              _do((api) async {
+                                await api.ratePassenger(trip.id, i);
+                                if (mounted) setState(() => _rated = true);
+                              });
+                            },
+                    icon: Icon(
+                      i <= _stars ? Icons.star : Icons.star_border,
+                      color: HorideColors.amber,
+                    ),
                   ),
               ],
             ),

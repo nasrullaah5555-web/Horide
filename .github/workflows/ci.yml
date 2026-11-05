@@ -44,6 +44,23 @@ jobs:
       - run: pnpm --filter @horide/backend test
       - run: pnpm --filter @horide/backend build
 
+  admin:
+    name: Admin dashboard (lint, typecheck, build)
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: pnpm/action-setup@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: pnpm
+      - run: pnpm install --frozen-lockfile
+      - run: pnpm --filter @horide/admin lint
+      - run: pnpm --filter @horide/admin typecheck
+      - run: pnpm --filter @horide/admin build
+        env:
+          NEXT_TELEMETRY_DISABLED: '1'
+
   security:
     name: Secrets and dependency scan
     runs-on: ubuntu-latest

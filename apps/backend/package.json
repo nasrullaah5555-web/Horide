@@ -8,12 +8,13 @@
     "start": "node dist/main.js",
     "dev": "ts-node-dev --respawn --transpile-only src/main.ts",
     "typecheck": "tsc -p tsconfig.json --noEmit",
-    "lint": "eslint \"src/**/*.ts\" \"test/**/*.ts\"",
+    "lint": "eslint \"src/**/*.ts\" \"test/**/*.ts\" \"scripts/**/*.ts\"",
     "test": "jest --runInBand",
     "migrate": "ts-node --transpile-only src/database/migrate-cli.ts latest",
     "migrate:down": "ts-node --transpile-only src/database/migrate-cli.ts down",
     "seed:dev": "ts-node --transpile-only src/database/seed-dev.ts",
-    "admin:create": "ts-node --transpile-only src/modules/admin-auth/create-admin-cli.ts"
+    "admin:create": "ts-node --transpile-only src/modules/admin-auth/create-admin-cli.ts",
+    "demo": "ts-node --transpile-only scripts/dev-demo.ts"
   },
   "dependencies": {
     "@nestjs/common": "^11.2.8",

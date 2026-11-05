@@ -53,3 +53,8 @@ Emergency numbers (Police 991, Ambulance 907, Fire 939, Traffic 945) from Wikipe
 ## T-029–T-031 Notifications, admin operations, rate limiting — 2026-11-05
 Evidence: `src/modules/notifications`, `src/modules/admin-ops`, `src/common/rate-limit.ts`; `test/ops.e2e-spec.ts`, `test/route-security.e2e-spec.ts`.
 Backend v1 scope complete. Remaining backend items are blocked on owner actions: SMS (OA-08), routing (OA-09), storage bucket (OA-12), push (OA-11), eBirr API (OA-10).
+
+## T-032–T-036 Admin dashboard — 2026-11-05
+Evidence: `apps/admin` (Next.js App Router, Tailwind, Overpass typeface); ADR-016; screenshots produced by `apps/admin/e2e/screenshots.mjs` against `pnpm --filter @horide/backend demo`.
+Screens: sign-in with authenticator code; overview; live map; emergencies; trips list/detail with event trail and cancel; drivers list/detail with document download, approvals, suspension; passengers; complaints; ride payments and disputes; subscriptions and plans; prices with preview and history, service area map; announcements with confirmation; staff accounts with one-time QR setup; audit log; password change.
+Known limits: service-zone boundaries can be viewed but not drawn in the dashboard; map tiles need a production provider (OA-20).

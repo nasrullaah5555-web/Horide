@@ -67,6 +67,13 @@ All amounts are `bigint` santim. Display formatting only at the edge.
 
 Turn-by-turn navigation is handed to the phone's maps app via a deep link instead of being built in. Building navigation is out of scope and unsafe to do badly.
 
+## ADR-016 Admin dashboard served same-origin with the API's /admin routes
+
+**Context:** The API's admin session cookie is `httpOnly`, `SameSite=Strict`, `path=/admin`. A dashboard on a different origin would need CORS with credentials and a looser cookie.
+**Decision:** The Next.js dashboard serves its pages at `/`, `/drivers`, … and forwards every `/admin/*` request to the API's `/admin/*` (Next.js rewrites). To the browser, dashboard and API are one origin, so the cookie works unchanged, no CORS is needed, and the CSRF header (token returned at sign-in, kept in the tab's localStorage) still guards every change.
+**Also:** Strict security headers on the dashboard (CSP allowing only self and OpenStreetMap tile images, frame-ancestors none, no third-party scripts). All data is fetched in the browser with the admin's own session; the dashboard server holds no credentials.
+**Consequences:** Dashboard pages must never use paths under `/admin`. Behind the proxy the API sees the dashboard server's address, so audit-log IPs are only accurate if the proxy forwards `X-Forwarded-For` and `trust proxy` is set for the hop count in production (checked at deployment, T-045).
+
 ## ADR-015 scrypt and a minimal built-in JWT (no native or ESM-only crypto packages)
 
 **Context:** argon2 needs a native add-on; popular JWT libraries are now ESM-only and clash with the CommonJS NestJS build (the same problem hit Kysely 0.29).

@@ -65,11 +65,11 @@ Jijiga service zone (approximate polygon, marked DEV), illustrative fares, test 
 
 ## Phase 4 — Admin dashboard
 
-**T-032 Admin foundation** — design tokens, layout, login + MFA.
-**T-033 Drivers & verification screens**
-**T-034 Trips, passengers, live map**
-**T-035 Pricing, subscriptions, payments, complaints**
-**T-036 Admin accounts, roles, audit viewer, reports**
+**T-032 Admin foundation** — DONE — design tokens, layout, login + MFA.
+**T-033 Drivers & verification screens** — DONE
+**T-034 Trips, passengers, live map** — DONE (map tiles not visible in the cloud workspace; OA-20)
+**T-035 Pricing, subscriptions, payments, complaints** — DONE (zone boundaries view-only)
+**T-036 Admin accounts, roles, audit viewer, reports** — DONE
 
 ## Phase 5 — Mobile (compiled only in CI / on owner laptop — ADR-014)
 

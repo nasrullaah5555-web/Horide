@@ -45,6 +45,13 @@ Only results that were actually run. Format: date · task · command · result.
 | 2026-11-05 | T-031 | Route security audit (all controllers) | Passed. Verified it detects problems by removing one admin permission and one user guard: both reported, then restored |
 | 2026-11-05 | all | Full backend suite | 247/247 passed; production build OK |
 
+| 2026-11-05 | T-032–T-036 | Admin dashboard `pnpm lint`, `typecheck`, `build` (Next.js 15.5) | Passed; 18 routes built |
+| 2026-11-05 | T-032–T-036 | `apps/backend/scripts/dev-demo.ts` (sample data through the real HTTP API) + `apps/admin/e2e/screenshots.mjs` (Playwright, real sign-in with TOTP) | All 17 desktop screens + 3 mobile screens rendered with no error messages, no failed requests, no console errors |
+| 2026-11-05 | T-036 | Created a support-only account through the dashboard, signed in as it | Menu limited to 6 permitted sections; driver page shows no approve/reject/suspend/download; direct GET /admin/pricing → 403 |
+| 2026-11-05 | T-034 | Live map | Driver markers, legend, freshness and attribution render. Map tiles NOT verified: this workspace's network blocks tile.openstreetmap.org |
+
+Defects found during dashboard screenshot review and fixed: sidebar footer could overlap the menu on short screens; "Ebirr"/"National id" labels; "Approve driver" clickable before requirements were met (server already refused it); service-area outline outside the initial map view; misaligned price inputs; status badges wrapping on mobile; screenshot script initially re-used a TOTP code, correctly refused by the server's replay protection.
+
 Defects found by tests and fixed: oversized JSON returned 500 instead of 413; malformed JSON returned the parser's raw message (could echo request fragments) — now a fixed `INVALID_JSON` error.
 Not yet verified: CI on GitHub (first run happens after this push).
 | 2026-11-04 | T-004 | First GitHub Actions run on `main` (run 41909539260) | Passed: backend job (lint, typecheck, 34 tests against PostGIS, build) and security job |

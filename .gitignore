@@ -47,3 +47,9 @@ apps/backend/storage/
 .DS_Store
 Thumbs.db
 *.log
+
+# Dev demo credentials (apps/backend/scripts/dev-demo.ts)
+.demo-admin.json
+
+# Next.js
+apps/admin/next-env.d.ts

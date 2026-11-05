@@ -26,6 +26,7 @@
   - Driver app: phone login, onboarding (name, vehicle, document photos, review status), subscription status, online/offline through the server, battery-aware location reporting with offline buffering, ride offers with countdown, trip steps, navigation via the phone's maps app, payment recording, passenger rating, earnings summary.
 - CI: Flutter format/analyze/test for all three packages, automatic `dart format` commits, unsigned Android build on every mobile change, iOS build on demand.
 - Account deletion from both apps and the API; hourly purge of old trip GPS history, OTP challenges and ended sessions (migration 0006).
+- Public website (`apps/web`, static): home, how it works, drive with Horide, safety, privacy policy (draft), terms (draft), contact, account deletion instructions.
 
 ### Security
 - Per-user/IP rate limits with stricter limits on OTP, quotes, bookings, location, uploads and admin login; production refuses to disable them.

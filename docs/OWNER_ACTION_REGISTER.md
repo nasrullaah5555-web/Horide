@@ -25,6 +25,7 @@ Actions only the owner can perform. Status: OPEN until the owner confirms or the
 | OA-20 | P2 | Choose a map tile provider for production (OpenStreetMap's public tile servers are for light use only and may block heavy traffic), or confirm OSM's usage policy is acceptable for the staff dashboard's volume | Map tiles (e.g. a paid OSM-based provider, or Google if chosen in OA-09) | The live map and service-area map need background tiles | Admin live map in production | Yes — OSM tiles in development | OPEN |
 | OA-17 | P0 (business) | Recruit pilot drivers and test subscription willingness to pay | Field | The business fails without paying drivers regardless of software | Pilot | Yes | OPEN |
 | OA-21 | P1 | Install the Horide test apps on a real Android phone (and an iPhone when OA-04 is done) and walk through a full ride with a test passenger and test driver against a test server | Owner | The apps have only been compiled and unit-tested in CI; nobody has used them on a phone yet | Pilot readiness (T-047) | Yes — development continues | OPEN |
+| OA-22 | P1 | Decide the public support phone number, support email, registered company name and office address/hours for drivers; give them to development to publish on the website and in the apps | Owner | Website Contact page and privacy policy show "will be published before launch" | Store listings (both stores require contact details and a privacy policy URL), T-042 | Yes | OPEN |
 
 Notes:
 - "WeBirr" (a separate Ethiopian bill-payment gateway) is not eBirr. Do not confuse them during OA-10.

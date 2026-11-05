@@ -1,0 +1,73 @@
+@import 'tailwindcss';
+@import '@fontsource/overpass/400.css';
+@import '@fontsource/overpass/600.css';
+@import '@fontsource/overpass/700.css';
+@import '@fontsource/overpass/800.css';
+
+/* Same tokens as the apps and the staff console. Overpass derives from road-sign lettering. */
+@theme {
+  --font-sans: 'Overpass', ui-sans-serif, system-ui, sans-serif;
+  --color-navy: #14283e;
+  --color-navy-soft: #23405f;
+  --color-sign: #19a974;
+  --color-sign-deep: #12805a;
+  --color-ground: #f3f5f7;
+  --color-line: #dde3ea;
+  --color-muted: #5b6b7d;
+  --color-amber: #b7791f;
+  --color-amber-soft: #fbf1e1;
+  --color-signal: #c0392b;
+  --color-night: #0e1c2c;
+}
+
+html {
+  color: var(--color-navy);
+  background: var(--color-ground);
+}
+
+body {
+  font-family: var(--font-sans);
+  font-size: 17px;
+  line-height: 1.6;
+}
+
+:focus-visible {
+  outline: 3px solid var(--color-sign);
+  outline-offset: 3px;
+}
+
+/* Road-sign panel: the one element that carries the brand. */
+.sign {
+  background: var(--color-sign);
+  color: white;
+  border: 4px solid white;
+  border-radius: 14px;
+  box-shadow: 0 0 0 2px var(--color-sign);
+}
+.sign-navy {
+  background: var(--color-navy);
+  box-shadow: 0 0 0 2px var(--color-navy);
+}
+
+.prose-legal h2 {
+  font-size: 1.25rem;
+  font-weight: 800;
+  margin-top: 2rem;
+  margin-bottom: 0.5rem;
+}
+.prose-legal p,
+.prose-legal li {
+  color: var(--color-navy-soft);
+}
+.prose-legal ul {
+  list-style: disc;
+  padding-left: 1.25rem;
+  margin: 0.5rem 0;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  * {
+    transition-duration: 0ms !important;
+    animation-duration: 0ms !important;
+  }
+}

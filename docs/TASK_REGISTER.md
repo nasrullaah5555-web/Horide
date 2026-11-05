@@ -85,7 +85,7 @@ Device testing of T-037–T-041 (Android phone or emulator, and iPhone) is owner
 
 ## Phase 6 — Website
 
-**T-042 Public website** — home, how it works, drivers, safety, privacy, terms, contact.
+**T-042 Public website** — DONE (privacy policy and terms are DRAFTS pending legal review, OA-07; contact details pending OA-22) · home, how it works, drivers, safety, privacy, terms, contact, account deletion page (required by Google Play).
 
 ## Phase 7 — Hardening and release
 

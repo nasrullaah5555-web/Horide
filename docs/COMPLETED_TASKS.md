@@ -69,3 +69,8 @@ Build check: unsigned debug builds succeed for Android (both apps) and iOS (both
 ## T-048 Account deletion and data retention — 2026-11-05
 Evidence: `apps/backend/src/modules/users/account.controller.ts`, `retention.service.ts`, migration 0006; `test/account.e2e-spec.ts`. Delete button in passenger Profile and driver Account screens (type DELETE to confirm).
 Known limits: an access token issued before deletion stays valid for read-only requests for up to 15 minutes (all changes re-check the account); legal retention periods for trip and payment records are undecided (OA-07).
+
+## T-042 Public website — 2026-11-05
+Evidence: `apps/web` (Next.js static export, same design tokens and typeface as the apps and console); CI job `web`.
+The privacy policy is written against what the software actually does (retention periods, who sees what, deletion). It and the terms are marked DRAFT on the page until a lawyer reviews them (OA-07). Prices, subscription price, contact details and provider list are shown as "will be published before launch" rather than invented (OA-15, OA-22).
+

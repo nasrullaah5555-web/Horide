@@ -63,4 +63,4 @@ Not yet verified: CI on GitHub (first run happens after this push).
 | 2026-11-05 | T-048 | `test/account.e2e-spec.ts` + updated auth test | Passed: confirmation required, passenger data removed and sessions ended, same phone registers as a new account, refused during an open trip (found and fixed: first version only checked trips that already had a driver), driver documents removed with their files, vehicle disabled, database constraints on deleted accounts, retention purge removes old OTPs and ended sessions and keeps the current one |
 | 2026-11-05 | T-048 | Migration 0006 rolled down and up by every test file's reset | Found and fixed: rollback failed once deleted accounts existed; down migration now keeps phone nullable in that case |
 | 2026-11-05 | all | Full backend suite | 253/253 passed |
-
+| 2026-11-05 | T-042 | `pnpm --filter @horide/web lint/typecheck/build`; Playwright over all 8 pages at 1280 px and 390 px served from the static output | Build passed; all pages 200, no console errors, no horizontal overflow on phone width; screenshots reviewed |

@@ -22,43 +22,46 @@ class HistoryScreen extends ConsumerWidget {
         onRefresh: () => ref.refresh(historyProvider.future),
         child: trips.when(
           loading: () => const Center(child: CircularProgressIndicator()),
-          error: (e, _) => ListView(
-            children: [
-              const SizedBox(height: 120),
-              Center(child: Text(e is ApiException ? e.message : 'Could not load your trips.')),
-              Center(
-                child: TextButton(
-                  onPressed: () => ref.invalidate(historyProvider),
-                  child: const Text('Try again'),
-                ),
+          error:
+              (e, _) => ListView(
+                children: [
+                  const SizedBox(height: 120),
+                  Center(child: Text(e is ApiException ? e.message : 'Could not load your trips.')),
+                  Center(
+                    child: TextButton(
+                      onPressed: () => ref.invalidate(historyProvider),
+                      child: const Text('Try again'),
+                    ),
+                  ),
+                ],
               ),
-            ],
-          ),
-          data: (list) => list.isEmpty
-              ? ListView(
-                  children: const [
-                    SizedBox(height: 120),
-                    Center(child: Text('No trips yet.')),
-                  ],
-                )
-              : ListView.separated(
-                  itemCount: list.length,
-                  separatorBuilder: (_, __) => const Divider(height: 1),
-                  itemBuilder: (_, i) {
-                    final t = list[i];
-                    final done = t.status == TripStatus.completed;
-                    return ListTile(
-                      minVerticalPadding: 12,
-                      title: Text(t.destinationText ?? 'Trip to a point on the map'),
-                      subtitle: Text('${_date(t.requestedAt)}  •  ${_statusText(t.status)}'),
-                      trailing: Text(
-                        formatEtbShort(t.fare),
-                        style: const TextStyle(fontWeight: FontWeight.w800),
+          data:
+              (list) =>
+                  list.isEmpty
+                      ? ListView(
+                        children: const [
+                          SizedBox(height: 120),
+                          Center(child: Text('No trips yet.')),
+                        ],
+                      )
+                      : ListView.separated(
+                        itemCount: list.length,
+                        separatorBuilder: (_, __) => const Divider(height: 1),
+                        itemBuilder: (_, i) {
+                          final t = list[i];
+                          final done = t.status == TripStatus.completed;
+                          return ListTile(
+                            minVerticalPadding: 12,
+                            title: Text(t.destinationText ?? 'Trip to a point on the map'),
+                            subtitle: Text('${_date(t.requestedAt)}  •  ${_statusText(t.status)}'),
+                            trailing: Text(
+                              formatEtbShort(t.fare),
+                              style: const TextStyle(fontWeight: FontWeight.w800),
+                            ),
+                            onTap: done ? () => context.push('/history/${t.id}') : null,
+                          );
+                        },
                       ),
-                      onTap: done ? () => context.push('/history/${t.id}') : null,
-                    );
-                  },
-                ),
         ),
       ),
     );
@@ -71,9 +74,9 @@ class HistoryScreen extends ConsumerWidget {
   }
 
   static String _statusText(TripStatus s) => switch (s) {
-        TripStatus.completed => 'Completed',
-        TripStatus.cancelled => 'Cancelled',
-        TripStatus.expired => 'No driver found',
-        _ => 'In progress',
-      };
+    TripStatus.completed => 'Completed',
+    TripStatus.cancelled => 'Cancelled',
+    TripStatus.expired => 'No driver found',
+    _ => 'In progress',
+  };
 }

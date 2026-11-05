@@ -80,14 +80,11 @@ class _EmergencySheetState extends State<_EmergencySheet> {
             const SizedBox(height: 6),
             Row(
               children: [
-                Icon(
-                  switch (_alert) {
-                    _AlertState.sending => Icons.schedule,
-                    _AlertState.sent => Icons.check_circle,
-                    _AlertState.failed => Icons.error_outline,
-                  },
-                  color: _alert == _AlertState.failed ? HorideColors.signal : HorideColors.sign,
-                ),
+                Icon(switch (_alert) {
+                  _AlertState.sending => Icons.schedule,
+                  _AlertState.sent => Icons.check_circle,
+                  _AlertState.failed => Icons.error_outline,
+                }, color: _alert == _AlertState.failed ? HorideColors.signal : HorideColors.sign),
                 const SizedBox(width: 8),
                 Expanded(
                   child: Text(switch (_alert) {

@@ -60,20 +60,26 @@ class _TripFinishedScreenState extends ConsumerState<TripFinishedScreen> {
     final note = TextEditingController();
     final text = await showDialog<String>(
       context: context,
-      builder: (d) => AlertDialog(
-        title: const Text('Report a payment problem'),
-        content: TextField(
-          controller: note,
-          maxLength: 500,
-          maxLines: 4,
-          minLines: 2,
-          decoration: const InputDecoration(hintText: 'What went wrong? (at least 5 characters)'),
-        ),
-        actions: [
-          TextButton(onPressed: () => Navigator.pop(d), child: const Text('Back')),
-          FilledButton(onPressed: () => Navigator.pop(d, note.text.trim()), child: const Text('Send')),
-        ],
-      ),
+      builder:
+          (d) => AlertDialog(
+            title: const Text('Report a payment problem'),
+            content: TextField(
+              controller: note,
+              maxLength: 500,
+              maxLines: 4,
+              minLines: 2,
+              decoration: const InputDecoration(
+                hintText: 'What went wrong? (at least 5 characters)',
+              ),
+            ),
+            actions: [
+              TextButton(onPressed: () => Navigator.pop(d), child: const Text('Back')),
+              FilledButton(
+                onPressed: () => Navigator.pop(d, note.text.trim()),
+                child: const Text('Send'),
+              ),
+            ],
+          ),
     );
     note.dispose();
     if (text == null || text.length < 5) return;
@@ -127,9 +133,10 @@ class _TripFinishedScreenState extends ConsumerState<TripFinishedScreen> {
             const SizedBox(height: 8),
             if (!passengerAnswered) ...[
               FilledButton(
-                onPressed: _busy
-                    ? null
-                    : () => _do((api) async {
+                onPressed:
+                    _busy
+                        ? null
+                        : () => _do((api) async {
                           final r = await api.confirmPayment(trip.id);
                           if (mounted) {
                             setState(() {
@@ -164,7 +171,10 @@ class _TripFinishedScreenState extends ConsumerState<TripFinishedScreen> {
                     tooltip: '$i star${i == 1 ? '' : 's'}',
                     iconSize: 38,
                     onPressed: () => setState(() => _stars = i),
-                    icon: Icon(i <= _stars ? Icons.star : Icons.star_border, color: HorideColors.amber),
+                    icon: Icon(
+                      i <= _stars ? Icons.star : Icons.star_border,
+                      color: HorideColors.amber,
+                    ),
                   ),
               ],
             ),
@@ -174,9 +184,10 @@ class _TripFinishedScreenState extends ConsumerState<TripFinishedScreen> {
               decoration: const InputDecoration(hintText: 'Comment (optional)'),
             ),
             FilledButton.tonal(
-              onPressed: _busy || _stars == 0
-                  ? null
-                  : () => _do((api) async {
+              onPressed:
+                  _busy || _stars == 0
+                      ? null
+                      : () => _do((api) async {
                         await api.rate(trip.id, _stars, _comment.text.trim());
                         if (mounted) setState(() => _rated = true);
                       }),
@@ -191,11 +202,11 @@ class _TripFinishedScreenState extends ConsumerState<TripFinishedScreen> {
   }
 
   static String _statusText(String s) => switch (s) {
-        'pending' => 'Not confirmed yet',
-        'driver_recorded' => 'Driver says payment received. Please confirm.',
-        'confirmed' => 'Confirmed',
-        'disputed' => 'Problem reported. Horide staff will contact you.',
-        'resolved' => 'Resolved by Horide staff',
-        _ => s,
-      };
+    'pending' => 'Not confirmed yet',
+    'driver_recorded' => 'Driver says payment received. Please confirm.',
+    'confirmed' => 'Confirmed',
+    'disputed' => 'Problem reported. Horide staff will contact you.',
+    'resolved' => 'Resolved by Horide staff',
+    _ => s,
+  };
 }

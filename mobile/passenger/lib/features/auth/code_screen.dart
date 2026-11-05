@@ -59,7 +59,11 @@ class _CodeScreenState extends ConsumerState<CodeScreen> {
     try {
       await ref
           .read(authApiProvider)
-          .verifyCode(challengeId: _challenge.challengeId, code: _code.text, role: UserRole.passenger);
+          .verifyCode(
+            challengeId: _challenge.challengeId,
+            code: _code.text,
+            role: UserRole.passenger,
+          );
       ref.read(sessionProvider.notifier).signedIn();
       if (mounted) context.go('/');
     } catch (e) {

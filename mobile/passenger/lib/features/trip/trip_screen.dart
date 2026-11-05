@@ -56,18 +56,22 @@ class _TripScreenState extends ConsumerState<TripScreen> {
   Future<void> _cancel(Trip trip) async {
     final ok = await showDialog<bool>(
       context: context,
-      builder: (d) => AlertDialog(
-        title: const Text('Cancel this ride?'),
-        content: Text(
-          trip.status.hasDriver
-              ? 'Your driver is already on the way. A cancellation fee may apply.'
-              : 'We will stop looking for a driver.',
-        ),
-        actions: [
-          TextButton(onPressed: () => Navigator.pop(d, false), child: const Text('Keep ride')),
-          FilledButton(onPressed: () => Navigator.pop(d, true), child: const Text('Cancel ride')),
-        ],
-      ),
+      builder:
+          (d) => AlertDialog(
+            title: const Text('Cancel this ride?'),
+            content: Text(
+              trip.status.hasDriver
+                  ? 'Your driver is already on the way. A cancellation fee may apply.'
+                  : 'We will stop looking for a driver.',
+            ),
+            actions: [
+              TextButton(onPressed: () => Navigator.pop(d, false), child: const Text('Keep ride')),
+              FilledButton(
+                onPressed: () => Navigator.pop(d, true),
+                child: const Text('Cancel ride'),
+              ),
+            ],
+          ),
     );
     if (ok == true) await _run((api) => api.cancel(trip.id));
   }
@@ -88,19 +92,20 @@ class _TripScreenState extends ConsumerState<TripScreen> {
       final approve = await showDialog<bool>(
         context: context,
         barrierDismissible: false,
-        builder: (d) => AlertDialog(
-          title: const Text('New price'),
-          content: Text(
-            'The new route is ${formatKm(p.distanceMetres)}.\n\n'
-            'Price now: ${formatEtb(p.currentFare)}\n'
-            'New price: ${formatEtb(p.newFare)}\n\n'
-            'Your driver continues to the old destination unless you approve.',
-          ),
-          actions: [
-            TextButton(onPressed: () => Navigator.pop(d, false), child: const Text('Keep old')),
-            FilledButton(onPressed: () => Navigator.pop(d, true), child: const Text('Approve')),
-          ],
-        ),
+        builder:
+            (d) => AlertDialog(
+              title: const Text('New price'),
+              content: Text(
+                'The new route is ${formatKm(p.distanceMetres)}.\n\n'
+                'Price now: ${formatEtb(p.currentFare)}\n'
+                'New price: ${formatEtb(p.newFare)}\n\n'
+                'Your driver continues to the old destination unless you approve.',
+              ),
+              actions: [
+                TextButton(onPressed: () => Navigator.pop(d, false), child: const Text('Keep old')),
+                FilledButton(onPressed: () => Navigator.pop(d, true), child: const Text('Approve')),
+              ],
+            ),
       );
       final trip2 = await api.decideDestination(trip.id, p.changeId, approve: approve ?? false);
       ref.read(activeTripProvider.notifier).show(trip2);
@@ -142,18 +147,19 @@ class _TripScreenState extends ConsumerState<TripScreen> {
     if (trip == null) {
       return Scaffold(
         body: Center(
-          child: async.hasError
-              ? Column(
-                  mainAxisSize: MainAxisSize.min,
-                  children: [
-                    const Text('Could not load your trip.'),
-                    TextButton(
-                      onPressed: () => ref.invalidate(activeTripProvider),
-                      child: const Text('Try again'),
-                    ),
-                  ],
-                )
-              : const CircularProgressIndicator(),
+          child:
+              async.hasError
+                  ? Column(
+                    mainAxisSize: MainAxisSize.min,
+                    children: [
+                      const Text('Could not load your trip.'),
+                      TextButton(
+                        onPressed: () => ref.invalidate(activeTripProvider),
+                        child: const Text('Try again'),
+                      ),
+                    ],
+                  )
+                  : const CircularProgressIndicator(),
         ),
       );
     }
@@ -214,31 +220,36 @@ class _TripScreenState extends ConsumerState<TripScreen> {
   }
 
   Marker _pin(LatLngPoint p, Color colour, String label) => Marker(
-        point: toLatLng(p),
-        width: 30,
-        height: 44,
-        alignment: Alignment.topCenter,
-        child: MapPin(colour: colour, label: label),
-      );
+    point: toLatLng(p),
+    width: 30,
+    height: 44,
+    alignment: Alignment.topCenter,
+    child: MapPin(colour: colour, label: label),
+  );
 
   Widget _panel(BuildContext context, Trip trip, DriverLocation? loc, bool live) {
     final theme = Theme.of(context);
     final driver = trip.driver;
     final (title, subtitle, tone) = switch (trip.status) {
-      TripStatus.requested ||
-      TripStatus.searching =>
-        ('Finding a driver', 'Asking nearby ${vehicleLabel(trip.category).toLowerCase()} drivers', SignTone.calm),
+      TripStatus.requested || TripStatus.searching => (
+        'Finding a driver',
+        'Asking nearby ${vehicleLabel(trip.category).toLowerCase()} drivers',
+        SignTone.calm,
+      ),
       TripStatus.accepted ||
-      TripStatus.driverArriving =>
-        ('Driver on the way', driver?.vehicle.plate, SignTone.go),
+      TripStatus.driverArriving => ('Driver on the way', driver?.vehicle.plate, SignTone.go),
       TripStatus.arrived => ('Your driver is here', driver?.vehicle.plate, SignTone.go),
       TripStatus.inProgress => ('On your way', trip.destination.text, SignTone.go),
       TripStatus.cancelled => (
-          'Ride cancelled',
-          trip.cancelledBy == 'passenger' ? 'You cancelled this ride.' : 'This ride was cancelled.',
-          SignTone.alert,
-        ),
-      TripStatus.expired => ('No driver found', 'No driver accepted in time. Please try again.', SignTone.alert),
+        'Ride cancelled',
+        trip.cancelledBy == 'passenger' ? 'You cancelled this ride.' : 'This ride was cancelled.',
+        SignTone.alert,
+      ),
+      TripStatus.expired => (
+        'No driver found',
+        'No driver accepted in time. Please try again.',
+        SignTone.alert,
+      ),
       TripStatus.completed => ('Arrived', null, SignTone.go),
     };
 
@@ -258,13 +269,14 @@ class _TripScreenState extends ConsumerState<TripScreen> {
                 title: title,
                 subtitle: subtitle,
                 tone: tone,
-                trailing: trip.status == TripStatus.searching || trip.status == TripStatus.requested
-                    ? const SizedBox(
-                        width: 26,
-                        height: 26,
-                        child: CircularProgressIndicator(color: Colors.white, strokeWidth: 3),
-                      )
-                    : null,
+                trailing:
+                    trip.status == TripStatus.searching || trip.status == TripStatus.requested
+                        ? const SizedBox(
+                          width: 26,
+                          height: 26,
+                          child: CircularProgressIndicator(color: Colors.white, strokeWidth: 3),
+                        )
+                        : null,
               ),
               if (driver != null && trip.status.hasDriver) ...[
                 const SizedBox(height: 12),
@@ -274,8 +286,8 @@ class _TripScreenState extends ConsumerState<TripScreen> {
                   loc == null
                       ? 'Driver location not available yet.'
                       : live
-                          ? 'Live location'
-                          : 'Location not updated for ${_ago(loc.ageSeconds)}. The driver may have a weak connection.',
+                      ? 'Live location'
+                      : 'Location not updated for ${_ago(loc.ageSeconds)}. The driver may have a weak connection.',
                   style: TextStyle(
                     color: live ? HorideColors.signDeep : HorideColors.amber,
                     fontWeight: FontWeight.w700,
@@ -326,7 +338,8 @@ class _TripScreenState extends ConsumerState<TripScreen> {
     );
   }
 
-  static String _ago(int seconds) => seconds < 120 ? '$seconds seconds' : '${seconds ~/ 60} minutes';
+  static String _ago(int seconds) =>
+      seconds < 120 ? '$seconds seconds' : '${seconds ~/ 60} minutes';
 }
 
 class _DriverCard extends StatelessWidget {
@@ -376,7 +389,10 @@ class _DriverCard extends StatelessWidget {
         if (phone != null)
           IconButton.filledTonal(
             tooltip: 'Call driver',
-            constraints: const BoxConstraints(minWidth: kLargeTouchTarget, minHeight: kLargeTouchTarget),
+            constraints: const BoxConstraints(
+              minWidth: kLargeTouchTarget,
+              minHeight: kLargeTouchTarget,
+            ),
             onPressed: () => launchUrl(Uri(scheme: 'tel', path: phone)),
             icon: const Icon(Icons.call),
           ),
@@ -404,7 +420,11 @@ class _DriverDot extends StatelessWidget {
             border: Border.all(color: live ? Colors.white : HorideColors.muted, width: 4),
             boxShadow: const [BoxShadow(color: Color(0x4014283E), blurRadius: 6)],
           ),
-          child: Icon(Icons.directions_car, size: 14, color: live ? Colors.white : HorideColors.muted),
+          child: Icon(
+            Icons.directions_car,
+            size: 14,
+            color: live ? Colors.white : HorideColors.muted,
+          ),
         ),
       ),
     );

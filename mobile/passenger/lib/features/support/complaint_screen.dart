@@ -45,11 +45,9 @@ class _ComplaintScreenState extends ConsumerState<ComplaintScreen> {
     }
     setState(() => _busy = true);
     try {
-      await ref.read(passengerApiProvider).complain(
-            tripId: widget.tripId,
-            category: _category,
-            description: _text.text.trim(),
-          );
+      await ref
+          .read(passengerApiProvider)
+          .complain(tripId: widget.tripId, category: _category, description: _text.text.trim());
       if (mounted) setState(() => _sent = true);
     } catch (e) {
       if (mounted) showError(context, e);
@@ -62,49 +60,50 @@ class _ComplaintScreenState extends ConsumerState<ComplaintScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(title: const Text('Report a problem')),
-      body: _sent
-          ? const Center(
-              child: Padding(
-                padding: EdgeInsets.all(24),
-                child: Text(
-                  'Thank you. Horide support will review your report.\n\n'
-                  'If you are in danger, use the Emergency button or call 991.',
-                  textAlign: TextAlign.center,
-                ),
-              ),
-            )
-          : ListView(
-              padding: const EdgeInsets.all(16),
-              children: [
-                if (widget.tripId != null)
-                  const Padding(
-                    padding: EdgeInsets.only(bottom: 12),
-                    child: Text('This report will be linked to your trip.'),
+      body:
+          _sent
+              ? const Center(
+                child: Padding(
+                  padding: EdgeInsets.all(24),
+                  child: Text(
+                    'Thank you. Horide support will review your report.\n\n'
+                    'If you are in danger, use the Emergency button or call 991.',
+                    textAlign: TextAlign.center,
                   ),
-                Wrap(
-                  spacing: 8,
-                  runSpacing: 8,
-                  children: [
-                    for (final e in categories.entries)
-                      ChoiceChip(
-                        label: Text(e.value),
-                        selected: _category == e.key,
-                        onSelected: (_) => setState(() => _category = e.key),
-                      ),
-                  ],
                 ),
-                const SizedBox(height: 16),
-                TextField(
-                  controller: _text,
-                  maxLength: 2000,
-                  minLines: 4,
-                  maxLines: 8,
-                  decoration: const InputDecoration(hintText: 'Tell us what happened'),
-                ),
-                const SizedBox(height: 8),
-                FilledButton(onPressed: _busy ? null : _send, child: const Text('Send report')),
-              ],
-            ),
+              )
+              : ListView(
+                padding: const EdgeInsets.all(16),
+                children: [
+                  if (widget.tripId != null)
+                    const Padding(
+                      padding: EdgeInsets.only(bottom: 12),
+                      child: Text('This report will be linked to your trip.'),
+                    ),
+                  Wrap(
+                    spacing: 8,
+                    runSpacing: 8,
+                    children: [
+                      for (final e in categories.entries)
+                        ChoiceChip(
+                          label: Text(e.value),
+                          selected: _category == e.key,
+                          onSelected: (_) => setState(() => _category = e.key),
+                        ),
+                    ],
+                  ),
+                  const SizedBox(height: 16),
+                  TextField(
+                    controller: _text,
+                    maxLength: 2000,
+                    minLines: 4,
+                    maxLines: 8,
+                    decoration: const InputDecoration(hintText: 'Tell us what happened'),
+                  ),
+                  const SizedBox(height: 8),
+                  FilledButton(onPressed: _busy ? null : _send, child: const Text('Send report')),
+                ],
+              ),
     );
   }
 }

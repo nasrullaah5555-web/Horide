@@ -53,12 +53,17 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen> {
   Future<void> _save() async {
     final contact = _contact.text.trim();
     if (contact.isNotEmpty && normalizeEthiopianMobile(contact) == null) {
-      showError(context, const ApiException(400, 'INVALID_PHONE', 'Enter a valid Ethiopian mobile number.'));
+      showError(
+        context,
+        const ApiException(400, 'INVALID_PHONE', 'Enter a valid Ethiopian mobile number.'),
+      );
       return;
     }
     setState(() => _busy = true);
     try {
-      final p = await ref.read(passengerApiProvider).updateProfile(
+      final p = await ref
+          .read(passengerApiProvider)
+          .updateProfile(
             fullName: _name.text.trim().isEmpty ? null : _name.text.trim(),
             emergencyContactPhone: contact.isEmpty ? null : contact,
           );
@@ -76,34 +81,39 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(title: const Text('Your profile')),
-      body: _loading
-          ? const Center(child: CircularProgressIndicator())
-          : ListView(
-              padding: const EdgeInsets.all(16),
-              children: [
-                if (_phone != null) InfoRow('Phone', _phone!),
-                const SizedBox(height: 12),
-                TextField(
-                  controller: _name,
-                  maxLength: 120,
-                  textCapitalization: TextCapitalization.words,
-                  decoration: const InputDecoration(labelText: 'Your name (shown to your driver)'),
-                ),
-                TextField(
-                  controller: _contact,
-                  keyboardType: TextInputType.phone,
-                  maxLength: 25,
-                  decoration: const InputDecoration(labelText: 'Emergency contact phone (optional)'),
-                ),
-                const SizedBox(height: 8),
-                FilledButton(onPressed: _busy ? null : _save, child: const Text('Save')),
-                const SizedBox(height: 32),
-                OutlinedButton(
-                  onPressed: () => ref.read(sessionProvider.notifier).signOut(),
-                  child: const Text('Sign out'),
-                ),
-              ],
-            ),
+      body:
+          _loading
+              ? const Center(child: CircularProgressIndicator())
+              : ListView(
+                padding: const EdgeInsets.all(16),
+                children: [
+                  if (_phone != null) InfoRow('Phone', _phone!),
+                  const SizedBox(height: 12),
+                  TextField(
+                    controller: _name,
+                    maxLength: 120,
+                    textCapitalization: TextCapitalization.words,
+                    decoration: const InputDecoration(
+                      labelText: 'Your name (shown to your driver)',
+                    ),
+                  ),
+                  TextField(
+                    controller: _contact,
+                    keyboardType: TextInputType.phone,
+                    maxLength: 25,
+                    decoration: const InputDecoration(
+                      labelText: 'Emergency contact phone (optional)',
+                    ),
+                  ),
+                  const SizedBox(height: 8),
+                  FilledButton(onPressed: _busy ? null : _save, child: const Text('Save')),
+                  const SizedBox(height: 32),
+                  OutlinedButton(
+                    onPressed: () => ref.read(sessionProvider.notifier).signOut(),
+                    child: const Text('Sign out'),
+                  ),
+                ],
+              ),
     );
   }
 }

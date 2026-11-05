@@ -69,16 +69,22 @@ void main() {
   });
 
   test('a finished trip hides the driver phone (field absent)', () {
-    final json = Map<String, dynamic>.from(passengerTripJson)
-      ..['status'] = 'completed'
-      ..['fare'] = {'quoted': '8000', 'locked': '8000', 'final': '8000', 'cancellationFee': null}
-      ..['driver'] = {
-        'name': 'Abdi Yusuf',
-        'rating': '4.80',
-        'ratingCount': 12,
-        'vehicle': (passengerTripJson['driver'] as Map<String, dynamic>)['vehicle'],
-      }
-      ..remove('driverLocation');
+    final json =
+        Map<String, dynamic>.from(passengerTripJson)
+          ..['status'] = 'completed'
+          ..['fare'] = {
+            'quoted': '8000',
+            'locked': '8000',
+            'final': '8000',
+            'cancellationFee': null,
+          }
+          ..['driver'] = {
+            'name': 'Abdi Yusuf',
+            'rating': '4.80',
+            'ratingCount': 12,
+            'vehicle': (passengerTripJson['driver'] as Map<String, dynamic>)['vehicle'],
+          }
+          ..remove('driverLocation');
     final trip = Trip.fromJson(json);
     expect(trip.status.isFinal, isTrue);
     expect(trip.driver?.phone, isNull);

@@ -46,9 +46,10 @@ class ActiveTripController extends AsyncNotifier<Trip?> {
     try {
       // While a trip is open, reload that trip (so a just-completed trip stays visible for
       // payment and rating). Otherwise look for any open trip.
-      final trip = current != null && !current.status.isFinal
-          ? await ref.read(passengerApiProvider).trip(current.id)
-          : await ref.read(passengerApiProvider).activeTrip();
+      final trip =
+          current != null && !current.status.isFinal
+              ? await ref.read(passengerApiProvider).trip(current.id)
+              : await ref.read(passengerApiProvider).activeTrip();
       state = AsyncData(trip);
       _schedulePoll(trip);
     } on ApiException {
@@ -104,4 +105,6 @@ class ActiveTripController extends AsyncNotifier<Trip?> {
   }
 }
 
-final activeTripProvider = AsyncNotifierProvider<ActiveTripController, Trip?>(ActiveTripController.new);
+final activeTripProvider = AsyncNotifierProvider<ActiveTripController, Trip?>(
+  ActiveTripController.new,
+);

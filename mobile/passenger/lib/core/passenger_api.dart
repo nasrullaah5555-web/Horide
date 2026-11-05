@@ -44,8 +44,7 @@ class TripSummary {
   TripStatus get status => TripStatus.parse(data['status'] as String);
   String? get pickupText => data['pickup_text'] as String?;
   String? get destinationText => data['destination_text'] as String?;
-  String get fare =>
-      (data['final_fare'] ?? data['locked_fare'] ?? data['quoted_fare']) as String;
+  String get fare => (data['final_fare'] ?? data['locked_fare'] ?? data['quoted_fare']) as String;
   DateTime get requestedAt => DateTime.parse(data['requested_at'] as String);
 }
 
@@ -89,7 +88,11 @@ class PassengerApi {
   Future<Trip> cancel(String id, {String? reason}) async =>
       Trip.fromJson(await _c.post('/trips/$id/cancel', {if (reason != null) 'reason': reason}));
 
-  Future<DestinationProposal> proposeDestination(String id, LatLngPoint destination, String? text) async {
+  Future<DestinationProposal> proposeDestination(
+    String id,
+    LatLngPoint destination,
+    String? text,
+  ) async {
     final d = await _c.post('/trips/$id/destination-change', {
       'destination': destination.toJson(),
       if (text != null && text.isNotEmpty) 'destinationText': text,
@@ -117,14 +120,16 @@ class PassengerApi {
   Future<Receipt> receipt(String id) async => Receipt(await _c.get('/trips/$id/receipt'));
 
   Future<void> rate(String id, int stars, String? comment) => _c.post('/trips/$id/rating', {
-        'stars': stars,
-        if (comment != null && comment.isNotEmpty) 'comment': comment,
-      });
+    'stars': stars,
+    if (comment != null && comment.isNotEmpty) 'comment': comment,
+  });
 
   Future<List<TripSummary>> history({DateTime? before}) async {
     final q = before == null ? '' : '?before=${Uri.encodeQueryComponent(before.toIso8601String())}';
     final d = await _c.get('/trips$q');
-    return (d['trips'] as List<dynamic>).map((t) => TripSummary(t as Map<String, dynamic>)).toList();
+    return (d['trips'] as List<dynamic>)
+        .map((t) => TripSummary(t as Map<String, dynamic>))
+        .toList();
   }
 
   Future<void> complain({String? tripId, required String category, required String description}) =>
@@ -135,9 +140,9 @@ class PassengerApi {
       });
 
   Future<void> emergency({String? tripId, LatLngPoint? position}) => _c.post('/emergency', {
-        if (tripId != null) 'tripId': tripId,
-        if (position != null) 'position': position.toJson(),
-      });
+    if (tripId != null) 'tripId': tripId,
+    if (position != null) 'position': position.toJson(),
+  });
 
   Future<Map<String, dynamic>> profile() => _c.get('/passenger/profile');
 
@@ -145,11 +150,12 @@ class PassengerApi {
   Future<Map<String, dynamic>> updateProfile({
     String? fullName,
     required String? emergencyContactPhone,
-  }) =>
-      _c.patch('/passenger/profile', {
-        if (fullName != null) 'fullName': fullName,
-        'emergencyContactPhone': emergencyContactPhone,
-      });
+  }) => _c.patch('/passenger/profile', {
+    if (fullName != null) 'fullName': fullName,
+    'emergencyContactPhone': emergencyContactPhone,
+  });
 }
 
-final passengerApiProvider = Provider<PassengerApi>((ref) => PassengerApi(ref.watch(apiClientProvider)));
+final passengerApiProvider = Provider<PassengerApi>(
+  (ref) => PassengerApi(ref.watch(apiClientProvider)),
+);

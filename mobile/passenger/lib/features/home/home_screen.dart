@@ -41,7 +41,10 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
     super.dispose();
   }
 
-  Place get _pickup => Place(toPoint(_map.camera.center), _pickupText.text.trim().isEmpty ? null : _pickupText.text.trim());
+  Place get _pickup => Place(
+    toPoint(_map.camera.center),
+    _pickupText.text.trim().isEmpty ? null : _pickupText.text.trim(),
+  );
 
   Future<void> _chooseDestination() async {
     final place = await PlacePicker.open(
@@ -64,7 +67,9 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
     });
     try {
       final pickup = _pickup;
-      final quotes = await ref.read(passengerApiProvider).quotes(
+      final quotes = await ref
+          .read(passengerApiProvider)
+          .quotes(
             pickup: pickup.point,
             destination: destination.point,
             pickupText: pickup.text,
@@ -195,7 +200,11 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
               OutlinedButton.icon(
                 onPressed: _busy ? null : _chooseDestination,
                 icon: const Icon(Icons.place),
-                label: Text(_destination == null ? 'Where to?' : (_destination!.text ?? 'Destination set on the map')),
+                label: Text(
+                  _destination == null
+                      ? 'Where to?'
+                      : (_destination!.text ?? 'Destination set on the map'),
+                ),
               ),
               if (_busy && quotes == null) ...[
                 const SizedBox(height: 16),
@@ -203,12 +212,25 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
               ],
               if (quotes != null) ...[
                 const SizedBox(height: 14),
-                for (final q in quotes) _QuoteTile(quote: q, selected: q.category == _category, onTap: () => setState(() => _category = q.category)),
+                for (final q in quotes)
+                  _QuoteTile(
+                    quote: q,
+                    selected: q.category == _category,
+                    onTap: () => setState(() => _category = q.category),
+                  ),
                 const SizedBox(height: 8),
                 SegmentedButton<PaymentMethod>(
                   segments: const [
-                    ButtonSegment(value: PaymentMethod.cash, label: Text('Cash'), icon: Icon(Icons.payments_outlined)),
-                    ButtonSegment(value: PaymentMethod.ebirr, label: Text('eBirr'), icon: Icon(Icons.phone_android)),
+                    ButtonSegment(
+                      value: PaymentMethod.cash,
+                      label: Text('Cash'),
+                      icon: Icon(Icons.payments_outlined),
+                    ),
+                    ButtonSegment(
+                      value: PaymentMethod.ebirr,
+                      label: Text('eBirr'),
+                      icon: Icon(Icons.phone_android),
+                    ),
                   ],
                   selected: {_payment},
                   onSelectionChanged: (s) {
@@ -223,14 +245,18 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
                   textAlign: TextAlign.center,
                 ),
                 const SizedBox(height: 10),
-                Builder(builder: (context) {
-                  final selected = quotes.where((q) => q.category == _category).firstOrNull;
-                  if (selected == null) return const SizedBox.shrink();
-                  return FilledButton(
-                    onPressed: _busy ? null : () => _book(selected),
-                    child: Text('Book ${vehicleLabel(selected.category).toLowerCase()} for ${formatEtbShort(selected.fare)}'),
-                  );
-                }),
+                Builder(
+                  builder: (context) {
+                    final selected = quotes.where((q) => q.category == _category).firstOrNull;
+                    if (selected == null) return const SizedBox.shrink();
+                    return FilledButton(
+                      onPressed: _busy ? null : () => _book(selected),
+                      child: Text(
+                        'Book ${vehicleLabel(selected.category).toLowerCase()} for ${formatEtbShort(selected.fare)}',
+                      ),
+                    );
+                  },
+                ),
               ],
             ],
           ),
@@ -243,37 +269,38 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
     showModalBottomSheet<void>(
       context: context,
       showDragHandle: true,
-      builder: (sheet) => SafeArea(
-        child: Column(
-          mainAxisSize: MainAxisSize.min,
-          children: [
-            ListTile(
-              leading: const Icon(Icons.history),
-              title: const Text('Your trips'),
-              onTap: () {
-                Navigator.pop(sheet);
-                context.push('/history');
-              },
+      builder:
+          (sheet) => SafeArea(
+            child: Column(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                ListTile(
+                  leading: const Icon(Icons.history),
+                  title: const Text('Your trips'),
+                  onTap: () {
+                    Navigator.pop(sheet);
+                    context.push('/history');
+                  },
+                ),
+                ListTile(
+                  leading: const Icon(Icons.support_agent),
+                  title: const Text('Report a problem'),
+                  onTap: () {
+                    Navigator.pop(sheet);
+                    context.push('/complaint');
+                  },
+                ),
+                ListTile(
+                  leading: const Icon(Icons.person_outline),
+                  title: const Text('Your profile'),
+                  onTap: () {
+                    Navigator.pop(sheet);
+                    context.push('/profile');
+                  },
+                ),
+              ],
             ),
-            ListTile(
-              leading: const Icon(Icons.support_agent),
-              title: const Text('Report a problem'),
-              onTap: () {
-                Navigator.pop(sheet);
-                context.push('/complaint');
-              },
-            ),
-            ListTile(
-              leading: const Icon(Icons.person_outline),
-              title: const Text('Your profile'),
-              onTap: () {
-                Navigator.pop(sheet);
-                context.push('/profile');
-              },
-            ),
-          ],
-        ),
-      ),
+          ),
     );
   }
 }
@@ -300,11 +327,19 @@ class _QuoteTile extends StatelessWidget {
             padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 10),
             decoration: BoxDecoration(
               borderRadius: BorderRadius.circular(12),
-              border: Border.all(color: selected ? HorideColors.sign : theme.colorScheme.outline, width: selected ? 2.5 : 1),
+              border: Border.all(
+                color: selected ? HorideColors.sign : theme.colorScheme.outline,
+                width: selected ? 2.5 : 1,
+              ),
             ),
             child: Row(
               children: [
-                Icon(quote.category == VehicleCategory.car ? Icons.directions_car : Icons.electric_rickshaw, size: 30),
+                Icon(
+                  quote.category == VehicleCategory.car
+                      ? Icons.directions_car
+                      : Icons.electric_rickshaw,
+                  size: 30,
+                ),
                 const SizedBox(width: 12),
                 Expanded(
                   child: Column(
@@ -343,7 +378,10 @@ class _RoundButton extends StatelessWidget {
       elevation: 3,
       child: IconButton(
         iconSize: 26,
-        constraints: const BoxConstraints(minWidth: kLargeTouchTarget, minHeight: kLargeTouchTarget),
+        constraints: const BoxConstraints(
+          minWidth: kLargeTouchTarget,
+          minHeight: kLargeTouchTarget,
+        ),
         tooltip: label,
         icon: Icon(icon),
         onPressed: onTap,

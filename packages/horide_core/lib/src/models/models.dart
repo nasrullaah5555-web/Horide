@@ -18,17 +18,17 @@ enum TripStatus {
   expired;
 
   static TripStatus parse(String value) => switch (value) {
-        'requested' => requested,
-        'searching' => searching,
-        'accepted' => accepted,
-        'driver_arriving' => driverArriving,
-        'arrived' => arrived,
-        'in_progress' => inProgress,
-        'completed' => completed,
-        'cancelled' => cancelled,
-        'expired' => expired,
-        _ => throw FormatException('Unknown trip status: $value'),
-      };
+    'requested' => requested,
+    'searching' => searching,
+    'accepted' => accepted,
+    'driver_arriving' => driverArriving,
+    'arrived' => arrived,
+    'in_progress' => inProgress,
+    'completed' => completed,
+    'cancelled' => cancelled,
+    'expired' => expired,
+    _ => throw FormatException('Unknown trip status: $value'),
+  };
 
   bool get isFinal => this == completed || this == cancelled || this == expired;
   bool get hasDriver =>
@@ -54,7 +54,8 @@ class Place {
   final LatLngPoint point;
   final String? text;
 
-  static Place fromJson(Map<String, dynamic> j) => Place(LatLngPoint.fromJson(j), j['text'] as String?);
+  static Place fromJson(Map<String, dynamic> j) =>
+      Place(LatLngPoint.fromJson(j), j['text'] as String?);
 }
 
 /// A server price for one vehicle type. [quoteToken] is signed by the server and is sent back
@@ -79,14 +80,14 @@ class Quote {
   final String quoteToken;
 
   static Quote fromJson(Map<String, dynamic> j) => Quote(
-        category: VehicleCategory.values.byName(j['category'] as String),
-        fare: j['fare'] as String,
-        distanceMetres: (j['distanceMetres'] as num).toInt(),
-        durationSeconds: (j['durationSeconds'] as num).toInt(),
-        isEstimate: j['isEstimate'] as bool,
-        expiresAt: DateTime.parse(j['expiresAt'] as String),
-        quoteToken: j['quoteToken'] as String,
-      );
+    category: VehicleCategory.values.byName(j['category'] as String),
+    fare: j['fare'] as String,
+    distanceMetres: (j['distanceMetres'] as num).toInt(),
+    durationSeconds: (j['durationSeconds'] as num).toInt(),
+    isEstimate: j['isEstimate'] as bool,
+    expiresAt: DateTime.parse(j['expiresAt'] as String),
+    quoteToken: j['quoteToken'] as String,
+  );
 }
 
 /// The driver's last known position. Age is counted on the phone from when the server said the
@@ -94,7 +95,7 @@ class Quote {
 /// so a position that stops updating turns stale on screen by itself.
 class DriverLocation {
   DriverLocation({required this.point, required int ageSeconds, this.heading, DateTime? now})
-      : observedAt = (now ?? DateTime.now()).subtract(Duration(seconds: ageSeconds));
+    : observedAt = (now ?? DateTime.now()).subtract(Duration(seconds: ageSeconds));
 
   /// Positions older than this are never presented as live (master prompt §9).
   static const liveThreshold = Duration(seconds: 30);
@@ -109,11 +110,11 @@ class DriverLocation {
   int get ageSeconds => ageAt(DateTime.now()).inSeconds;
 
   static DriverLocation fromJson(Map<String, dynamic> j, {DateTime? now}) => DriverLocation(
-        point: LatLngPoint.fromJson(j),
-        ageSeconds: (j['ageSeconds'] as num).toInt(),
-        heading: (j['heading'] as num?)?.toInt(),
-        now: now,
-      );
+    point: LatLngPoint.fromJson(j),
+    ageSeconds: (j['ageSeconds'] as num).toInt(),
+    heading: (j['heading'] as num?)?.toInt(),
+    now: now,
+  );
 }
 
 class TripDriver {
@@ -131,16 +132,22 @@ class TripDriver {
   final TripVehicle vehicle;
 
   static TripDriver fromJson(Map<String, dynamic> j) => TripDriver(
-        name: j['name'] as String?,
-        rating: j['rating'].toString(),
-        ratingCount: (j['ratingCount'] as num).toInt(),
-        phone: j['phone'] as String?,
-        vehicle: TripVehicle.fromJson(j['vehicle'] as Map<String, dynamic>),
-      );
+    name: j['name'] as String?,
+    rating: j['rating'].toString(),
+    ratingCount: (j['ratingCount'] as num).toInt(),
+    phone: j['phone'] as String?,
+    vehicle: TripVehicle.fromJson(j['vehicle'] as Map<String, dynamic>),
+  );
 }
 
 class TripVehicle {
-  const TripVehicle({required this.make, required this.model, required this.colour, required this.plate, required this.category});
+  const TripVehicle({
+    required this.make,
+    required this.model,
+    required this.colour,
+    required this.plate,
+    required this.category,
+  });
   final String make;
   final String model;
   final String colour;
@@ -150,12 +157,12 @@ class TripVehicle {
   String get description => '$colour $make $model';
 
   static TripVehicle fromJson(Map<String, dynamic> j) => TripVehicle(
-        make: j['make'] as String,
-        model: j['model'] as String,
-        colour: j['colour'] as String,
-        plate: j['plate'] as String,
-        category: VehicleCategory.values.byName(j['category'] as String),
-      );
+    make: j['make'] as String,
+    model: j['model'] as String,
+    colour: j['colour'] as String,
+    plate: j['plate'] as String,
+    category: VehicleCategory.values.byName(j['category'] as String),
+  );
 }
 
 class TripPassenger {
@@ -230,12 +237,14 @@ class Trip {
       requestedAt: DateTime.parse(times['requestedAt'] as String),
       cancelledBy: j['cancelledBy'] as String?,
       driver: j['driver'] == null ? null : TripDriver.fromJson(j['driver'] as Map<String, dynamic>),
-      driverLocation: j['driverLocation'] == null
-          ? null
-          : DriverLocation.fromJson(j['driverLocation'] as Map<String, dynamic>),
-      passenger: j['passenger'] == null
-          ? null
-          : TripPassenger.fromJson(j['passenger'] as Map<String, dynamic>),
+      driverLocation:
+          j['driverLocation'] == null
+              ? null
+              : DriverLocation.fromJson(j['driverLocation'] as Map<String, dynamic>),
+      passenger:
+          j['passenger'] == null
+              ? null
+              : TripPassenger.fromJson(j['passenger'] as Map<String, dynamic>),
     );
   }
 }
@@ -267,40 +276,46 @@ class RideOffer {
   final PaymentMethod paymentMethod;
 
   static RideOffer fromJson(Map<String, dynamic> j) => RideOffer(
-        tripId: j['trip_id'] as String,
-        expiresAt: DateTime.parse(j['expires_at'] as String),
-        distanceToPickupMetres: (j['distance_to_pickup_m'] as num).toInt(),
-        category: VehicleCategory.values.byName(j['category'] as String),
-        pickup: LatLngPoint((j['pickup_lat'] as num).toDouble(), (j['pickup_lng'] as num).toDouble()),
-        pickupText: j['pickup_text'] as String?,
-        destinationText: j['destination_text'] as String?,
-        tripDistanceMetres: (j['route_distance_m'] as num).toInt(),
-        fare: j['quoted_fare'] as String,
-        paymentMethod: PaymentMethod.values.byName(j['payment_method'] as String),
-      );
+    tripId: j['trip_id'] as String,
+    expiresAt: DateTime.parse(j['expires_at'] as String),
+    distanceToPickupMetres: (j['distance_to_pickup_m'] as num).toInt(),
+    category: VehicleCategory.values.byName(j['category'] as String),
+    pickup: LatLngPoint((j['pickup_lat'] as num).toDouble(), (j['pickup_lng'] as num).toDouble()),
+    pickupText: j['pickup_text'] as String?,
+    destinationText: j['destination_text'] as String?,
+    tripDistanceMetres: (j['route_distance_m'] as num).toInt(),
+    fare: j['quoted_fare'] as String,
+    paymentMethod: PaymentMethod.values.byName(j['payment_method'] as String),
+  );
 }
 
 /// Why a driver can or can't receive rides (GET /driver/eligibility).
 class Eligibility {
-  const Eligibility({required this.eligible, required this.reasons, required this.missingDocuments, this.subscriptionEndsAt});
+  const Eligibility({
+    required this.eligible,
+    required this.reasons,
+    required this.missingDocuments,
+    this.subscriptionEndsAt,
+  });
   final bool eligible;
   final List<String> reasons;
   final List<String> missingDocuments;
   final DateTime? subscriptionEndsAt;
 
   static Eligibility fromJson(Map<String, dynamic> j) => Eligibility(
-        eligible: j['eligible'] as bool,
-        reasons: (j['reasons'] as List<dynamic>).cast<String>(),
-        missingDocuments: (j['missingDocuments'] as List<dynamic>).cast<String>(),
-        subscriptionEndsAt:
-            j['subscriptionEndsAt'] == null ? null : DateTime.parse(j['subscriptionEndsAt'] as String),
-      );
+    eligible: j['eligible'] as bool,
+    reasons: (j['reasons'] as List<dynamic>).cast<String>(),
+    missingDocuments: (j['missingDocuments'] as List<dynamic>).cast<String>(),
+    subscriptionEndsAt:
+        j['subscriptionEndsAt'] == null ? null : DateTime.parse(j['subscriptionEndsAt'] as String),
+  );
 
   static const reasonText = <String, String>{
     'ACCOUNT_SUSPENDED': 'Your account is suspended. Contact Horide support.',
     'ACCOUNT_DELETED': 'This account is closed.',
     'DRIVER_NOT_APPROVED': 'Horide has not approved your documents yet.',
     'NO_APPROVED_VEHICLE': 'Your vehicle has not been approved yet.',
-    'SUBSCRIPTION_INACTIVE': 'Your monthly subscription is not active. Pay at the Horide office to continue.',
+    'SUBSCRIPTION_INACTIVE':
+        'Your monthly subscription is not active. Pay at the Horide office to continue.',
   };
 }

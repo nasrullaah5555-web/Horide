@@ -16,7 +16,10 @@ const variants = {
   passenger: { bg: c.navy, m: c.white, ring: c.sign, hole: c.navy, dot: c.white },
   driver: { bg: c.sign, m: c.navy, ring: c.white, hole: c.sign, dot: c.navy },
 };
-const svg = (v, px) => `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100" width="${px}" height="${px}">
+const svg = (
+  v,
+  px,
+) => `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100" width="${px}" height="${px}">
   <rect width="100" height="100" fill="${v.bg}"/>
   <g transform="translate(19 17) scale(0.62)">
     <path d="${L.path}" fill="none" stroke="${v.m}" stroke-width="${L.stroke}" stroke-linecap="round" stroke-linejoin="round"/>
@@ -30,10 +33,12 @@ const svg = (v, px) => `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100
   for (const [app, v] of Object.entries(variants)) {
     const base = path.join(root, 'mobile', app);
     const files = [
-      ...fs.readdirSync(path.join(base, 'android/app/src/main/res'))
+      ...fs
+        .readdirSync(path.join(base, 'android/app/src/main/res'))
         .filter((d) => d.startsWith('mipmap-'))
         .map((d) => path.join(base, 'android/app/src/main/res', d, 'ic_launcher.png')),
-      ...fs.readdirSync(path.join(base, 'ios/Runner/Assets.xcassets/AppIcon.appiconset'))
+      ...fs
+        .readdirSync(path.join(base, 'ios/Runner/Assets.xcassets/AppIcon.appiconset'))
         .filter((f) => f.endsWith('.png'))
         .map((f) => path.join(base, 'ios/Runner/Assets.xcassets/AppIcon.appiconset', f)),
     ].filter((f) => fs.existsSync(f));

@@ -50,7 +50,12 @@ const dart = [
   dartGroup('MusrideStroke', 'Line and border widths.', t.stroke, num),
   `/// The bundled typeface (packages/musride_core/assets/fonts).\nconst musrideFontFamily = 'packages/musride_core/${t.font.family}';\n`,
   `/// The wordmark typeface, used only for the Musride name in the logo.\nconst musrideBrandFontFamily = 'packages/musride_core/${t.font.brand}';\n`,
-  `/// Route M logo geometry in a 100 x 100 box (see design/brand/).\nabstract final class MusrideLogoShape {\n${Object.entries(t.logo).filter(([k]) => !k.startsWith('$') && k !== 'path').map(([k, v]) => `  static const ${k} = ${num(v)};`).join('\n')}\n  static const path = '${t.logo.path}';\n}\n`,
+  `/// Route M logo geometry in a 100 x 100 box (see design/brand/).\nabstract final class MusrideLogoShape {\n${Object.entries(
+    t.logo,
+  )
+    .filter(([k]) => !k.startsWith('$') && k !== 'path')
+    .map(([k, v]) => `  static const ${k} = ${num(v)};`)
+    .join('\n')}\n  static const path = '${t.logo.path}';\n}\n`,
 ].join('\n');
 
 const css = [
@@ -83,7 +88,7 @@ const ts = [
 const L = t.logo;
 const logoTsx = [
   header('//'),
-  "/** The Musride logo: Route M symbol (pickup ring to drop-off dot) and the wordmark. */",
+  '/** The Musride logo: Route M symbol (pickup ring to drop-off dot) and the wordmark. */',
   'export function MusrideLogo({',
   '  onDark = false,',
   '  wordmark = true,',
@@ -116,7 +121,13 @@ const logoTsx = [
 
 const iconSvg = (bg, m, ring, holeC, dot) =>
   `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100"><rect width="100" height="100" rx="22" fill="${bg}"/><g transform="translate(19 17) scale(0.62)"><path d="${L.path}" fill="none" stroke="${m}" stroke-width="${L.stroke}" stroke-linecap="round" stroke-linejoin="round"/><circle cx="${L.ringX}" cy="${L.ringY}" r="${L.ringR}" fill="${ring}"/><circle cx="${L.ringX}" cy="${L.ringY}" r="${L.holeR}" fill="${holeC}"/><circle cx="${L.dotX}" cy="${L.dotY}" r="${L.dotR}" fill="${dot}"/></g></svg>\n`;
-const favicon = iconSvg(cssColor(t.color.navy), '#ffffff', cssColor(t.color.sign), cssColor(t.color.navy), '#ffffff');
+const favicon = iconSvg(
+  cssColor(t.color.navy),
+  '#ffffff',
+  cssColor(t.color.sign),
+  cssColor(t.color.navy),
+  '#ffffff',
+);
 
 const outputs = {
   'apps/admin/src/lib/logo.g.tsx': logoTsx,

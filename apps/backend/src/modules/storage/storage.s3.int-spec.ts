@@ -15,7 +15,7 @@ let available = false;
 
 beforeAll(async () => {
   let output = '';
-  moto = spawn('python3', ['-m', 'moto.server', '-p', String(PORT)], {
+  moto = spawn(process.env.MOTO_PYTHON ?? 'python3', ['-m', 'moto.server', '-p', String(PORT)], {
     stdio: ['ignore', 'pipe', 'pipe'],
   });
   moto.stdout?.on('data', (d: Buffer) => (output += d.toString()));

@@ -15,7 +15,11 @@ export const DATABASE = Symbol('DATABASE');
       provide: DATABASE,
       inject: [APP_CONFIG],
       useFactory: (config: AppConfig) =>
-        createDatabase({ connectionString: config.DATABASE_URL, ssl: config.DATABASE_SSL }),
+        createDatabase({
+          connectionString: config.DATABASE_URL,
+          ssl: config.DATABASE_SSL,
+          maxConnections: config.DATABASE_POOL_MAX,
+        }),
     },
   ],
   exports: [DATABASE],

@@ -67,3 +67,16 @@ Not yet verified: CI on GitHub (first run happens after this push).
 | 2026-11-05 | T-043 | `test/proxy.e2e-spec.ts`; mock-location test in `test/trips.e2e-spec.ts` | Passed: with 2 hops the address Cloudflare saw is used and a forged X-Forwarded-For entry ignored; mock-location positions refused for going online and dropped from updates |
 | 2026-11-05 | T-043 | `pnpm audit --prod --audit-level high` | No known high or critical vulnerabilities |
 | 2026-11-05 | all | Full backend suite | 256/256 passed |
+
+### T-044 load test (2026-11-05) — `pnpm --filter @horide/backend load-test`
+
+Machine: the 2-CPU development workspace, with the load generator, the API (one Node process, 10 database connections) and PostgreSQL 16 all on the same machine. Drivers send a location every 5 s and check offers every 3 s — more often than the driver app does when waiting (15 s and 8 s), so this is a heavier-than-real profile. Not a production capacity figure.
+
+| Run | Requests/s | Errors | Trips booked / accepted / expired | Latency p95 (location, offers, quote, book, accept) | Booking → accepted |
+|---|---|---|---|---|---|
+| 50 drivers, 15 passengers, 30 s | 37 | 0 | 29 / 29 / 0 | 13, 8, 175, 86, 44 ms | ≤ 2 s (the polling interval) |
+| 200 drivers, 60 passengers, 60 s | 148 | 0 (8 lost accept races → 409, expected) | 276 / 276 / 0 | 19, 12, 37, 106, 61 ms | p95 2 s, max 4 s |
+| 600 drivers, 180 passengers, 90 s | 406 | 0 server errors; 606 lost accept races (409, expected); 6 quotes refused (422, random points too close together) | 1038 / 1038 / 0 | 1614, 543, 1669, 3117, 3167 ms | p95 5.2 s, max 6.5 s |
+
+Findings: every booking was matched and no two drivers ever won the same trip at any load. Up to about 150 requests/s responses stay well under a quarter of a second. At about 400 requests/s on this 2-CPU machine latency rises to seconds (CPU shared by all three processes); nothing failed. The pilot (expected tens of drivers) is far below either level. Before launch: rerun against the real hosting plan (OA-12/13), and keep `DATABASE_POOL_MAX` × instances under the database's connection limit (new setting).
+

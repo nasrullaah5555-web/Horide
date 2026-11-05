@@ -33,6 +33,8 @@ export const envSchema = z
     LOG_LEVEL: z.enum(['fatal', 'error', 'warn', 'info', 'debug', 'trace']).default('info'),
     DATABASE_URL: z.string().url().startsWith('postgres'),
     DATABASE_SSL: boolFromString,
+    // Connections per API instance. Keep (instances × this) under the database plan's limit.
+    DATABASE_POOL_MAX: z.coerce.number().int().min(2).max(100).default(10),
     CORS_ORIGINS: z
       .string()
       .default('')

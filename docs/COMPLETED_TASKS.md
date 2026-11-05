@@ -79,3 +79,7 @@ Evidence: SECURITY_PLAN §9 (control-by-control status with test evidence), `tes
 Finding fixed: behind Cloudflare + Render, trusting one proxy hop would have given every user Cloudflare's IP, so one busy edge could lock many people out of sign-in codes. Now configurable and tested.
 Not done: external penetration test, release obfuscation (T-046), monitoring and backups (need hosting).
 
+## T-044 Load test — 2026-11-05
+Evidence: `apps/backend/scripts/load-test.ts` (accounts prepared in a local database, built API started as a separate process, simulated driver and passenger behaviour, latency percentiles per endpoint); results in TEST_REPORT. Added `DATABASE_POOL_MAX`.
+Limits: one 2-CPU machine shared by load generator, API and database; production capacity must be measured on the real plan.
+

@@ -27,6 +27,7 @@
 - CI: Flutter format/analyze/test for all three packages, automatic `dart format` commits, unsigned Android build on every mobile change, iOS build on demand.
 - Account deletion from both apps and the API; hourly purge of old trip GPS history, OTP challenges and ended sessions (migration 0006).
 - Public website (`apps/web`, static): home, how it works, drive with Horide, safety, privacy policy (draft), terms (draft), contact, account deletion instructions.
+- Load test script for location ingestion and matching; configurable database pool size (`DATABASE_POOL_MAX`).
 
 ### Security
 - Client IP read through a configurable number of proxy hops (`TRUST_PROXY_HOPS`; 2 behind Cloudflare + Render) so per-IP limits are neither shared nor forgeable.

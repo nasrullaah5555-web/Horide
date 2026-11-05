@@ -14,7 +14,8 @@
     "migrate:down": "ts-node --transpile-only src/database/migrate-cli.ts down",
     "seed:dev": "ts-node --transpile-only src/database/seed-dev.ts",
     "admin:create": "ts-node --transpile-only src/modules/admin-auth/create-admin-cli.ts",
-    "demo": "ts-node --transpile-only scripts/dev-demo.ts"
+    "demo": "ts-node --transpile-only scripts/dev-demo.ts",
+    "load-test": "ts-node --transpile-only scripts/load-test.ts"
   },
   "dependencies": {
     "@nestjs/common": "^11.2.8",

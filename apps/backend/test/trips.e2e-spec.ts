@@ -141,6 +141,35 @@ describe('Ride flow: request, matching, acceptance, lifecycle (e2e)', () => {
       expect(res.body).toEqual({ accepted: 2, rejected: { implausible_jump: 1 } });
     });
 
+    it('refuses positions the phone reports as coming from a mock-location app', async () => {
+      const d = await readyDriver(t, { ...PICKUP, online: false });
+      const off = await t
+        .http()
+        .post('/driver/availability')
+        .set(bearer(d.token))
+        .send({
+          online: true,
+          position: { ...PICKUP, recordedAt: new Date().toISOString(), accuracyM: 5, mocked: true },
+        })
+        .expect(422);
+      expect(off.body.error.code).toBe('LOCATION_MOCKED');
+
+      await backdate(d.id);
+      const now = Date.now();
+      const res = await t
+        .http()
+        .post('/driver/location')
+        .set(bearer(d.token))
+        .send({
+          points: [
+            { ...near(0.001), recordedAt: new Date(now - 5_000).toISOString(), mocked: true },
+            { ...near(0.0012), recordedAt: new Date(now).toISOString(), accuracyM: 10 },
+          ],
+        })
+        .expect(200);
+      expect(res.body).toEqual({ accepted: 1, rejected: { mocked: 1 } });
+    });
+
     it('an older point never overwrites a newer position', async () => {
       const d = await readyDriver(t, PICKUP);
       await backdate(d.id);

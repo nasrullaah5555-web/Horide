@@ -57,6 +57,8 @@ class LocationReporter {
     if (p.accuracy > 0) 'accuracyM': p.accuracy,
     if (p.heading >= 0 && p.heading <= 360) 'heading': p.heading,
     if (p.speed >= 0) 'speedKmh': p.speed * 3.6,
+    // Android flags positions from mock-location apps; the server refuses them.
+    if (p.isMocked) 'mocked': true,
   };
 
   void start({required bool onTrip}) {

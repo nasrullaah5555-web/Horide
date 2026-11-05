@@ -29,6 +29,9 @@
 - Public website (`apps/web`, static): home, how it works, drive with Horide, safety, privacy policy (draft), terms (draft), contact, account deletion instructions.
 
 ### Security
+- Client IP read through a configurable number of proxy hops (`TRUST_PROXY_HOPS`; 2 behind Cloudflare + Render) so per-IP limits are neither shared nor forgeable.
+- Positions reported as mock locations are refused and logged; the driver app sends the flag.
+- Android apps exclude their data from cloud backup and device transfer (sign-in tokens stay on the phone).
 - Per-user/IP rate limits with stricter limits on OTP, quotes, bookings, location, uploads and admin login; production refuses to disable them.
 - Automated route audit fails the build if any endpoint lacks its login guard or permission.
 - Forced `multer` ≥ 2.5.0 to fix a denial-of-service advisory in a transitive dependency.

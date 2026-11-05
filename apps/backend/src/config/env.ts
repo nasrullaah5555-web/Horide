@@ -42,6 +42,10 @@ export const envSchema = z
           .map((s) => s.trim())
           .filter(Boolean),
       ),
+    // How many proxies sit in front of the API and append to X-Forwarded-For. The client IP
+    // (used for rate limits and audit) is read that many hops from the right, so a client can't
+    // fake it by sending its own header. Render alone: 1. Cloudflare in front of Render: 2.
+    TRUST_PROXY_HOPS: z.coerce.number().int().min(0).max(5).default(1),
     SMS_PROVIDER: z.enum(['console', 'fake', 'afromessage']).default('console'),
     ROUTING_PROVIDER: z.enum(['dev_estimate', 'fake', 'google', 'osrm']).default('dev_estimate'),
     STORAGE_PROVIDER: z.enum(['local', 's3']).default('local'),

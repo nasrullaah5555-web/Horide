@@ -1,5 +1,14 @@
 import { RateLimit } from '../../common/rate-limit';
-import { Body, Controller, HttpCode, HttpStatus, Inject, Post, UseGuards } from '@nestjs/common';
+import {
+  Body,
+  Controller,
+  HttpCode,
+  HttpStatus,
+  Inject,
+  Logger,
+  Post,
+  UseGuards,
+} from '@nestjs/common';
 import { Kysely, sql } from 'kysely';
 import { z } from 'zod';
 import { DomainEvents } from '../../common/domain-events';
@@ -18,6 +27,7 @@ const pointSchema = latLngSchema.extend({
   accuracyM: z.number().min(0).max(10_000).optional(),
   heading: z.number().min(0).max(360).optional(),
   speedKmh: z.number().min(0).max(400).optional(),
+  mocked: z.boolean().optional(),
 });
 
 const availabilitySchema = z.strictObject({
@@ -34,6 +44,8 @@ type Point = z.infer<typeof pointSchema>;
 @UseGuards(UserAuthGuard)
 @Roles('driver')
 export class LocationsController {
+  private readonly logger = new Logger(LocationsController.name);
+
   constructor(
     @Inject(DATABASE) private readonly db: Kysely<DB>,
     private readonly eligibility: DriverEligibilityService,
@@ -156,6 +168,10 @@ export class LocationsController {
       }
     }
 
+    if (rejected.mocked) {
+      // Visible to staff in the logs; repeated reports are grounds to review the driver.
+      this.logger.warn({ driverId: user.id, points: rejected.mocked }, 'Mock location reported');
+    }
     return { accepted: accepted.length, rejected };
   }
 
@@ -188,12 +204,14 @@ function toPoint(p: Point): LocationPoint {
     lng: p.lng,
     recordedAt: p.recordedAt,
     ...(p.accuracyM !== undefined ? { accuracyM: p.accuracyM } : {}),
+    ...(p.mocked ? { mocked: true } : {}),
   };
 }
 
 function rejectPoint(verdict: PointVerdict): AppError {
   const messages: Record<PointVerdict, string> = {
     ok: '',
+    mocked: 'A mock-location app is faking your position. Turn it off to drive with Horide.',
     inaccurate: 'Your GPS signal is weak. Move to an open area and try again.',
     future: 'Your phone clock is wrong. Turn on automatic date and time.',
     too_old: 'Your location is out of date. Wait for GPS and try again.',

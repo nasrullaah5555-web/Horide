@@ -64,3 +64,6 @@ Not yet verified: CI on GitHub (first run happens after this push).
 | 2026-11-05 | T-048 | Migration 0006 rolled down and up by every test file's reset | Found and fixed: rollback failed once deleted accounts existed; down migration now keeps phone nullable in that case |
 | 2026-11-05 | all | Full backend suite | 253/253 passed |
 | 2026-11-05 | T-042 | `pnpm --filter @horide/web lint/typecheck/build`; Playwright over all 8 pages at 1280 px and 390 px served from the static output | Build passed; all pages 200, no console errors, no horizontal overflow on phone width; screenshots reviewed |
+| 2026-11-05 | T-043 | `test/proxy.e2e-spec.ts`; mock-location test in `test/trips.e2e-spec.ts` | Passed: with 2 hops the address Cloudflare saw is used and a forged X-Forwarded-For entry ignored; mock-location positions refused for going online and dropped from updates |
+| 2026-11-05 | T-043 | `pnpm audit --prod --audit-level high` | No known high or critical vulnerabilities |
+| 2026-11-05 | all | Full backend suite | 256/256 passed |

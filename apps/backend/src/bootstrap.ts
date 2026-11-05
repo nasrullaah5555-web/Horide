@@ -22,8 +22,10 @@ export async function createApp(config: AppConfig): Promise<INestApplication> {
   app.useLogger(app.get(Logger));
 
   app.disable('x-powered-by');
-  // Render and Cloudflare sit in front of the API; trust exactly one proxy hop for client IPs.
-  app.set('trust proxy', 1);
+  // Client IPs come from X-Forwarded-For, trusting exactly the configured number of proxy hops
+  // (DEPLOYMENT_GUIDE: 2 behind Cloudflare + Render). Trusting too few would make every user
+  // share the proxy's IP for rate limits; too many would let clients fake their IP.
+  app.set('trust proxy', config.TRUST_PROXY_HOPS);
   app.use(helmet());
   app.enableCors({
     origin: config.CORS_ORIGINS,

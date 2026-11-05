@@ -89,7 +89,7 @@ Device testing of T-037–T-041 (Android phone or emulator, and iPhone) is owner
 
 ## Phase 7 — Hardening and release
 
-**T-043 Security review & scanning**
+**T-043 Security review & scanning** — DONE (no external penetration test; see SECURITY_PLAN §9 for what is and isn't tested) · Added: configurable proxy hops for client IPs, mock-location refusal, Android backup exclusion.
 **T-044 Load test: matching & location ingestion**
 **T-045 Deployment configuration** — Render blueprint, migration procedure, backups, health checks, Cloudflare guide (live deploy blocked by OA-12/13/14).
 **T-046 Mobile release configuration** — signing, store listings (BLOCKED by OA-04/05).

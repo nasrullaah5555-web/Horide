@@ -74,3 +74,8 @@ Known limits: an access token issued before deletion stays valid for read-only r
 Evidence: `apps/web` (Next.js static export, same design tokens and typeface as the apps and console); CI job `web`.
 The privacy policy is written against what the software actually does (retention periods, who sees what, deletion). It and the terms are marked DRAFT on the page until a lawyer reviews them (OA-07). Prices, subscription price, contact details and provider list are shown as "will be published before launch" rather than invented (OA-15, OA-22).
 
+## T-043 Security review — 2026-11-05
+Evidence: SECURITY_PLAN §9 (control-by-control status with test evidence), `test/proxy.e2e-spec.ts`, mock-location test, Android `data_extraction_rules.xml`.
+Finding fixed: behind Cloudflare + Render, trusting one proxy hop would have given every user Cloudflare's IP, so one busy edge could lock many people out of sign-in codes. Now configurable and tested.
+Not done: external penetration test, release obfuscation (T-046), monitoring and backups (need hosting).
+

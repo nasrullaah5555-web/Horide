@@ -14,9 +14,12 @@ export const MAX_POINT_AGE_SECONDS = 120;
 export interface LocationPoint extends LatLng {
   recordedAt: Date;
   accuracyM?: number;
+  /** The phone reported that this position came from a mock-location (fake GPS) app. */
+  mocked?: boolean;
 }
 
-export type PointVerdict = 'ok' | 'inaccurate' | 'future' | 'too_old' | 'implausible_jump';
+export type PointVerdict =
+  'ok' | 'mocked' | 'inaccurate' | 'future' | 'too_old' | 'implausible_jump';
 
 /**
  * Checks one GPS point against the previous accepted point.
@@ -27,6 +30,9 @@ export function judgePoint(
   previous: LocationPoint | null,
   now: Date,
 ): PointVerdict {
+  // Android reports positions from mock-location apps. A modified app could hide this, so it is
+  // one signal among several (speed and accuracy checks below), not a guarantee.
+  if (point.mocked) return 'mocked';
   const ageSeconds = (now.getTime() - point.recordedAt.getTime()) / 1000;
   if (ageSeconds < -MAX_FUTURE_SKEW_SECONDS) return 'future';
   if (ageSeconds > MAX_POINT_AGE_SECONDS) return 'too_old';

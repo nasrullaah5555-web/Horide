@@ -59,5 +59,23 @@ void main() {
     expect(json['recordedAt'], '2026-11-05T06:00:00.000Z');
     expect(json.containsKey('heading'), isFalse);
     expect(json['speedKmh'], closeTo(36, 0.001));
+    expect(json.containsKey('mocked'), isFalse);
+  });
+
+  test('a position from a mock-location app is labelled so the server can refuse it', () {
+    final p = Position(
+      latitude: 9.35,
+      longitude: 42.8,
+      timestamp: DateTime.utc(2026, 11, 5, 6),
+      accuracy: 5,
+      altitude: 0,
+      altitudeAccuracy: 0,
+      heading: 0,
+      headingAccuracy: 0,
+      speed: 0,
+      speedAccuracy: 0,
+      isMocked: true,
+    );
+    expect(LocationReporter.toPoint(p)['mocked'], isTrue);
   });
 }

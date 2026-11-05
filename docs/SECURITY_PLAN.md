@@ -16,7 +16,7 @@ Baselines: OWASP ASVS (backend/web), OWASP MASVS (mobile), OWASP API Security To
 | Fare tampering | Server-side fare, signed quote token, fare version stored | Unit + negative tests |
 | Subscription bypass | Eligibility checked in SQL at offer time and at accept time | Integration |
 | Fake payment confirmation | Only trip parties, only after completion, once each, audited | Integration |
-| GPS spoofing / teleport | Reject points with impossible speed (> 150 km/h between points), poor accuracy (> 100 m), future timestamps; flag device mock-location (Android) | Unit |
+| GPS spoofing / teleport | Reject points with impossible speed (> 150 km/h between points), poor accuracy (> 100 m), future timestamps, and points Android reports as mock locations (logged for staff) | Integration |
 | Driver document leak | Private bucket, server-generated signed URLs (5 min) only for verification admins; downloads audited | Integration |
 | Malicious upload | Size cap 8 MB, magic-byte type check (JPEG/PNG/PDF only), random storage keys, never served from API origin | Unit |
 | SQL injection | Kysely parameterised queries only; raw `sql` with bound params; lint rule forbids string concatenation into `sql.raw` | Code review + tests |
@@ -60,6 +60,34 @@ Tokens in flutter_secure_storage; no secrets in the app bundle (only public API 
 
 Structured JSON logs (no OTP codes, tokens or document URLs), error tracking, alerts on: OTP volume spikes, 5xx rate, failed admin logins, refresh-token reuse events.
 
-## 9. Verification status
+## 9. Verification status (security review T-043, 2026-11-05)
 
-Nothing in this plan is verified yet. Each control moves to "Tested" only with a passing test recorded in TEST_REPORT.md.
+"Tested" means an automated test exercises the control and is recorded in TEST_REPORT.md. "Implemented" means the code exists but has no automated test. Nothing here has had an external penetration test.
+
+| Control | Status | Evidence |
+|---|---|---|
+| OTP limits, expiry, replay, hashing, enumeration | Tested | `test/auth.e2e-spec.ts` |
+| Refresh rotation, reuse detection, logout | Tested | `test/auth.e2e-spec.ts` |
+| Admin password + TOTP, replay, lockout, CSRF, idle timeout, role matrix | Tested | `test/admin-auth.e2e-spec.ts` |
+| Every route has a login guard and permission | Tested | `test/route-security.e2e-spec.ts` |
+| IDOR on trips, places, receipts, ratings | Tested | onboarding, trips, ride-extras e2e |
+| Duplicate acceptance (20 concurrent) | Tested | `test/trips.e2e-spec.ts` |
+| Fare tampering (signed quotes, client prices refused) | Tested | `test/pricing.e2e-spec.ts` |
+| Subscription bypass | Tested | `test/subscriptions.e2e-spec.ts`, `test/trips.e2e-spec.ts` |
+| Fake payment confirmation | Tested | `test/ride-extras.e2e-spec.ts` |
+| GPS: jump, accuracy, future, mock location | Tested (server); driver app sends the mock flag — compiled in CI only | `test/trips.e2e-spec.ts`, driver `test/app_test.dart` |
+| Upload type sniffing, size, private keys, audited download | Tested | `test/onboarding.e2e-spec.ts` |
+| Rate limiting, production cannot disable | Tested | `test/ops.e2e-spec.ts`, config tests |
+| Client IP behind proxies (rate limits not shared, not forgeable) | Tested | `test/proxy.e2e-spec.ts`; set `TRUST_PROXY_HOPS=2` behind Cloudflare + Render |
+| Account deletion, retention purge | Tested | `test/account.e2e-spec.ts` |
+| Secrets not in repo | CI (gitleaks) | `ci.yml` security job |
+| Dependency vulnerabilities | CI (`pnpm audit --prod --audit-level high`), Dependabot | `ci.yml` |
+| Admin CSP and headers | Implemented; checked by hand in the browser | `apps/admin/next.config.ts` |
+| Website headers | Implemented for Cloudflare Pages; not yet deployed | `apps/web/public/_headers` |
+| Mobile: tokens in Keystore/Keychain, no backup of app data | Implemented, compiled in CI, not tested on a device (OA-21) | `token_store.dart`, Android `data_extraction_rules.xml` |
+| Mobile release obfuscation | Not done — release configuration T-046 | — |
+| Encrypted backups, restore drill | Not done — needs hosting (OA-12/13) | DATABASE_DESIGN |
+| Monitoring and alerts | Not done — needs hosting | §8 |
+| Certificate pinning | Deliberately not done before the pilot (lock-out risk) | §7 |
+
+Known residual risks: an access token stays valid for read-only requests up to 15 minutes after suspension or deletion (all changes re-check the account); the eBirr reference typed by a driver is not verified (OA-10); a modified driver app could hide the mock-location flag, so speed and accuracy checks remain the main GPS defence; rate limits are in memory and reset on restart (single instance, ADR-005).

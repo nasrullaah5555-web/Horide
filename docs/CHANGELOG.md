@@ -31,6 +31,8 @@
 - Production adapters (unverified against the real services): S3-compatible private storage, Google Routes / OSRM routing, Firebase Cloud Messaging push, AfroMessage SMS.
 - Deployment: Render blueprint, deployment guide, encrypted backup and tested restore scripts.
 - Mobile release setup: final app IDs, release signing from a git-ignored key file or CI secrets, obfuscated release bundles in CI, Horide launcher icons; release builds refuse a non-https server address.
+- Pilot runbook: go/no-go checklist, daily operations, incident and breach procedures, support process.
+- Passenger app: saved places as one-tap destinations (save, use, hold to remove).
 
 ### Security
 - Client IP read through a configurable number of proxy hops (`TRUST_PROXY_HOPS`; 2 behind Cloudflare + Render) so per-IP limits are neither shared nor forgeable.

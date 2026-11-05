@@ -48,6 +48,23 @@ class TripSummary {
   DateTime get requestedAt => DateTime.parse(data['requested_at'] as String);
 }
 
+/// A place the passenger saved, such as "Home" or "Work". Most Jijiga addresses are landmarks,
+/// so saving the exact pin saves explaining it again.
+class SavedPlace {
+  const SavedPlace({required this.id, required this.label, required this.point, this.addressText});
+  final String id;
+  final String label;
+  final LatLngPoint point;
+  final String? addressText;
+
+  static SavedPlace fromJson(Map<String, dynamic> j) => SavedPlace(
+    id: j['id'] as String,
+    label: j['label'] as String,
+    point: LatLngPoint((j['lat'] as num).toDouble(), (j['lng'] as num).toDouble()),
+    addressText: j['address_text'] as String?,
+  );
+}
+
 /// Every passenger endpoint, in one place.
 class PassengerApi {
   PassengerApi(this._c);
@@ -144,6 +161,22 @@ class PassengerApi {
     if (position != null) 'position': position.toJson(),
   });
 
+  Future<List<SavedPlace>> savedPlaces() async {
+    final d = await _c.get('/passenger/saved-locations');
+    return (d['locations'] as List<dynamic>)
+        .map((l) => SavedPlace.fromJson(l as Map<String, dynamic>))
+        .toList();
+  }
+
+  Future<void> savePlace(String label, LatLngPoint point, String? addressText) =>
+      _c.post('/passenger/saved-locations', {
+        'label': label,
+        'position': point.toJson(),
+        if (addressText != null && addressText.isNotEmpty) 'addressText': addressText,
+      });
+
+  Future<void> deleteSavedPlace(String id) => _c.delete('/passenger/saved-locations/$id');
+
   Future<Map<String, dynamic>> profile() => _c.get('/passenger/profile');
 
   /// [emergencyContactPhone] is always sent: null removes the contact.
@@ -158,4 +191,8 @@ class PassengerApi {
 
 final passengerApiProvider = Provider<PassengerApi>(
   (ref) => PassengerApi(ref.watch(apiClientProvider)),
+);
+
+final savedPlacesProvider = FutureProvider.autoDispose<List<SavedPlace>>(
+  (ref) => ref.watch(passengerApiProvider).savedPlaces(),
 );

@@ -61,10 +61,7 @@ android {
             signingConfig = when {
                 storeFilePath != null -> signingConfigs.getByName("release")
                 System.getenv("HORIDE_ALLOW_DEBUG_SIGNING") == "true" -> signingConfigs.getByName("debug")
-                else -> throw GradleException(
-                    "No release signing key. Create android/key.properties (see docs/DEPLOYMENT_GUIDE.md, " +
-                        "mobile release) or set HORIDE_KEYSTORE_* variables."
-                )
+                else -> null // refused below, only when a release build is actually requested
             }
             isMinifyEnabled = true
             isShrinkResources = true
@@ -81,3 +78,17 @@ kotlin {
 flutter {
     source = "../.."
 }
+
+// Debug builds never need the release key; a release build without one stops here with a clear
+// message instead of producing an unsigned file.
+gradle.taskGraph.whenReady {
+    val wantsRelease = allTasks.any { it.project == project && it.name.contains("Release") &&
+        (it.name.startsWith("assemble") || it.name.startsWith("bundle")) }
+    if (wantsRelease && android.buildTypes.getByName("release").signingConfig == null) {
+        throw GradleException(
+            "No release signing key. Create android/key.properties (docs/DEPLOYMENT_GUIDE.md §10) " +
+                "or set the HORIDE_KEYSTORE_* variables."
+        )
+    }
+}
+

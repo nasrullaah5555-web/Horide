@@ -206,6 +206,13 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
                       : (_destination!.text ?? 'Destination set on the map'),
                 ),
               ),
+              _SavedPlacesRow(
+                onPick: (place) async {
+                  setState(() => _destination = Place(place.point, place.label));
+                  await _loadQuotes();
+                },
+                current: _destination,
+              ),
               if (_busy && quotes == null) ...[
                 const SizedBox(height: 16),
                 const Center(child: CircularProgressIndicator()),
@@ -385,6 +392,100 @@ class _RoundButton extends StatelessWidget {
         tooltip: label,
         icon: Icon(icon),
         onPressed: onTap,
+      ),
+    );
+  }
+}
+
+/// Saved places as one-tap destinations, plus "Save" for the destination just chosen.
+class _SavedPlacesRow extends ConsumerWidget {
+  const _SavedPlacesRow({required this.onPick, required this.current});
+  final ValueChanged<SavedPlace> onPick;
+  final Place? current;
+
+  Future<void> _save(BuildContext context, WidgetRef ref, Place place) async {
+    final label = TextEditingController(text: place.text ?? '');
+    final name = await showDialog<String>(
+      context: context,
+      builder: (d) => AlertDialog(
+        title: const Text('Save this place'),
+        content: TextField(
+          controller: label,
+          maxLength: 40,
+          autofocus: true,
+          decoration: const InputDecoration(hintText: 'Name, e.g. Home or Work'),
+        ),
+        actions: [
+          TextButton(onPressed: () => Navigator.pop(d), child: const Text('Cancel')),
+          FilledButton(onPressed: () => Navigator.pop(d, label.text.trim()), child: const Text('Save')),
+        ],
+      ),
+    );
+    label.dispose();
+    if (name == null || name.isEmpty) return;
+    try {
+      await ref.read(passengerApiProvider).savePlace(name, place.point, place.text);
+      ref.invalidate(savedPlacesProvider);
+    } catch (e) {
+      if (context.mounted) showError(context, e);
+    }
+  }
+
+  Future<void> _delete(BuildContext context, WidgetRef ref, SavedPlace p) async {
+    final ok = await showDialog<bool>(
+      context: context,
+      builder: (d) => AlertDialog(
+        title: Text('Remove "${p.label}"?'),
+        actions: [
+          TextButton(onPressed: () => Navigator.pop(d, false), child: const Text('Keep')),
+          FilledButton(onPressed: () => Navigator.pop(d, true), child: const Text('Remove')),
+        ],
+      ),
+    );
+    if (ok != true) return;
+    try {
+      await ref.read(passengerApiProvider).deleteSavedPlace(p.id);
+      ref.invalidate(savedPlacesProvider);
+    } catch (e) {
+      if (context.mounted) showError(context, e);
+    }
+  }
+
+  @override
+  Widget build(BuildContext context, WidgetRef ref) {
+    final places = ref.watch(savedPlacesProvider).valueOrNull ?? const <SavedPlace>[];
+    final place = current;
+    final alreadySaved =
+        place != null &&
+        places.any((p) => p.point.lat == place.point.lat && p.point.lng == place.point.lng);
+    if (places.isEmpty && (place == null || alreadySaved)) return const SizedBox.shrink();
+    return Padding(
+      padding: const EdgeInsets.only(top: 8),
+      child: SingleChildScrollView(
+        scrollDirection: Axis.horizontal,
+        child: Row(
+          children: [
+            for (final p in places)
+              Padding(
+                padding: const EdgeInsets.only(right: 8),
+                child: GestureDetector(
+                  onLongPress: () => _delete(context, ref, p),
+                  child: ActionChip(
+                    avatar: const Icon(Icons.bookmark, size: 18),
+                    label: Text(p.label),
+                    tooltip: 'Go to ${p.label} (hold to remove)',
+                    onPressed: () => onPick(p),
+                  ),
+                ),
+              ),
+            if (place != null && !alreadySaved)
+              ActionChip(
+                avatar: const Icon(Icons.bookmark_add_outlined, size: 18),
+                label: const Text('Save this place'),
+                onPressed: () => _save(context, ref, place),
+              ),
+          ],
+        ),
       ),
     );
   }

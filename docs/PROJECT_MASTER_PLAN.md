@@ -17,7 +17,8 @@ A working, tested ride-hailing platform for a closed pilot in Jijiga: passenger 
 | BLOCKED_TASKS.md | Tasks waiting on something |
 | OWNER_ACTION_REGISTER.md | What only the owner can do |
 | TEST_REPORT.md | Real test results only |
-| DEPLOYMENT_GUIDE.md | How to deploy |
+| DEPLOYMENT_GUIDE.md | How to deploy, back up, restore, release the apps |
+| PILOT_RUNBOOK.md | Go/no-go, daily operations, incidents, breaches, support |
 | CHANGELOG.md | Version history |
 
 ## Changes from the master prompt (all documented as ADRs)
@@ -33,8 +34,21 @@ A working, tested ride-hailing platform for a closed pilot in Jijiga: passenger 
 | Unclear licensing | Launch blocked | OA-06 early |
 | Map/search quality in Jijiga | Wrong pickups, wrong fares | OA-09 field test; manual pin always available |
 | SMS delivery unreliable | Users can't log in | Provider adapter; test with real Ethio Telecom and Safaricom numbers |
-| Mobile code not compiled in workspace | Build errors surface late | CI on GitHub as soon as OA-01 is done |
+| Mobile code not compiled in workspace | Build errors surface late | Done: CI compiles, analyses, tests and builds Android and iOS on every change; device testing still needed (OA-21) |
 | Owner can't maintain code | Long-term fragility | Plain-language summaries per task; owner reviews each phase |
 
 ## Status definitions
 Implemented → Tested → Deployment-ready → Deployed → Externally verified. Nothing is reported at a higher status than evidence supports.
+
+## Where things stand (2026-11-05)
+
+| Part | Status |
+|---|---|
+| Backend API | Tested (271 automated tests); production adapters implemented but not verified against real services |
+| Staff console | Tested in a browser against the real API on development data |
+| Website | Built and checked; legal pages are drafts |
+| Passenger and driver apps | Compiled, analysed and unit-tested in CI; Android and iOS builds succeed; not yet run on a phone |
+| Deployment | Configured and documented; restore drill passed locally; nothing deployed |
+| Pilot | Runbook written; waiting on owner actions |
+
+Everything that remains before a pilot is an owner action (OWNER_ACTION_REGISTER) or depends on one.

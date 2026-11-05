@@ -16,4 +16,6 @@ Estimates are rough. They assume Claude builds code in sessions and the owner re
 
 **Critical path outside code:** OA-06 (legal), OA-08 (SMS), OA-09 (maps), OA-17 (drivers). Start these now; each can take weeks.
 
+**Progress (2026-11-05):** phases 0–7 are complete in code (see TASK_REGISTER for each task's exact status). Remaining work is owner actions, device testing (OA-21), real-service checks, deployment and the pilot.
+
 **Honest caveat:** Mobile apps (Phase 5) carry the most risk because they cannot be compiled in Claude's workspace. Expect several rounds of fixing build errors reported from CI or the owner's laptop.

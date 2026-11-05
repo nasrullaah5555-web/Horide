@@ -39,7 +39,7 @@ jobs:
           cache: pnpm
       - run: pnpm install --frozen-lockfile
       # Local emulators for the production adapters' integration tests (S3).
-      - run: pip install --quiet "moto[server]==5.2.5"
+      - run: python3 -m pip install --quiet "moto[server]==5.2.5"
       - run: pnpm format:check
       - run: pnpm --filter @horide/backend lint
       - run: pnpm --filter @horide/backend typecheck

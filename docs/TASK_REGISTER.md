@@ -95,4 +95,4 @@ Device testing of T-037–T-041 (Android phone or emulator, and iPhone) is owner
 **T-044 Load test: matching & location ingestion** — DONE on the development machine (rerun on real hosting before launch) · `scripts/load-test.ts`; results in TEST_REPORT.
 **T-045 Deployment configuration** — DONE (live deploy BLOCKED – OWNER ACTION REQUIRED: OA-07, OA-12, OA-13, OA-14) · `render.yaml`, DEPLOYMENT_GUIDE, encrypted backup/restore scripts with a passing local restore drill.
 **T-046 Mobile release configuration** — DONE for configuration; signed builds and store listings BLOCKED – OWNER ACTION REQUIRED (OA-04, OA-05, OA-23) · release signing from key.properties or CI secrets, final app IDs, obfuscation, launcher icons, https-only release builds, release bundle CI job.
-**T-047 Pilot runbook** — incident response, breach notification, support process.
+**T-047 Pilot runbook** — DONE (docs/PILOT_RUNBOOK.md; untested until the pilot) · go/no-go checklist, pilot shape and measures, daily operations, incident response, breach procedure, support process.

@@ -14,9 +14,15 @@ let moto: ChildProcess | null = null;
 let available = false;
 
 beforeAll(async () => {
-  moto = spawn('python3', ['-m', 'moto.server', '-p', String(PORT)], { stdio: 'ignore' });
-  moto.on('error', () => undefined);
-  for (let i = 0; i < 40; i++) {
+  let output = '';
+  moto = spawn('python3', ['-m', 'moto.server', '-p', String(PORT)], {
+    stdio: ['ignore', 'pipe', 'pipe'],
+  });
+  moto.stdout?.on('data', (d: Buffer) => (output += d.toString()));
+  moto.stderr?.on('data', (d: Buffer) => (output += d.toString()));
+  moto.on('error', (err) => (output += String(err)));
+  // A cold CI machine can take a while to import the emulator.
+  for (let i = 0; i < 120; i++) {
     try {
       await fetch(ENDPOINT);
       available = true;
@@ -26,7 +32,9 @@ beforeAll(async () => {
     }
   }
   // In CI the emulator is installed on purpose, so a missing emulator is a failure, not a skip.
-  if (!available && process.env.CI) throw new Error('moto S3 emulator did not start in CI');
+  if (!available && process.env.CI) {
+    throw new Error(`moto S3 emulator did not start in CI:\n${output.slice(-2000)}`);
+  }
   if (available) {
     const admin = new S3Client({
       region: 'us-east-1',
@@ -36,7 +44,7 @@ beforeAll(async () => {
     });
     await admin.send(new CreateBucketCommand({ Bucket: 'horide-docs' }));
   }
-}, 20_000);
+}, 45_000);
 
 afterAll(() => {
   moto?.kill();

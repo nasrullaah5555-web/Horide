@@ -91,3 +91,9 @@ Not verified: none of these has talked to the real service. AfroMessage is based
 Evidence: `render.yaml`, `docs/DEPLOYMENT_GUIDE.md`, `infra/backup/backup.sh`, `infra/backup/restore.sh`; restore drill in TEST_REPORT.
 Not verified: nothing has been deployed; the Render blueprint has not been applied (needs OA-13).
 
+## T-046 Mobile release configuration — 2026-11-05 (signed builds blocked by OA-04/05/23)
+Evidence: `mobile/*/android/app/build.gradle.kts` signing block, iOS bundle IDs, `HorideConfig.releaseProblem` + `config_test.dart`, CI job `android-release`, DEPLOYMENT_GUIDE §10, launcher icons.
+
+## T-047 Pilot runbook — 2026-11-05
+Evidence: `docs/PILOT_RUNBOOK.md`. Console menu names checked against the dashboard. Breach-notification authority and form to be confirmed during OA-07.
+

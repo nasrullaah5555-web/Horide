@@ -86,6 +86,7 @@ abstract final class MusrideLetterSpacing {
   static const plate = 1.5;
   static const phone = 1.0;
   static const code = 12.0;
+  static const wordmarkEm = 0.14;
 }
 
 /// Fixed sizes: touch targets, icons, map markers.
@@ -114,3 +115,19 @@ abstract final class MusrideStroke {
 
 /// The bundled typeface (packages/musride_core/assets/fonts).
 const musrideFontFamily = 'packages/musride_core/Overpass';
+
+/// The wordmark typeface, used only for the Musride name in the logo.
+const musrideBrandFontFamily = 'packages/musride_core/Outfit';
+
+/// Route M logo geometry in a 100 x 100 box (see design/brand/).
+abstract final class MusrideLogoShape {
+  static const stroke = 17.0;
+  static const ringX = 21.0;
+  static const ringY = 81.0;
+  static const ringR = 11.0;
+  static const holeR = 4.4;
+  static const dotX = 79.0;
+  static const dotY = 81.0;
+  static const dotR = 11.0;
+  static const path = 'M22 72V17L50 53L78 17V72';
+}

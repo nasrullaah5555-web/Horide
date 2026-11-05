@@ -30,3 +30,8 @@ flutter:
     - family: Overpass
       fonts:
         - asset: assets/fonts/Overpass-Variable.ttf
+    # Outfit Bold (SIL Open Font License, see assets/fonts/OFL-Outfit.txt): the Musride wordmark only.
+    - family: Outfit
+      fonts:
+        - asset: assets/fonts/Outfit-Bold.ttf
+          weight: 700

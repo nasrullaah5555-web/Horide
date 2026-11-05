@@ -61,7 +61,9 @@ class _PhoneScreenState extends ConsumerState<PhoneScreen> {
             MusrideSpace.xl,
           ),
           children: [
-            const SignPanel(title: 'Musride Driver', subtitle: 'Drive in Jijiga'),
+            const MusrideLogo(),
+            const Gap(MusrideSpace.sm),
+            const HintText('Driver app · Drive in Jijiga'),
             const Gap(MusrideSpace.xxxl),
             Text('Your phone number', style: theme.textTheme.headlineMedium),
             const Gap(MusrideSpace.sm),

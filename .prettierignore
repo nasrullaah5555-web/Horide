@@ -9,3 +9,5 @@ packages/
 # Generated from design/tokens.json
 apps/admin/src/lib/tokens.g.ts
 packages/design-tokens/tokens.css
+apps/admin/src/lib/logo.g.tsx
+apps/web/src/lib/logo.g.tsx

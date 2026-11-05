@@ -4,6 +4,7 @@ import Link from 'next/link';
 import { usePathname } from 'next/navigation';
 import type { ReactNode } from 'react';
 import { useSession } from '@/lib/session';
+import { MusrideLogo } from '@/lib/logo.g';
 
 interface NavItem {
   href: string;
@@ -58,7 +59,7 @@ export function Shell({ children }: { children: ReactNode }) {
       <aside className="flex flex-col bg-navy text-white md:sticky md:top-0 md:h-screen md:overflow-y-auto">
         <div className="flex items-center justify-between px-5 py-5">
           <Link href="/" className="text-title-large font-extrabold tracking-tight">
-            Musride
+            <MusrideLogo onDark />
             <span className="ml-2 align-middle text-caption font-semibold text-white/60">
               Jijiga console
             </span>

@@ -61,7 +61,9 @@ class _PhoneScreenState extends ConsumerState<PhoneScreen> {
             MusrideSpace.xl,
           ),
           children: [
-            const SignPanel(title: 'Musride', subtitle: 'Rides in Jijiga'),
+            const MusrideLogo(),
+            const Gap(MusrideSpace.sm),
+            const HintText('Rides in Jijiga'),
             const Gap(MusrideSpace.xxxl),
             Text('Your phone number', style: theme.textTheme.headlineMedium),
             const Gap(MusrideSpace.sm),

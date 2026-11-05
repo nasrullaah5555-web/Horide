@@ -68,3 +68,16 @@ Only the token files, the theme builder (`theme.dart`) and the shared components
 ## Light and dark
 
 Both themes are built from tokens in `theme.dart`. The apps follow the phone's setting. The website and console are light only.
+
+## Logo
+
+The owner's brand sheet: the **Route M** symbol (the M is a journey: green pickup ring to drop-off dot) and the **MUSRIDE** wordmark in Outfit Bold, letter-spaced 0.14 em. The symbol's geometry lives in `design/tokens.json` (`logo`), and every logo is generated from it:
+
+| Where | File |
+|---|---|
+| Vector symbol (light, on dark, one colour) | `design/brand/musride-symbol*.svg` |
+| App launcher icons (passenger navy, driver green) | `node design/brand/render-icons.cjs` writes every Android and iOS size |
+| Apps (sign-in screens) | `MusrideLogo` widget in `musride_core` |
+| Website and console | generated `lib/logo.g.tsx` (`<MusrideLogo />`), favicon `app/icon.svg` |
+
+Fonts: Outfit (SIL Open Font License) for the wordmark only; Overpass for everything else. The brand sheet notes that a trademark search is still required.

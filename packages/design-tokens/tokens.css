@@ -2,6 +2,8 @@
 
 @theme {
   --font-sans: 'Overpass', ui-sans-serif, system-ui, sans-serif;
+  --font-brand: 'Outfit', ui-sans-serif, system-ui, sans-serif;
+  --tracking-wordmark: 0.14em;
   --color-navy: #14283e;
   --color-navy-soft: #23405f;
   --color-sign: #19a974;

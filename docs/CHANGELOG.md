@@ -3,7 +3,8 @@
 ## Unreleased
 
 ### Changed
-- Product renamed from Horide to Musride everywhere in the repository (ADR-019). Launcher icons are temporary until the owner's logo is added.
+- Product renamed from Horide to Musride everywhere in the repository (ADR-019).
+- Musride logo (Route M symbol and Outfit wordmark) on both app icons, the sign-in screens, the website, the console and favicons, all generated from the design tokens.
 
 ### Added
 - Planning documents: requirements, architecture, database design, security plan, ADRs, roadmap, task and owner action registers.

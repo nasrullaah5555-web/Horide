@@ -14,6 +14,8 @@ const ALLOWED = [
   'packages/musride_core/lib/src/theme.dart',
   'packages/design-tokens/',
   'apps/admin/src/lib/tokens.g.ts',
+  'apps/admin/src/lib/logo.g.tsx',
+  'apps/web/src/lib/logo.g.tsx',
 ];
 
 const dartRules = [

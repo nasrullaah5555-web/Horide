@@ -3,6 +3,7 @@
 @import '@fontsource/overpass/600.css';
 @import '@fontsource/overpass/700.css';
 @import '@fontsource/overpass/800.css';
+@import '@fontsource/outfit/700.css'; /* wordmark only */
 
 /* Every design value comes from design/tokens.json, shared with the apps and the staff console. */
 @import '../../../../packages/design-tokens/tokens.css';

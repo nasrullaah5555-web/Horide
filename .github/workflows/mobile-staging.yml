@@ -31,6 +31,7 @@ jobs:
       API_URL: ${{ inputs.api_url }}
     steps:
       - name: Refuse anything but an https address
+        working-directory: . # runs before checkout, so the app folder doesn't exist yet
         run: |
           case "$API_URL" in
             https://*) echo "API: $API_URL" ;;

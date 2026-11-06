@@ -13,6 +13,7 @@ const PUBLIC_ROUTES = new Set([
   'POST /auth/refresh',
   'POST /auth/logout',
   'POST /admin/auth/login',
+  'POST /share/view', // "Share my trip": the link's secret is the authorisation (ADR-023)
 ]);
 
 const METHODS = ['GET', 'POST', 'PUT', 'DELETE', 'PATCH', 'ALL', 'OPTIONS', 'HEAD', 'SEARCH'];

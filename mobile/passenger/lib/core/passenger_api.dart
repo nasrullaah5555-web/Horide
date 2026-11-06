@@ -102,6 +102,10 @@ class PassengerApi {
 
   Future<Trip> trip(String id) async => Trip.fromJson(await _c.get('/trips/$id'));
 
+  /// A link family can open to follow this trip; it stops working when the trip ends.
+  Future<String> shareLink(String id) async =>
+      (await _c.post('/trips/$id/share'))['url'] as String;
+
   Future<Trip> cancel(String id, {String? reason}) async =>
       Trip.fromJson(await _c.post('/trips/$id/cancel', {if (reason != null) 'reason': reason}));
 

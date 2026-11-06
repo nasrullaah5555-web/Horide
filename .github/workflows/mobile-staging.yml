@@ -73,6 +73,10 @@ jobs:
       - name: Build release APK (debug-signed, staging only)
         env:
           MUSRIDE_ALLOW_DEBUG_SIGNING: 'true'
+          # Own app ID and "(test)" name, and one fixed test key so each build installs over the
+          # last one (mobile/staging-signing/README.md).
+          MUSRIDE_STAGING: 'true'
+          MUSRIDE_STAGING_KEYSTORE: ${{ github.workspace }}/mobile/staging-signing/staging-test.keystore
         run: |
           flutter build apk --release \
             --obfuscate --split-debug-info=build/symbols \
@@ -111,6 +115,8 @@ jobs:
             echo "Test build for the staging server ($API_URL). Not for Google Play."
             echo
             echo "Install: download the APK on the phone and open it (allow installing from this source)."
+            echo "Apps appear as \"Musride (test)\" and \"Musride Driver (test)\". Later test builds install"
+            echo "over this one and keep your sign-in."
             echo "Built from commit $short on $(date -u '+%d %b %Y, %H:%M') UTC."
             echo
             echo "SHA-256:"

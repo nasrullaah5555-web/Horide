@@ -264,6 +264,14 @@ export interface TripsTable {
   updated_at: Generated<Date>;
 }
 
+export interface TripSharesTable {
+  id: Generated<string>;
+  trip_id: string;
+  token_hash: string;
+  created_at: CreatedAt;
+  last_viewed_at: Timestamp | null;
+}
+
 export interface TripOffersTable {
   id: Generated<string>;
   trip_id: string;
@@ -452,6 +460,7 @@ export interface DB {
   fare_settings: FareSettingsTable;
   trips: TripsTable;
   trip_offers: TripOffersTable;
+  trip_shares: TripSharesTable;
   trip_events: TripEventsTable;
   trip_destination_changes: TripDestinationChangesTable;
   trip_locations: TripLocationsTable;

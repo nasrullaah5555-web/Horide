@@ -64,3 +64,6 @@ apps/web/next-env.d.ts
 *.jks
 *.keystore
 key.properties
+
+# The staging TEST signing key is committed on purpose (see mobile/staging-signing/README.md).
+!mobile/staging-signing/staging-test.keystore

@@ -41,6 +41,9 @@ export const envSchema = z
     // Staging only: creates this super admin at startup when there are no admins yet, and prints
     // its one-time sign-in details to the server log (hosts without a shell, e.g. Render free).
     STAGING_BOOTSTRAP_ADMIN_EMAIL: z.string().email().optional(),
+    // The public website, used to build "Share my trip" links (https://<site>/share/#<secret>).
+    // Without it, sharing is switched off.
+    PUBLIC_WEB_URL: z.string().url().optional(),
     // Test-only: accept Kenyan numbers (+254 written in full) and add a Nairobi test service
     // area, so the apps can be tried in Kenya before Jijiga. Refused in production.
     KENYA_TEST_MODE: boolFromString,
@@ -144,6 +147,13 @@ export const envSchema = z
           });
         }
       }
+    }
+    if (
+      env.PUBLIC_WEB_URL &&
+      (env.NODE_ENV === 'production' || env.NODE_ENV === 'staging') &&
+      !env.PUBLIC_WEB_URL.startsWith('https://')
+    ) {
+      ctx.addIssue({ code: 'custom', path: ['PUBLIC_WEB_URL'], message: 'must use https' });
     }
     if (env.KENYA_TEST_MODE && env.NODE_ENV === 'production') {
       ctx.addIssue({

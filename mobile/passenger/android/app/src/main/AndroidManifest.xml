@@ -4,7 +4,7 @@
     <uses-permission android:name="android.permission.ACCESS_FINE_LOCATION"/>
     <uses-permission android:name="android.permission.ACCESS_COARSE_LOCATION"/>
     <application
-        android:label="Musride"
+        android:label="${appLabel}"
         android:name="${applicationName}"
         android:allowBackup="false"
         android:fullBackupContent="false"
@@ -59,6 +59,11 @@
         <intent>
             <action android:name="android.intent.action.PROCESS_TEXT"/>
             <data android:mimeType="text/plain"/>
+        </intent>
+        <!-- "Share trip with family" by text message -->
+        <intent>
+            <action android:name="android.intent.action.SENDTO"/>
+            <data android:scheme="sms"/>
         </intent>
     </queries>
 </manifest>

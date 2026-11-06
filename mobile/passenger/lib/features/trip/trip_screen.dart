@@ -14,6 +14,9 @@ import '../../core/ui.dart';
 import 'trip_controller.dart';
 import 'trip_finished.dart';
 
+/// The share of the screen the trip panel can cover; the map keeps both ends above it.
+const _panelShare = 0.5;
+
 /// The open trip, from searching to finished. Every status shown here comes from the server.
 class TripScreen extends ConsumerStatefulWidget {
   const TripScreen({super.key});
@@ -101,6 +104,7 @@ class _TripScreenState extends ConsumerState<TripScreen> {
       confirmLabel: 'Get new price',
       start: toLatLng(trip.destination.point),
       places: ref.read(placesApiProvider),
+      other: OtherEnd.pickup(trip.pickup.point),
     );
     if (place == null || !mounted) return;
     setState(() => _busy = true);
@@ -202,22 +206,21 @@ class _TripScreenState extends ConsumerState<TripScreen> {
           FlutterMap(
             mapController: _map,
             options: MapOptions(
-              initialCameraFit: CameraFit.coordinates(
-                coordinates: [toLatLng(trip.pickup.point), toLatLng(trip.destination.point)],
-                padding: const EdgeInsets.fromLTRB(
-                  MusrideSpace.xxxl,
-                  MusrideSpace.xxxl,
-                  MusrideSpace.xxxl,
-                  MusrideSpace.xxxl,
-                ),
+              // Both ends above the bottom panel (it covered the destination before 2026-11-06).
+              initialCameraFit: fitTrip(
+                trip.pickup.point,
+                trip.destination.point,
+                bottom: MediaQuery.sizeOf(context).height * _panelShare,
               ),
+              interactionOptions: mapInteraction,
             ),
             children: [
               ...baseMapLayers(),
+              tripLine(trip.pickup.point, trip.destination.point),
               MarkerLayer(
                 markers: [
-                  pinMarker(trip.pickup.point, MusrideColors.sign, 'Pickup'),
-                  pinMarker(trip.destination.point, MusrideColors.navy, 'Destination'),
+                  pickupMarker(trip.pickup.point),
+                  destinationMarker(trip.destination.point),
                   if (loc != null)
                     Marker(
                       point: toLatLng(loc.point),

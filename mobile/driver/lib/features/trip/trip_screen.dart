@@ -197,13 +197,18 @@ class _TripScreenState extends ConsumerState<TripScreen> {
       body: Stack(
         children: [
           FlutterMap(
-            options: MapOptions(initialCenter: toLatLng(target.point), initialZoom: 15),
+            options: MapOptions(
+              initialCenter: toLatLng(target.point),
+              initialZoom: 15,
+              interactionOptions: mapInteraction,
+            ),
             children: [
               ...baseMapLayers(),
+              tripLine(trip.pickup.point, trip.destination.point),
               MarkerLayer(
                 markers: [
-                  pinMarker(trip.pickup.point, MusrideColors.sign, 'Pickup'),
-                  pinMarker(trip.destination.point, MusrideColors.navy, 'Destination'),
+                  pickupMarker(trip.pickup.point),
+                  destinationMarker(trip.destination.point),
                 ],
               ),
               mapAttribution(),

@@ -7,9 +7,12 @@ export const metadata: Metadata = { title: 'How it works' };
 const steps = [
   [
     'Set your pickup',
-    'Move the map pin to where you are, and add a landmark so the driver finds you.',
+    'The app starts from where you are. Add a landmark so the driver finds you, or search for another pickup.',
   ],
-  ['Choose where to go', 'Pick your destination on the map.'],
+  [
+    'Choose where to go',
+    'Search for your destination by name. Both points and the way between them show on the map.',
+  ],
   [
     'See the prices',
     'Musride shows the fare for a car and for a Bajaj, worked out from the road distance.',

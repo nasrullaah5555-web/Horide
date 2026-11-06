@@ -78,6 +78,7 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
           FlutterMap(
             mapController: _map,
             options: MapOptions(
+              interactionOptions: mapInteraction,
               initialCenter: marketCentre,
               initialZoom: 14,
               onMapReady: () {

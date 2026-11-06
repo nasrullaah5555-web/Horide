@@ -21,6 +21,7 @@ import {
   PLACES_PROVIDER,
   type PlacesProvider,
   PlacesUnavailableError,
+  photonUserAgent,
 } from './places.provider';
 
 const coord = (min: number, max: number) => z.coerce.number().min(min).max(max);
@@ -92,7 +93,11 @@ export class PlacesController {
           case 'google':
             return new GooglePlaces(config.PLACES_GOOGLE_API_KEY!);
           case 'photon':
-            return new PhotonPlaces(config.PLACES_PHOTON_URL);
+            return new PhotonPlaces(
+              config.PLACES_PHOTON_URL,
+              fetch,
+              photonUserAgent(config.PUBLIC_WEB_URL),
+            );
           default:
             return new DevPlaces();
         }

@@ -40,6 +40,7 @@ void main() {
       }),
     ];
     expect(HistoryScreen.sumFares(trips), BigInt.from(12075));
+    expect(formatEtb(HistoryScreen.sumFares(trips).toString()), contains('120.75'));
   });
 
   test("today's earnings count only completed trips since midnight", () {
@@ -54,7 +55,6 @@ void main() {
     ], now: now);
     expect(today.trips, 2);
     expect(today.santim, BigInt.from(62500));
-    expect(formatEtb(HistoryScreen.sumFares(trips).toString()), contains('120.75'));
   });
 
   test('location points carry GPS time in UTC and plausible fields only', () {

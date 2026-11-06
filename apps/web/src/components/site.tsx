@@ -33,7 +33,7 @@ export function Header() {
 
 export function Footer() {
   return (
-    <footer className="mt-16 bg-navy text-white">
+    <footer className="mt-auto bg-navy text-white">
       <div className="mx-auto grid max-w-5xl gap-6 px-4 py-10 sm:grid-cols-3">
         <div>
           <MusrideLogo onDark className="text-title" />
@@ -71,7 +71,7 @@ export function Page({
   return (
     <>
       <Header />
-      <main className="mx-auto max-w-3xl px-4 pt-10">
+      <main className="mx-auto w-full max-w-3xl px-4 pb-16 pt-10">
         <h1 className="text-display font-extrabold leading-tight tracking-tight">{title}</h1>
         {lead && <p className="mt-3 text-title text-muted">{lead}</p>}
         <div className="mt-8">{children}</div>

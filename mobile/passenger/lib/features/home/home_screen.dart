@@ -315,12 +315,12 @@ class _SavedPlacesRow extends ConsumerWidget {
               decoration: const InputDecoration(hintText: 'Name, e.g. Home or Work'),
             ),
             actions: [
-              MusrideButton(
+              MusrideButton(compact: true, 
                 kind: MusrideButtonKind.quiet,
                 label: 'Cancel',
                 onPressed: () => Navigator.pop(d),
               ),
-              MusrideButton(label: 'Save', onPressed: () => Navigator.pop(d, label.text.trim())),
+              MusrideButton(compact: true, label: 'Save', onPressed: () => Navigator.pop(d, label.text.trim())),
             ],
           ),
     );
@@ -341,12 +341,12 @@ class _SavedPlacesRow extends ConsumerWidget {
           (d) => AlertDialog(
             title: Text('Remove "${p.label}"?'),
             actions: [
-              MusrideButton(
+              MusrideButton(compact: true, 
                 kind: MusrideButtonKind.quiet,
                 label: 'Keep',
                 onPressed: () => Navigator.pop(d, false),
               ),
-              MusrideButton(label: 'Remove', onPressed: () => Navigator.pop(d, true)),
+              MusrideButton(compact: true, label: 'Remove', onPressed: () => Navigator.pop(d, true)),
             ],
           ),
     );

@@ -104,6 +104,7 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
                     text: eligibility.reasons.map((r) => Eligibility.reasonText[r] ?? r).join('\n'),
                     action: MusrideButton(
                       kind: MusrideButtonKind.quiet,
+                      compact: true,
                       label: 'Open',
                       onPressed: () => context.push('/onboarding'),
                     ),

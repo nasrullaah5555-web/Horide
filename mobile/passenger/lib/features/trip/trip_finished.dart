@@ -73,12 +73,12 @@ class _TripFinishedScreenState extends ConsumerState<TripFinishedScreen> {
               ),
             ),
             actions: [
-              MusrideButton(
+              MusrideButton(compact: true, 
                 kind: MusrideButtonKind.quiet,
                 label: 'Back',
                 onPressed: () => Navigator.pop(d),
               ),
-              MusrideButton(label: 'Send', onPressed: () => Navigator.pop(d, note.text.trim())),
+              MusrideButton(compact: true, label: 'Send', onPressed: () => Navigator.pop(d, note.text.trim())),
             ],
           ),
     );

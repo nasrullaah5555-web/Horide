@@ -206,12 +206,19 @@ class MusrideNotice extends StatelessWidget {
         border: Border.all(color: MusrideColors.amber),
         borderRadius: BorderRadius.circular(MusrideRadius.control),
       ),
-      child: Row(
+      // The action goes under the text, not beside it: a full-width button beside the text
+      // squeezed the text to one letter per line (seen on a phone, 2026-11-06).
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.stretch,
         children: [
-          Expanded(child: Text(text, style: const TextStyle(color: MusrideColors.navy))),
-          if (action != null) action!,
-          if (onClose != null)
-            IconButton(tooltip: 'Dismiss', onPressed: onClose, icon: const Icon(Icons.close)),
+          Row(
+            children: [
+              Expanded(child: Text(text, style: const TextStyle(color: MusrideColors.navy))),
+              if (onClose != null)
+                IconButton(tooltip: 'Dismiss', onPressed: onClose, icon: const Icon(Icons.close)),
+            ],
+          ),
+          if (action != null) Align(alignment: Alignment.centerRight, child: action),
         ],
       ),
     );

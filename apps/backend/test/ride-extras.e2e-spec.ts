@@ -1,7 +1,7 @@
 import { sql } from 'kysely';
 import { seedDevelopment } from '../src/database/seed-dev';
 import { adminLogin, type AdminSession } from './helpers/admin';
-import { loginAs, startTestApp, type TestApp } from './helpers/app';
+import { loginAs, startTestApp, type TestApp, ridePin } from './helpers/app';
 import { readyDriver } from './helpers/drivers';
 
 const PICKUP = { lat: 9.3505, lng: 42.7979 };
@@ -59,7 +59,12 @@ describe('Destination change, payments, ratings, complaints, emergencies (e2e)',
           ? ['arrived', 'start']
           : ['arrived', 'start', 'complete'];
     for (const s of steps)
-      await t.http().post(`/trips/${id}/${s}`).set(bearer(d.token)).expect(200);
+      await t
+        .http()
+        .post(`/trips/${id}/${s}`)
+        .set(bearer(d.token))
+        .send(s === 'start' ? { pin: await ridePin(t, id) } : {})
+        .expect(200);
     return { id, p, d, fare: q.body.quotes[0].fare as string };
   }
 

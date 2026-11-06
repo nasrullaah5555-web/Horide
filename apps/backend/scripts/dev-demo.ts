@@ -264,7 +264,12 @@ async function main(): Promise<void> {
       await call(`/trips/${trip.id}/accept`, { method: 'POST', token: driver.token });
       if (i === 6) continue; // driver on the way
       await call(`/trips/${trip.id}/arrived`, { method: 'POST', token: driver.token });
-      await call(`/trips/${trip.id}/start`, { method: 'POST', token: driver.token });
+      const { start_pin: pin } = await db
+        .selectFrom('trips')
+        .select('start_pin')
+        .where('id', '=', trip.id)
+        .executeTakeFirstOrThrow();
+      await call(`/trips/${trip.id}/start`, { method: 'POST', token: driver.token, body: { pin } });
       if (i === 4) continue; // ride in progress
       await call(`/trips/${trip.id}/complete`, { method: 'POST', token: driver.token });
       const ebirr = i % 3 === 0;

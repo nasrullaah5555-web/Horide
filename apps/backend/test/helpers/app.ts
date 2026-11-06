@@ -63,3 +63,13 @@ export function randomIp(): string {
   ipCounter++;
   return `10.${(ipCounter >> 16) & 255}.${(ipCounter >> 8) & 255}.${ipCounter & 255}`;
 }
+
+/** The ride PIN the passenger sees, read straight from the database (tests only). */
+export async function ridePin(t: TestApp, tripId: string): Promise<string> {
+  const row = await t.db
+    .selectFrom('trips')
+    .select('start_pin')
+    .where('id', '=', tripId)
+    .executeTakeFirstOrThrow();
+  return row.start_pin ?? '';
+}

@@ -1,7 +1,7 @@
 import { sql } from 'kysely';
 import { seedDevelopment } from '../src/database/seed-dev';
 import { MatchingService } from '../src/modules/trips/matching.service';
-import { loginAs, startTestApp, type TestApp } from './helpers/app';
+import { loginAs, startTestApp, type TestApp, ridePin } from './helpers/app';
 import { readyDriver } from './helpers/drivers';
 
 // Jijiga, inside the development service zone.
@@ -379,9 +379,19 @@ describe('Ride flow: request, matching, acceptance, lifecycle (e2e)', () => {
       expect(seen.body.driver.phone).toMatch(/^\+251/);
       expect(seen.body.driverLocation.isLive).toBe(true);
 
+      expect(seen.body.startPin).toMatch(/^[0-9]{4}$/); // the passenger sees the ride PIN
+      const driverView = await t.http().get(`/trips/${tripId}`).set(bearer(d.token)).expect(200);
+      expect(driverView.body.startPin).toBeUndefined(); // the driver must hear it from them
+      const pin = await ridePin(t, tripId);
       for (const step of ['arriving', 'arrived', 'start', 'complete']) {
-        await t.http().post(`/trips/${tripId}/${step}`).set(bearer(d.token)).expect(200);
+        await t
+          .http()
+          .post(`/trips/${tripId}/${step}`)
+          .set(bearer(d.token))
+          .send(step === 'start' ? { pin } : {})
+          .expect(200);
       }
+      expect(await ridePin(t, tripId)).toBe(''); // removed once used
       const done = await t.http().get(`/trips/${tripId}`).set(bearer(p.accessToken)).expect(200);
       expect(done.body.status).toBe('completed');
       expect(done.body.fare.final).toBe(fare);
@@ -416,13 +426,24 @@ describe('Ride flow: request, matching, acceptance, lifecycle (e2e)', () => {
       const { tripId, p, d } = await acceptedTrip();
       const other = await readyDriver(t, near(0.2));
       expect(
-        (await t.http().post(`/trips/${tripId}/start`).set(bearer(d.token)).expect(409)).body.error
-          .code,
+        (
+          await t
+            .http()
+            .post(`/trips/${tripId}/start`)
+            .set(bearer(d.token))
+            .send({ pin: await ridePin(t, tripId) })
+            .expect(409)
+        ).body.error.code,
       ).toBe('INVALID_TRIP_STATE');
       await t.http().post(`/trips/${tripId}/arrived`).set(bearer(other.token)).expect(404);
       await t.http().post(`/trips/${tripId}/complete`).set(bearer(p.accessToken)).expect(403);
       await t.http().post(`/trips/${tripId}/arrived`).set(bearer(d.token)).expect(200);
-      await t.http().post(`/trips/${tripId}/start`).set(bearer(d.token)).expect(200);
+      await t
+        .http()
+        .post(`/trips/${tripId}/start`)
+        .set(bearer(d.token))
+        .send({ pin: await ridePin(t, tripId) })
+        .expect(200);
       // Nobody but an admin may cancel a trip that is under way.
       await t
         .http()
@@ -437,9 +458,47 @@ describe('Ride flow: request, matching, acceptance, lifecycle (e2e)', () => {
       const { tripId, d } = await acceptedTrip();
       await sql`UPDATE subscriptions SET ends_at = now() - interval '1 second', starts_at = now() - interval '31 days'
                 WHERE id = ${d.subscriptionId}`.execute(t.db);
+      const pin = await ridePin(t, tripId);
       for (const step of ['arrived', 'start', 'complete']) {
-        await t.http().post(`/trips/${tripId}/${step}`).set(bearer(d.token)).expect(200);
+        await t
+          .http()
+          .post(`/trips/${tripId}/${step}`)
+          .set(bearer(d.token))
+          .send(step === 'start' ? { pin } : {})
+          .expect(200);
       }
+    });
+
+    it('starting needs the ride PIN; wrong PINs are counted and limited', async () => {
+      const { tripId, d } = await acceptedTrip();
+      await t.http().post(`/trips/${tripId}/arrived`).set(bearer(d.token)).expect(200);
+      const pin = await ridePin(t, tripId);
+      const wrong = pin === '0000' ? '1111' : '0000';
+      await t.http().post(`/trips/${tripId}/start`).set(bearer(d.token)).send({}).expect(400);
+      for (let i = 4; i >= 0; i--) {
+        const res = await t
+          .http()
+          .post(`/trips/${tripId}/start`)
+          .set(bearer(d.token))
+          .send({ pin: wrong })
+          .expect(400);
+        expect(res.body.error.code).toBe('RIDE_PIN_WRONG');
+        expect(res.body.error.details.triesLeft).toBe(i);
+      }
+      // Locked: even the right PIN no longer works, so it can't be found by guessing.
+      const locked = await t
+        .http()
+        .post(`/trips/${tripId}/start`)
+        .set(bearer(d.token))
+        .send({ pin })
+        .expect(403);
+      expect(locked.body.error.code).toBe('RIDE_PIN_LOCKED');
+      const status = await t.db
+        .selectFrom('trips')
+        .select('status')
+        .where('id', '=', tripId)
+        .executeTakeFirstOrThrow();
+      expect(status.status).toBe('arrived');
     });
 
     it('a passenger can cancel while searching; offers are withdrawn', async () => {

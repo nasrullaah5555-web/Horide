@@ -47,6 +47,7 @@ export class TripViewsService {
         't.cancelled_at',
         't.cancelled_by',
         't.cancellation_fee',
+        't.start_pin',
       ])
       .where('t.id', '=', tripId)
       .where(ownerColumn, '=', viewer.id) // ownership enforced in the query: no IDOR
@@ -86,6 +87,9 @@ export class TripViewsService {
       },
       cancelledBy: trip.cancelled_by,
     };
+    // Only the passenger sees the ride PIN, and only until the trip starts. The driver must
+    // hear it from the passenger, which proves they found each other.
+    if (viewer.role === 'passenger' && trip.start_pin) view.startPin = trip.start_pin;
 
     if (viewer.role === 'passenger' && trip.driver_id) {
       const driver = await this.db

@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter_map/flutter_map.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
@@ -21,10 +22,72 @@ class TripScreen extends ConsumerStatefulWidget {
 class _TripScreenState extends ConsumerState<TripScreen> {
   bool _busy = false;
 
+  /// Asks for the passenger's ride PIN. Returns null if the driver goes back.
+  Future<String?> _askPin() async {
+    final pin = TextEditingController();
+    final result = await showDialog<String>(
+      context: context,
+      builder:
+          (d) => StatefulBuilder(
+            builder:
+                (d, setState) => AlertDialog(
+                  title: const Text('Ride PIN'),
+                  content: Column(
+                    mainAxisSize: MainAxisSize.min,
+                    crossAxisAlignment: CrossAxisAlignment.stretch,
+                    children: [
+                      const Text('Ask the passenger for the 4-digit PIN shown in their app.'),
+                      const Gap(MusrideSpace.md),
+                      TextField(
+                        controller: pin,
+                        autofocus: true,
+                        keyboardType: TextInputType.number,
+                        maxLength: 4,
+                        textAlign: TextAlign.center,
+                        inputFormatters: [FilteringTextInputFormatter.digitsOnly],
+                        style: const TextStyle(
+                          fontSize: MusrideFontSize.code,
+                          fontWeight: MusrideFontWeight.heavy,
+                          letterSpacing: MusrideLetterSpacing.code,
+                        ),
+                        decoration: const InputDecoration(counterText: ''),
+                        onChanged: (_) => setState(() {}),
+                        onSubmitted: (v) {
+                          if (v.length == 4) Navigator.pop(d, v);
+                        },
+                      ),
+                    ],
+                  ),
+                  actions: [
+                    MusrideButton(
+                      kind: MusrideButtonKind.quiet,
+                      compact: true,
+                      label: 'Back',
+                      onPressed: () => Navigator.pop(d),
+                    ),
+                    MusrideButton(
+                      compact: true,
+                      label: 'Start trip',
+                      onPressed: pin.text.length == 4 ? () => Navigator.pop(d, pin.text) : null,
+                    ),
+                  ],
+                ),
+          ),
+    );
+    pin.dispose();
+    return result;
+  }
+
   Future<void> _step(Trip trip, String step) async {
+    String? pin;
+    if (step == 'start') {
+      pin = await _askPin();
+      if (pin == null) return;
+    }
     setState(() => _busy = true);
     try {
-      final t = await ref.read(driverApiProvider).step(trip.id, step);
+      final api = ref.read(driverApiProvider);
+      final t = pin != null ? await api.start(trip.id, pin) : await api.step(trip.id, step);
       ref.read(driverControllerProvider.notifier).showTrip(t);
     } catch (e) {
       if (mounted) showError(context, e);
@@ -117,7 +180,7 @@ class _TripScreenState extends ConsumerState<TripScreen> {
     final (title, subtitle) = switch (trip.status) {
       TripStatus.accepted => ('Go to pickup', trip.pickup.text ?? 'Point on the map'),
       TripStatus.driverArriving => ('Driving to pickup', trip.pickup.text ?? 'Point on the map'),
-      TripStatus.arrived => ('Waiting for passenger', 'Start the trip when they are in'),
+      TripStatus.arrived => ('Waiting for passenger', 'Ask for their ride PIN to start'),
       TripStatus.inProgress => (
         'Drive to destination',
         trip.destination.text ?? 'Point on the map',

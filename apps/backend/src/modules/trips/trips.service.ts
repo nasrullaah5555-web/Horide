@@ -1,6 +1,6 @@
 import { HttpStatus, Inject, Injectable } from '@nestjs/common';
 import { Kysely, sql, Transaction } from 'kysely';
-import { createHash } from 'node:crypto';
+import { createHash, randomInt } from 'node:crypto';
 import { DomainEvents } from '../../common/domain-events';
 import { AppError } from '../../common/errors';
 import { geoPoint } from '../../common/geo';
@@ -169,6 +169,9 @@ export class TripsService {
             vehicle_id: vehicle.id,
             locked_fare: sql`quoted_fare`, // the fare is locked at acceptance (FR-07)
             accepted_at: sql`now()`,
+            // Shown only to the passenger; the driver enters it to start the trip.
+            start_pin: newRidePin(),
+            start_pin_failures: 0,
           })
           .where('id', '=', tripId)
           .where('status', '=', 'searching')
@@ -250,7 +253,7 @@ export class TripsService {
     action: Exclude<TripAction, 'accept' | 'expire'>,
     actor: Actor,
     tripId: string,
-    opts: { reason?: string } = {},
+    opts: { reason?: string; pin?: string } = {},
   ): Promise<TripStatus> {
     const from = allowedFrom(action, actor.party);
     const to = TRANSITIONS[action].to;
@@ -268,6 +271,8 @@ export class TripsService {
           'payment_method',
           'fare_version_id',
           'arrived_at',
+          'start_pin',
+          'start_pin_failures',
         ])
         .where('id', '=', tripId)
         .forUpdate()
@@ -291,8 +296,29 @@ export class TripsService {
         );
       }
 
+      // Starting needs the passenger's ride PIN. A wrong PIN is counted (and kept, so the
+      // transaction must not roll it back) and the start is refused after the transaction.
+      if (action === 'start' && current.start_pin) {
+        if (current.start_pin_failures >= MAX_PIN_FAILURES) {
+          return { pinProblem: 'locked' as const };
+        }
+        if (opts.pin !== current.start_pin) {
+          await trx
+            .updateTable('trips')
+            .set({ start_pin_failures: current.start_pin_failures + 1 })
+            .where('id', '=', tripId)
+            .execute();
+          return {
+            pinProblem: 'wrong' as const,
+            left: MAX_PIN_FAILURES - current.start_pin_failures - 1,
+          };
+        }
+      }
+
       const now = sql`now()`;
       const set: Record<string, unknown> = { status: to };
+      // The PIN has done its job once the trip starts, ends or is cancelled.
+      if (to === 'in_progress' || to === 'completed' || to === 'cancelled') set.start_pin = null;
       if (to === 'arrived') set.arrived_at = now;
       if (to === 'in_progress') set.started_at = now;
       if (to === 'completed') {
@@ -346,6 +372,25 @@ export class TripsService {
       return { passengerId: current.passenger_id, driverId: current.driver_id };
     });
 
+    if ('pinProblem' in outcome) {
+      if (outcome.pinProblem === 'locked') {
+        throw new AppError(
+          HttpStatus.FORBIDDEN,
+          'RIDE_PIN_LOCKED',
+          'Too many wrong PINs. Call Musride support, or the passenger can cancel and book again.',
+        );
+      }
+      const left = outcome.left ?? 0;
+      throw new AppError(
+        HttpStatus.BAD_REQUEST,
+        'RIDE_PIN_WRONG',
+        left > 0
+          ? `That PIN is not right. Ask the passenger for the 4-digit PIN in their app (${left} tries left).`
+          : 'That PIN is not right, and no tries are left. Call Musride support.',
+        { triesLeft: left },
+      );
+    }
+
     this.events.emit('trip.updated', {
       tripId,
       passengerId: outcome.passengerId,
@@ -393,4 +438,12 @@ export class TripsService {
       })
       .execute();
   }
+}
+
+/** Wrong ride PINs allowed per trip; 5 tries out of 10,000 PINs makes guessing pointless. */
+export const MAX_PIN_FAILURES = 5;
+
+/** A random 4-digit PIN, from the operating system's secure random source. */
+export function newRidePin(): string {
+  return randomInt(0, 10_000).toString().padStart(4, '0');
 }

@@ -289,6 +289,10 @@ class _TripScreenState extends ConsumerState<TripScreen> {
             ok: live,
           ),
         ],
+        if (trip.startPin != null && !trip.status.isFinal) ...[
+          const Gap(MusrideSpace.md),
+          RidePinCard(pin: trip.startPin!),
+        ],
         const Gap(MusrideSpace.md),
         InfoRow(
           trip.lockedFare != null ? 'Fixed price' : 'Price',

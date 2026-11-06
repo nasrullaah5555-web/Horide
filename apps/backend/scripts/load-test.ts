@@ -23,6 +23,7 @@ import { join } from 'node:path';
 import { sql, type Kysely } from 'kysely';
 import { createApp } from '../src/bootstrap';
 import { loadConfig } from '../src/config/env';
+import { createDatabase } from '../src/database/database';
 import { DATABASE } from '../src/database/database.module';
 import { assertMigrationSuccess, createMigrator } from '../src/database/migrator';
 import { seedDevelopment } from '../src/database/seed-dev';
@@ -221,6 +222,7 @@ async function startServer(): Promise<ChildProcess> {
 async function driverLoop(
   d: { id: string; token: string; pos: { lat: number; lng: number } },
   until: number,
+  db: Kysely<DB>,
 ) {
   const go = await call('POST /driver/availability', '/driver/availability', d.token, {
     online: true,
@@ -247,9 +249,20 @@ async function driverLoop(
         const acc = await call('POST /trips/:id/accept', `/trips/${tripId}/accept`, d.token, {});
         if (acc.status === 409) acceptConflicts++;
         if (acc.status === 200) {
+          // The passenger would read out the ride PIN; the load test reads it from the database.
+          const { start_pin: pin } = await db
+            .selectFrom('trips')
+            .select('start_pin')
+            .where('id', '=', tripId)
+            .executeTakeFirstOrThrow();
           for (const step of ['arrived', 'start', 'complete']) {
             await sleep(1000);
-            await call(`POST /trips/:id/${step}`, `/trips/${tripId}/${step}`, d.token, {});
+            await call(
+              `POST /trips/:id/${step}`,
+              `/trips/${tripId}/${step}`,
+              d.token,
+              step === 'start' ? { pin } : {},
+            );
           }
           tripsCompleted++;
         }
@@ -347,17 +360,23 @@ async function main() {
   console.log(`Preparing ${DRIVERS} drivers and ${PASSENGERS} passengers...`);
   const { drivers, passengers } = await prepare();
   const server = await startServer();
+  // Only used to read ride PINs, which a real passenger would read out to the driver.
+  const db = createDatabase({
+    connectionString: loadConfig({ ...process.env, NODE_ENV: 'development' }).DATABASE_URL,
+    ssl: false,
+  });
   try {
     console.log(`Running for ${SECONDS} s...`);
     const started = Date.now();
     const until = started + SECONDS * 1000;
     await Promise.all([
-      ...drivers.map((d) => driverLoop(d, until)),
+      ...drivers.map((d) => driverLoop(d, until, db)),
       ...passengers.map((p) => passengerLoop(p, until)),
     ]);
     report((Date.now() - started) / 1000);
   } finally {
     server.kill();
+    await db.destroy();
   }
 }
 

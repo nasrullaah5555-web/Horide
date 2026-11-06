@@ -43,6 +43,20 @@ void main() {
     expect(formatEtb(HistoryScreen.sumFares(trips).toString()), contains('120.75'));
   });
 
+  test("today's earnings count only completed trips since midnight", () {
+    DriverTripSummary trip(String id, String status, String at, String? fare) =>
+        DriverTripSummary({'id': id, 'status': status, 'final_fare': fare, 'requested_at': at});
+    final now = DateTime(2026, 11, 6, 18);
+    final today = todaysEarnings([
+      trip('a', 'completed', DateTime(2026, 11, 6, 9).toUtc().toIso8601String(), '45000'),
+      trip('b', 'completed', DateTime(2026, 11, 6, 17).toUtc().toIso8601String(), '17500'),
+      trip('c', 'cancelled', DateTime(2026, 11, 6, 12).toUtc().toIso8601String(), null),
+      trip('d', 'completed', DateTime(2026, 11, 5, 23).toUtc().toIso8601String(), '9900'),
+    ], now: now);
+    expect(today.trips, 2);
+    expect(today.santim, BigInt.from(62500));
+  });
+
   test('location points carry GPS time in UTC and plausible fields only', () {
     final p = Position(
       latitude: 9.35,

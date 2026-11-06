@@ -6,10 +6,6 @@ import 'package:musride_core/musride_core.dart';
 import '../../core/driver_api.dart';
 import '../trip/trip_screen.dart';
 
-final driverHistoryProvider = FutureProvider.autoDispose<List<DriverTripSummary>>(
-  (ref) => ref.watch(driverApiProvider).history(),
-);
-
 /// Trip records and an earnings summary. Earnings are the fares of completed trips, which
 /// passengers paid to the driver directly; Musride takes no commission (BR-01).
 class HistoryScreen extends ConsumerWidget {

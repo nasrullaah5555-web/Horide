@@ -104,6 +104,7 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
             alignment: Alignment.bottomCenter,
             child: MusrideBottomPanel(
               children: [
+                if (state.offers.isEmpty) ...[const _TodayStrip(), const Gap(MusrideSpace.md)],
                 if (state.offers.isNotEmpty)
                   _OfferCard(offer: state.offers.first)
                 else
@@ -272,6 +273,49 @@ class CurrentLocationLayer extends ConsumerWidget {
           child: const PositionDot(live: true, label: 'You'),
         ),
       ],
+    );
+  }
+}
+
+/// Today's completed trips and fares at a glance; tap for the full list.
+class _TodayStrip extends ConsumerWidget {
+  const _TodayStrip();
+
+  @override
+  Widget build(BuildContext context, WidgetRef ref) {
+    final history = ref.watch(driverHistoryProvider).valueOrNull;
+    final today = history == null ? null : todaysEarnings(history);
+    final theme = Theme.of(context);
+    return Semantics(
+      button: true,
+      label:
+          today == null
+              ? 'Today\'s earnings'
+              : 'Today: ${today.trips} trips, ${formatEtb(today.santim.toString())}. Open trips.',
+      excludeSemantics: true,
+      child: InkWell(
+        borderRadius: BorderRadius.circular(MusrideRadius.control),
+        onTap: () => context.go('/history'),
+        child: Padding(
+          padding: const EdgeInsets.symmetric(vertical: MusrideSpace.xs),
+          child: Row(
+            children: [
+              const Icon(Icons.payments_outlined, color: MusrideColors.sign),
+              const Gap(MusrideSpace.sm),
+              Text('Today', style: theme.textTheme.titleMedium),
+              const Spacer(),
+              Text(
+                today == null
+                    ? '…'
+                    : '${today.trips} ${today.trips == 1 ? 'trip' : 'trips'}  ·  '
+                        '${formatEtbShort(today.santim.toString())}',
+                style: theme.textTheme.titleMedium?.copyWith(fontWeight: MusrideFontWeight.heavy),
+              ),
+              const Icon(Icons.chevron_right),
+            ],
+          ),
+        ),
+      ),
     );
   }
 }

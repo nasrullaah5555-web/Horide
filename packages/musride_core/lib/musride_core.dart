@@ -5,6 +5,7 @@ export 'src/api/api_client.dart';
 export 'src/api/auth_api.dart';
 export 'src/api/token_store.dart';
 export 'src/config.dart';
+export 'src/contact.dart';
 export 'src/design/components.dart';
 export 'src/design/logo.dart';
 export 'src/design/markers.dart';

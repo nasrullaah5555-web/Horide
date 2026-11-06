@@ -8,7 +8,6 @@ import 'package:go_router/go_router.dart';
 import 'package:musride_core/musride_core.dart';
 
 import '../../core/driver_api.dart';
-import '../../core/providers.dart';
 import 'driver_controller.dart';
 
 final overviewProvider = FutureProvider.autoDispose<DriverOverview>(
@@ -27,12 +26,17 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
   final _map = MapController();
   bool _busy = false;
 
-  @override
-  void initState() {
-    super.initState();
-    currentPosition().then((p) {
-      if (p != null && mounted) _map.move(p, 15);
-    });
+  bool _mapReady = false;
+
+  /// Moves the map to the phone's position. Only once the map is on screen: moving it earlier
+  /// does nothing, which left the map on Jijiga (seen on a phone in Nairobi, 2026-11-06).
+  Future<void> _centreOnMe() async {
+    if (!_mapReady) return;
+    final last = ref.read(locationReporterProvider).last;
+    final p = last != null ? toLatLng(LatLngPoint(last.latitude, last.longitude)) : await currentPosition();
+    if (p != null && mounted) {
+      _map.move(p, 15);
+    }
   }
 
   Future<void> _toggle(bool online) async {
@@ -55,30 +59,43 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
 
     return Scaffold(
       appBar: AppBar(
-        title: const Text('Musride Driver'),
-        actions: [
-          NotificationsBell(
-            api: ref.read(apiClientProvider),
-            onOpen: () => context.push<void>('/notifications'),
-          ),
-          IconButton(
-            tooltip: 'Your trips and earnings',
-            onPressed: () => context.push('/history'),
-            icon: const Icon(Icons.receipt_long),
-          ),
-          IconButton(
-            tooltip: 'Account, vehicle and documents',
-            onPressed: () => context.push('/onboarding'),
-            icon: const Icon(Icons.badge_outlined),
-          ),
-        ],
+        title: Row(
+          children: [
+            MusrideLogo(
+              size: MusrideSize.iconLarge,
+              onDark: Theme.of(context).brightness == Brightness.dark,
+            ),
+            const Gap(MusrideSpace.sm),
+            const HintText('Driver'),
+          ],
+        ),
       ),
       body: Stack(
         children: [
           FlutterMap(
             mapController: _map,
-            options: const MapOptions(initialCenter: jijiga, initialZoom: 14),
+            options: MapOptions(
+              initialCenter: jijiga,
+              initialZoom: 14,
+              onMapReady: () {
+                _mapReady = true;
+                _centreOnMe();
+              },
+            ),
             children: [...baseMapLayers(), const CurrentLocationLayer(), mapAttribution()],
+          ),
+          SafeArea(
+            child: Padding(
+              padding: const EdgeInsets.all(MusrideSpace.md),
+              child: Align(
+                alignment: Alignment.topRight,
+                child: MusrideRoundButton(
+                  icon: Icons.my_location,
+                  label: 'Show my position',
+                  onPressed: _centreOnMe,
+                ),
+              ),
+            ),
           ),
           Align(
             alignment: Alignment.bottomCenter,
@@ -134,11 +151,6 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
                     label: _busy ? 'Please wait…' : (state.online ? 'Go offline' : 'Go online'),
                     onPressed: _busy ? null : () => _toggle(!state.online),
                   ),
-                MusrideButton(
-                  kind: MusrideButtonKind.quiet,
-                  label: 'Sign out',
-                  onPressed: () => ref.read(sessionProvider.notifier).signOut(),
-                ),
               ],
             ),
           ),

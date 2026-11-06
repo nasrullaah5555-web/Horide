@@ -61,6 +61,9 @@ services:
       # Set to "false" to go back to Jijiga only. Never set in render.yaml (production refuses it).
       - key: KENYA_TEST_MODE
         value: 'true'
+      # "Share my trip" links point at the staging website.
+      - key: PUBLIC_WEB_URL
+        value: https://musride-staging-web.onrender.com
 
   - type: web
     name: musride-staging-admin
@@ -87,6 +90,9 @@ services:
     envVars:
       - key: NODE_VERSION
         value: '22'
+      # Read at build time by the "follow a trip" page (/share).
+      - key: NEXT_PUBLIC_MUSRIDE_API_URL
+        value: https://musride-staging-api.onrender.com
     headers:
       - path: /*
         name: X-Frame-Options

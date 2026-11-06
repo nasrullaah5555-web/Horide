@@ -81,6 +81,18 @@ class _TripScreenState extends ConsumerState<TripScreen> {
     if (ok == true) await _run((api) => api.cancel(trip.id));
   }
 
+  Future<void> _share(Trip trip) async {
+    setState(() => _busy = true);
+    try {
+      final url = await ref.read(passengerApiProvider).shareLink(trip.id);
+      if (mounted) await showShareTripSheet(context, url);
+    } catch (e) {
+      if (mounted) showError(context, e);
+    } finally {
+      if (mounted) setState(() => _busy = false);
+    }
+  }
+
   Future<void> _changeDestination(Trip trip) async {
     final place = await PlacePicker.open(
       context,
@@ -287,6 +299,15 @@ class _TripScreenState extends ConsumerState<TripScreen> {
                 ? 'Live location'
                 : 'Location not updated for ${_ago(loc.ageSeconds)}. The driver may have a weak connection.',
             ok: live,
+          ),
+        ],
+        if (!trip.status.isFinal) ...[
+          const Gap(MusrideSpace.sm),
+          MusrideButton(
+            kind: MusrideButtonKind.quiet,
+            icon: Icons.ios_share,
+            label: 'Share trip with family',
+            onPressed: _busy ? null : () => _share(trip),
           ),
         ],
         if (trip.startPin != null && !trip.status.isFinal) ...[

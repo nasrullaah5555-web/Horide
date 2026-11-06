@@ -29,6 +29,6 @@ void main() {
     await tester.enterText(find.byType(TextField), '12345');
     await tester.tap(find.text('Send code'));
     await tester.pump();
-    expect(find.textContaining('Enter an Ethiopian mobile number'), findsOneWidget);
+    expect(find.textContaining('Enter a mobile number, for example 0911 234 567'), findsOneWidget);
   });
 }

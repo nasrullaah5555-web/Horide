@@ -25,6 +25,11 @@ import { TripsService } from './trips.service';
 
 const requestSchema = z.strictObject({ quoteToken: z.string().min(20).max(4000) });
 const cancelSchema = z.strictObject({ reason: z.string().trim().max(300).optional() });
+/** The passenger's ride PIN, read out to the driver (see migration 0007). */
+const startSchema = z.strictObject({
+  pin: z.string().regex(/^[0-9]{4}$/, 'Enter the 4-digit PIN.'),
+});
+
 const destinationSchema = z.strictObject({
   destination: latLngSchema,
   destinationText: z.string().trim().max(200).optional(),
@@ -147,8 +152,13 @@ export class TripsController {
   @Post('trips/:id/start')
   @HttpCode(200)
   @Roles('driver')
-  async start(@CurrentUser() user: AuthUser, @Param('id', ParseUUIDPipe) id: string) {
-    return this.driverStep(user, id, 'start');
+  async start(
+    @CurrentUser() user: AuthUser,
+    @Param('id', ParseUUIDPipe) id: string,
+    @Body(new ZodValidationPipe(startSchema)) body: z.infer<typeof startSchema>,
+  ) {
+    await this.trips.transition('start', { party: 'driver', id: user.id }, id, { pin: body.pin });
+    return this.views.forUser(id, user);
   }
 
   @Post('trips/:id/complete')
@@ -195,11 +205,7 @@ export class TripsController {
     return this.views.forUser(id, user);
   }
 
-  private async driverStep(
-    user: AuthUser,
-    id: string,
-    step: 'arriving' | 'arrive' | 'start' | 'complete',
-  ) {
+  private async driverStep(user: AuthUser, id: string, step: 'arriving' | 'arrive' | 'complete') {
     await this.trips.transition(step, { party: 'driver', id: user.id }, id);
     return this.views.forUser(id, user);
   }

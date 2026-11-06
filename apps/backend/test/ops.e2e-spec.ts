@@ -2,7 +2,7 @@ import { seedDevelopment } from '../src/database/seed-dev';
 import { FixedWindowCounter } from '../src/common/rate-limit';
 import { LogPushProvider, PUSH_PROVIDER } from '../src/modules/notifications/push.provider';
 import { adminLogin, type AdminSession } from './helpers/admin';
-import { loginAs, startTestApp, type TestApp } from './helpers/app';
+import { loginAs, startTestApp, type TestApp, ridePin } from './helpers/app';
 import { readyDriver } from './helpers/drivers';
 
 const PICKUP = { lat: 9.3505, lng: 42.7979 };
@@ -189,7 +189,12 @@ describe('Notifications, admin operations and rate limits (e2e)', () => {
     it('trip detail shows the full event trail; staff can cancel a trip in progress (audited)', async () => {
       const { id, d } = await acceptedTrip();
       await t.http().post(`/trips/${id}/arrived`).set(bearer(d.token)).expect(200);
-      await t.http().post(`/trips/${id}/start`).set(bearer(d.token)).expect(200);
+      await t
+        .http()
+        .post(`/trips/${id}/start`)
+        .set(bearer(d.token))
+        .send({ pin: await ridePin(t, id) })
+        .expect(200);
       await t.http().post(`/admin/trips/${id}/cancel`).set(admin(support)).send({}).expect(400);
       await t
         .http()

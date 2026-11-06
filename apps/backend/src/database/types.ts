@@ -259,6 +259,8 @@ export interface TripsTable {
   cancel_reason: string | null;
   quote_hash: string | null;
   cancellation_fee: Money | null;
+  start_pin: string | null;
+  start_pin_failures: Generated<number>;
   updated_at: Generated<Date>;
 }
 

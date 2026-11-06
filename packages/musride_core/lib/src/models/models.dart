@@ -194,6 +194,7 @@ class Trip {
     this.driver,
     this.driverLocation,
     this.passenger,
+    this.startPin,
   });
 
   final String id;
@@ -213,6 +214,32 @@ class Trip {
   final TripDriver? driver;
   final DriverLocation? driverLocation;
   final TripPassenger? passenger;
+
+  /// The 4-digit ride PIN. Only the passenger receives it, and only until the trip starts; the
+  /// driver must hear it from the passenger to start the trip.
+  final String? startPin;
+
+  /// The same trip with a newer driver position (from the live location stream).
+  Trip withDriverLocation(DriverLocation location) => Trip(
+    id: id,
+    status: status,
+    category: category,
+    pickup: pickup,
+    destination: destination,
+    distanceMetres: distanceMetres,
+    durationSeconds: durationSeconds,
+    isEstimate: isEstimate,
+    quotedFare: quotedFare,
+    lockedFare: lockedFare,
+    finalFare: finalFare,
+    paymentMethod: paymentMethod,
+    requestedAt: requestedAt,
+    cancelledBy: cancelledBy,
+    driver: driver,
+    passenger: passenger,
+    startPin: startPin,
+    driverLocation: location,
+  );
 
   /// The fare that applies right now: final, else locked at acceptance, else the quote.
   String get fare => finalFare ?? lockedFare ?? quotedFare;
@@ -245,6 +272,7 @@ class Trip {
           j['passenger'] == null
               ? null
               : TripPassenger.fromJson(j['passenger'] as Map<String, dynamic>),
+      startPin: j['startPin'] as String?,
     );
   }
 }

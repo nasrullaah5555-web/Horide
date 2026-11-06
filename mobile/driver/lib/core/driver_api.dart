@@ -167,6 +167,10 @@ class DriverApi {
   Future<Trip> step(String tripId, String step) async =>
       Trip.fromJson(await _c.post('/trips/$tripId/$step'));
 
+  /// Starting needs the passenger's 4-digit ride PIN.
+  Future<Trip> start(String tripId, String pin) async =>
+      Trip.fromJson(await _c.post('/trips/$tripId/start', {'pin': pin}));
+
   Future<Trip> cancel(String tripId, String reason) async =>
       Trip.fromJson(await _c.post('/trips/$tripId/cancel', {'reason': reason}));
 

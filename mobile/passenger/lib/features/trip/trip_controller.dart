@@ -81,24 +81,8 @@ class ActiveTripController extends AsyncNotifier<Trip?> {
       final lat = (e.data['lat'] as num).toDouble();
       final lng = (e.data['lng'] as num).toDouble();
       state = AsyncData(
-        Trip(
-          id: current.id,
-          status: current.status,
-          category: current.category,
-          pickup: current.pickup,
-          destination: current.destination,
-          distanceMetres: current.distanceMetres,
-          durationSeconds: current.durationSeconds,
-          isEstimate: current.isEstimate,
-          quotedFare: current.quotedFare,
-          lockedFare: current.lockedFare,
-          finalFare: current.finalFare,
-          paymentMethod: current.paymentMethod,
-          requestedAt: current.requestedAt,
-          cancelledBy: current.cancelledBy,
-          driver: current.driver,
-          passenger: current.passenger,
-          driverLocation: DriverLocation(point: LatLngPoint(lat, lng), ageSeconds: 0),
+        current.withDriverLocation(
+          DriverLocation(point: LatLngPoint(lat, lng), ageSeconds: 0),
         ),
       );
     }

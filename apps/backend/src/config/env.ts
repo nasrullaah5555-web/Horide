@@ -14,6 +14,7 @@ const boolFromString = z
 export const DEV_ONLY_ADAPTERS = {
   SMS_PROVIDER: ['console', 'fake'],
   ROUTING_PROVIDER: ['dev_estimate', 'fake'],
+  PLACES_PROVIDER: ['dev'],
   STORAGE_PROVIDER: ['local'],
   PUSH_PROVIDER: ['log'],
 } as const;
@@ -69,6 +70,11 @@ export const envSchema = z
     ROUTING_PROVIDER: z.enum(['dev_estimate', 'fake', 'google', 'osrm']).default('dev_estimate'),
     ROUTING_GOOGLE_API_KEY: z.string().min(20).optional(),
     ROUTING_OSRM_URL: z.string().url().optional(),
+    // Place search for the apps (suggestions while typing). google needs an API key with the
+    // Places API (New) and Geocoding API enabled; photon is free OpenStreetMap search.
+    PLACES_PROVIDER: z.enum(['dev', 'photon', 'google']).default('dev'),
+    PLACES_GOOGLE_API_KEY: z.string().min(20).optional(),
+    PLACES_PHOTON_URL: z.string().url().default('https://photon.komoot.io'),
     STORAGE_PROVIDER: z.enum(['local', 's3']).default('local'),
     STORAGE_LOCAL_DIR: z.string().min(1).default('./storage'),
     // S3-compatible private bucket (STORAGE_PROVIDER=s3). Required together; checked below.
@@ -114,6 +120,24 @@ export const envSchema = z
         code: 'custom',
         path: ['ROUTING_GOOGLE_API_KEY'],
         message: 'required when ROUTING_PROVIDER=google',
+      });
+    }
+    if (env.PLACES_PROVIDER === 'google' && !env.PLACES_GOOGLE_API_KEY) {
+      ctx.addIssue({
+        code: 'custom',
+        path: ['PLACES_GOOGLE_API_KEY'],
+        message: 'required when PLACES_PROVIDER=google',
+      });
+    }
+    if (
+      env.NODE_ENV === 'production' &&
+      env.PLACES_PROVIDER === 'photon' &&
+      env.PLACES_PHOTON_URL.includes('photon.komoot.io')
+    ) {
+      ctx.addIssue({
+        code: 'custom',
+        path: ['PLACES_PHOTON_URL'],
+        message: 'the public Photon server is for testing; use Google or your own Photon server',
       });
     }
     if (env.ROUTING_PROVIDER === 'osrm' && !env.ROUTING_OSRM_URL) {

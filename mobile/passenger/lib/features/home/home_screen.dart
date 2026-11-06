@@ -1,10 +1,14 @@
+import 'dart:async';
+
 import 'package:flutter/material.dart';
 import 'package:flutter_map/flutter_map.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
+import 'package:latlong2/latlong.dart' show Distance, LengthUnit;
 import 'package:musride_core/musride_core.dart';
 
 import '../../core/passenger_api.dart';
+import '../../core/providers.dart';
 import '../../core/ui.dart';
 import '../trip/trip_controller.dart';
 
@@ -26,16 +30,57 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
   PaymentMethod _payment = PaymentMethod.cash;
   bool _busy = false;
 
+  /// True once the passenger typed their own pickup note; then it's never overwritten.
+  bool _pickupTyped = false;
+  Timer? _naming;
+
   @override
   void initState() {
     super.initState();
     currentPosition().then((p) {
-      if (p != null && mounted) _map.move(p, 16);
+      if (p != null && mounted) {
+        _map.move(p, 16);
+        _namePickup();
+      }
     });
+  }
+
+  /// Fills the pickup with the name of the place under the pin ("Current location" style), unless
+  /// the passenger wrote their own note.
+  Future<void> _namePickup() async {
+    if (_pickupTyped) return;
+    final at = toPoint(_map.camera.center);
+    try {
+      final name = await ref.read(placesApiProvider).reverse(at);
+      final now = _map.camera.center;
+      if (!mounted || _pickupTyped || now.latitude != at.lat || now.longitude != at.lng) return;
+      setState(() => _pickupText.text = name ?? '');
+    } on ApiException {
+      // No name: the pin position is what counts; the passenger can type a landmark.
+    }
+  }
+
+  Future<void> _choosePickup() async {
+    final place = await PlacePicker.open(
+      context,
+      title: 'Pickup',
+      confirmLabel: 'Set pickup here',
+      start: _map.camera.center,
+      places: ref.read(placesApiProvider),
+    );
+    if (place == null || !mounted) return;
+    _map.move(toLatLng(place.point), 17);
+    setState(() {
+      _pickupText.text = place.text ?? '';
+      _pickupTyped = place.text != null;
+      _quotes = null;
+    });
+    if (_destination != null) await _loadQuotes();
   }
 
   @override
   void dispose() {
+    _naming?.cancel();
     _pickupText.dispose();
     super.dispose();
   }
@@ -51,6 +96,7 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
       title: 'Where to?',
       confirmLabel: 'Set destination',
       start: _map.camera.center,
+      places: ref.read(placesApiProvider),
     );
     if (place == null || !mounted) return;
     setState(() => _destination = place);
@@ -60,6 +106,23 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
   Future<void> _loadQuotes() async {
     final destination = _destination;
     if (destination == null) return;
+    final metres = const Distance().as(
+      LengthUnit.Meter,
+      _map.camera.center,
+      toLatLng(destination.point),
+    );
+    if (metres < 150) {
+      showError(
+        context,
+        const ApiException(
+          422,
+          'SAME_PLACE',
+          'Your destination is where your pickup is. Search for the destination by name, '
+              'or move its pin to the place.',
+        ),
+      );
+      return;
+    }
     setState(() {
       _busy = true;
       _quotes = null;
@@ -117,8 +180,11 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
               initialCenter: jijiga,
               initialZoom: 15,
               onPositionChanged: (_, hasGesture) {
+                if (!hasGesture) return;
                 // Moving the pickup makes the old prices wrong.
-                if (hasGesture && _quotes != null) setState(() => _quotes = null);
+                if (_quotes != null) setState(() => _quotes = null);
+                _naming?.cancel();
+                _naming = Timer(const Duration(milliseconds: 700), _namePickup);
               },
             ),
             children: [
@@ -167,10 +233,16 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
         TextField(
           controller: _pickupText,
           maxLength: 200,
-          decoration: const InputDecoration(
-            prefixIcon: Icon(Icons.trip_origin, color: MusrideColors.sign),
-            hintText: 'Pickup landmark (helps the driver find you)',
+          onChanged: (v) => _pickupTyped = v.trim().isNotEmpty,
+          decoration: InputDecoration(
+            prefixIcon: const Icon(Icons.trip_origin, color: MusrideColors.sign),
+            hintText: 'Pickup: your location, or type a landmark',
             counterText: '',
+            suffixIcon: IconButton(
+              tooltip: 'Search for a pickup place',
+              icon: const Icon(Icons.search),
+              onPressed: _busy ? null : _choosePickup,
+            ),
           ),
         ),
         const Gap(MusrideSpace.md),

@@ -9,6 +9,7 @@ import { DatabaseModule } from './database/database.module';
 import { AdminAuthModule } from './modules/admin-auth/admin-auth.module';
 import { AuthModule } from './modules/auth/auth.module';
 import { DriversModule } from './modules/drivers/drivers.module';
+import { PlacesModule } from './modules/places/places.module';
 import { PricingModule } from './modules/pricing/pricing.module';
 import { SubscriptionsModule } from './modules/subscriptions/subscriptions.module';
 import { TripsModule } from './modules/trips/trips.module';
@@ -62,6 +63,7 @@ export class AppModule {
         UsersModule,
         DriversModule,
         PricingModule,
+        PlacesModule,
         SubscriptionsModule,
         TripsModule,
         PaymentsModule,

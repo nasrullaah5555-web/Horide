@@ -21,9 +21,9 @@ class AccountScreen extends ConsumerWidget {
     return Scaffold(
       appBar: AppBar(title: const Text('Account')),
       body: RefreshIndicator(
-        onRefresh: () async {
+        onRefresh: () {
           ref.invalidate(subscriptionProvider);
-          await ref.refresh(overviewProvider.future);
+          return ref.refresh(overviewProvider.future);
         },
         child: ListView(
           padding: const EdgeInsets.symmetric(vertical: MusrideSpace.md),

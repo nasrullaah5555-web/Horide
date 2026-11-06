@@ -121,12 +121,8 @@ class PlacePicker extends StatefulWidget {
       MaterialPageRoute(
         fullscreenDialog: true,
         builder:
-            (_) => PlacePicker(
-              title: title,
-              confirmLabel: confirmLabel,
-              start: start,
-              places: places,
-            ),
+            (_) =>
+                PlacePicker(title: title, confirmLabel: confirmLabel, start: start, places: places),
       ),
     );
   }
@@ -298,8 +294,7 @@ class _PlacePickerState extends State<PlacePicker> {
                       color: theme.colorScheme.surface,
                       child: ListView(
                         children: [
-                          if (_searchError != null)
-                            ListTile(title: Text(_searchError!)),
+                          if (_searchError != null) ListTile(title: Text(_searchError!)),
                           for (final r in _results)
                             ListTile(
                               leading: const Icon(Icons.place_outlined),

@@ -55,10 +55,7 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen> {
     final contact = _contact.text.trim();
     if (contact.isNotEmpty &&
         normalizeMobile(contact, allowKenya: MusrideConfig.allowKenyanPhones) == null) {
-      showError(
-        context,
-        ApiException(400, 'INVALID_PHONE', MusrideConfig.phoneHint),
-      );
+      showError(context, ApiException(400, 'INVALID_PHONE', MusrideConfig.phoneHint));
       return;
     }
     setState(() => _busy = true);

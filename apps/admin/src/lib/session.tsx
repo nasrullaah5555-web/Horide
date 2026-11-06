@@ -4,6 +4,7 @@ import { useRouter } from 'next/navigation';
 import { createContext, useCallback, useContext, useEffect, useState, type ReactNode } from 'react';
 import { Button } from '@/components/ui';
 import { api, ApiError, setCsrfToken } from './api';
+import { loadMarket } from './market';
 
 export interface Admin {
   id: string;
@@ -36,8 +37,8 @@ export function SessionProvider({ children }: { children: ReactNode }) {
   useEffect(() => {
     let alive = true;
     setFailed(false);
-    api<Admin>('/auth/me')
-      .then((a) => alive && setAdmin(a))
+    Promise.all([api<Admin>('/auth/me'), loadMarket()])
+      .then(([a]) => alive && setAdmin(a))
       .catch((e: unknown) => {
         if (!alive) return;
         if (e instanceof ApiError && e.status === 401) router.replace('/login');

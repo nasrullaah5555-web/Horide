@@ -8,6 +8,7 @@ import { startTestApp, type TestApp } from './helpers/app';
 /** The only routes that may be called without logging in. Adding one here must be a deliberate decision. */
 const PUBLIC_ROUTES = new Set([
   'GET /health',
+  'GET /market', // city settings (currency, emergency numbers): nothing private (ADR-025)
   'POST /auth/otp/request',
   'POST /auth/otp/verify',
   'POST /auth/refresh',

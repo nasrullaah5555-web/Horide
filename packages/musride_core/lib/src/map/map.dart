@@ -8,6 +8,7 @@ import 'package:url_launcher/url_launcher.dart';
 
 import '../api/api_client.dart';
 import '../config.dart';
+import '../market.dart';
 import '../design/components.dart';
 import '../design/markers.dart';
 import '../design/tokens.g.dart';
@@ -20,6 +21,9 @@ LatLng toLatLng(LatLngPoint p) => LatLng(p.lat, p.lng);
 LatLngPoint toPoint(LatLng p) => LatLngPoint(p.latitude, p.longitude);
 
 const jijiga = LatLng(MusrideConfig.jijigaLat, MusrideConfig.jijigaLng);
+
+/// Where maps start before the phone has a position: the market's city centre.
+LatLng get marketCentre => toLatLng(Market.current.centre);
 
 /// Each app identifies itself to the tile server (OpenStreetMap's usage policy asks for this).
 String _userAgent = 'et.musride';
@@ -281,7 +285,7 @@ class _PlacePickerState extends State<PlacePicker> {
                 FlutterMap(
                   mapController: _map,
                   options: MapOptions(
-                    initialCenter: widget.start ?? jijiga,
+                    initialCenter: widget.start ?? marketCentre,
                     initialZoom: 16,
                     onPositionChanged: _onMapMoved,
                   ),

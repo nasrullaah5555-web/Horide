@@ -3,23 +3,29 @@ import { hashOtp, safeEqualHex, signAccessToken, verifyAccessToken } from './tok
 
 const SECRET = 'unit-test-secret-0123456789abcdef0123456789';
 
-describe('normalizeMobile (KENYA_TEST_MODE)', () => {
+describe('normalizeMobile (per market)', () => {
   it.each([
-    ['+254712345678', '+254712345678'],
-    ['254 712 345 678', '+254712345678'],
-    ['+254110123456', '+254110123456'],
-  ])('Kenyan %s is accepted only when allowed', (input, expected) => {
-    expect(normalizeMobile(input, true)).toBe(expected);
-    expect(normalizeMobile(input, false)).toBeNull();
+    ['0712345678', '+254712345678'],
+    ['0110 123 456', '+254110123456'],
+    ['254712345678', '+254712345678'],
+    ['+254 712 345 678', '+254712345678'],
+  ])('Nairobi reads %s as Kenyan', (input, expected) => {
+    expect(normalizeMobile(input, 'KE')).toBe(expected);
   });
 
-  it('a number without a country code stays Ethiopian even in Kenya test mode', () => {
-    // 07… is valid in both countries; without +254 it is Safaricom Ethiopia.
-    expect(normalizeMobile('0712345678', true)).toBe('+251712345678');
+  it('local numbers are local: 0712… is Ethiopian in Jijiga and Kenyan in Nairobi', () => {
+    expect(normalizeMobile('0712345678', 'ET')).toBe('+251712345678');
+    expect(normalizeMobile('0712345678', 'KE')).toBe('+254712345678');
+  });
+
+  it('Nairobi also takes Ethiopian numbers written with +251; Jijiga takes Ethiopian only', () => {
+    expect(normalizeMobile('+251911234567', 'KE')).toBe('+251911234567');
+    expect(normalizeMobile('0911234567', 'KE')).toBeNull();
+    expect(normalizeMobile('+254712345678', 'ET')).toBeNull();
   });
 
   it.each(['+254812345678', '+25471234567', '+2547123456789'])('rejects %s', (input) => {
-    expect(normalizeMobile(input, true)).toBeNull();
+    expect(normalizeMobile(input, 'KE')).toBeNull();
   });
 });
 

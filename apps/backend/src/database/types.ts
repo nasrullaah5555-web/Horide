@@ -127,7 +127,7 @@ export type TripStatus =
   | 'cancelled'
   | 'expired';
 export type OfferStatus = 'pending' | 'accepted' | 'rejected' | 'expired' | 'cancelled';
-export type PaymentMethod = 'cash' | 'ebirr';
+export type PaymentMethod = 'cash' | 'ebirr' | 'mpesa';
 export type PaymentStatus = 'pending' | 'driver_recorded' | 'confirmed' | 'disputed' | 'resolved';
 export type SubscriptionStatus = 'active' | 'expired' | 'cancelled';
 export type ComplaintStatus = 'open' | 'in_review' | 'resolved' | 'closed';

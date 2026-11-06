@@ -17,6 +17,7 @@ import { api, qs } from '@/lib/api';
 import { dateTime, etb, humanize } from '@/lib/format';
 import { useSession } from '@/lib/session';
 import { useApi } from '@/lib/use-api';
+import { market, PAYMENT_LABEL } from '@/lib/market';
 
 interface Payment {
   id: string;
@@ -42,7 +43,7 @@ function Payments() {
     <>
       <PageHeader
         title="Ride payments"
-        description="Passengers pay drivers directly in cash or eBirr. Musride only records what each side reports. eBirr references are as typed by the driver and are not checked with eBirr."
+        description={`Passengers pay drivers directly (${market.paymentMethods.map((m) => PAYMENT_LABEL[m]).join(', ')}). Musride only records what each side reports. References are typed by the driver and not checked against the payment service.`}
       />
       <div className="mb-4">
         <select

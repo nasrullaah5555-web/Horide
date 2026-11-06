@@ -25,6 +25,9 @@ import { AuditService } from '../audit/audit.service';
 import { type AuthUser, CurrentUser, Roles, UserAuthGuard } from '../auth/auth.guard';
 import { AccountService } from '../users/account.service';
 import { formatEtb } from './fare-engine';
+import { APP_CONFIG } from '../../config/config.module';
+import type { AppConfig } from '../../config/env';
+import { assertPaymentMethod, MARKETS } from '../../common/market';
 import { PricingService } from './pricing.service';
 
 const quoteSchema = z.strictObject({
@@ -37,7 +40,7 @@ const quoteSchema = z.strictObject({
     .min(1)
     .max(2)
     .default(['car', 'bajaj']),
-  paymentMethod: z.enum(['cash', 'ebirr']).default('cash'),
+  paymentMethod: z.enum(['cash', 'ebirr', 'mpesa']).default('cash'),
 });
 
 /** Admins enter prices in ETB (e.g. 40, 15.5). Stored as integer santim. */
@@ -77,6 +80,7 @@ export class PricingController {
     private readonly accounts: AccountService,
     private readonly audit: AuditService,
     @Inject(DATABASE) private readonly db: Kysely<DB>,
+    @Inject(APP_CONFIG) private readonly config: AppConfig,
   ) {}
 
   /** Passenger asks for prices before booking. Fares are only ever computed here, on the server. */
@@ -90,6 +94,7 @@ export class PricingController {
     @Body(new ZodValidationPipe(quoteSchema)) body: z.infer<typeof quoteSchema>,
   ) {
     await this.accounts.requireActive(user.id);
+    assertPaymentMethod(MARKETS[this.config.MARKET], body.paymentMethod);
     const quotes = await this.pricing.quote({ passengerId: user.id, ...body });
     return { quotes };
   }

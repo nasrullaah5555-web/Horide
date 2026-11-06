@@ -37,7 +37,7 @@ class ReceiptScreen extends ConsumerWidget {
                 if (r.driverName != null) InfoRow('Driver', r.driverName!),
                 if (r.plate != null) InfoRow('Plate', r.plate!),
                 InfoRow('Payment', r.paymentStatus.replaceAll('_', ' ')),
-                if (r.ebirrReference != null) InfoRow('eBirr reference', r.ebirrReference!),
+                if (r.ebirrReference != null) InfoRow('Payment reference', r.ebirrReference!),
                 const Gap(MusrideSpace.md),
                 Text(
                   r.note,
@@ -55,5 +55,6 @@ class ReceiptScreen extends ConsumerWidget {
     );
   }
 
-  static String _method(String m) => m == 'ebirr' ? 'eBirr' : 'cash';
+  static String _method(String m) =>
+      PaymentMethod.values.any((v) => v.name == m) ? paymentLabel(PaymentMethod.values.byName(m)) : m;
 }

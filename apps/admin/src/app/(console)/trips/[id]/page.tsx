@@ -172,7 +172,8 @@ export default function TripDetailPage({ params }: { params: Promise<{ id: strin
               </p>
               {payment.ebirr_reference && (
                 <p className="mt-1 text-small">
-                  eBirr reference: {payment.ebirr_reference} (as typed by the driver, not verified)
+                  Payment reference: {payment.ebirr_reference} (as typed by the driver, not
+                  verified)
                 </p>
               )}
               {payment.resolution_note && (

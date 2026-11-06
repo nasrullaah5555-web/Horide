@@ -27,6 +27,8 @@ class SessionNotifier extends AsyncNotifier<bool> {
     final api = ref.watch(apiClientProvider);
     final sub = api.onSignedOut.listen((_) => state = const AsyncData(false));
     ref.onDispose(sub.cancel);
+    // Currency, payment methods and emergency numbers for this server's city (ADR-025).
+    await Market.load(api).timeout(const Duration(seconds: 4), onTimeout: () {});
     return ref.watch(authApiProvider).isSignedIn();
   }
 

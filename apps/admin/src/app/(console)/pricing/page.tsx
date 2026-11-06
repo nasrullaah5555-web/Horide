@@ -8,6 +8,7 @@ import { api, ApiError } from '@/lib/api';
 import { dateTime, etb, humanize } from '@/lib/format';
 import { useSession } from '@/lib/session';
 import { useApi } from '@/lib/use-api';
+import { market } from '@/lib/market';
 
 const LiveMap = dynamic(() => import('@/components/live-map'), {
   ssr: false,
@@ -110,16 +111,17 @@ function NewPrice({
       }}
     >
       <div className="grid grid-cols-2 items-end gap-3 lg:grid-cols-5">
-        {field('baseFare', 'Base fare (ETB)')}
-        {field('perKm', 'Per km (ETB)')}
-        {field('minimumFare', 'Minimum fare (ETB)')}
-        {field('roundingUnit', 'Round up to (ETB)')}
-        {field('cancellationFee', 'Cancellation fee (ETB)')}
+        {field('baseFare', `Base fare (${market.currency})`)}
+        {field('perKm', `Per km (${market.currency})`)}
+        {field('minimumFare', `Minimum fare (${market.currency})`)}
+        {field('roundingUnit', `Round up to (${market.currency})`)}
+        {field('cancellationFee', `Cancellation fee (${market.currency})`)}
       </div>
       {valid && (
         <p className="text-small text-muted">
-          With these prices: 2 km costs {previewFare(2, v).toFixed(2)} ETB, 5 km costs{' '}
-          {previewFare(5, v).toFixed(2)} ETB, 10 km costs {previewFare(10, v).toFixed(2)} ETB.
+          With these prices: 2 km costs {previewFare(2, v).toFixed(2)} {market.currency}, 5 km costs{' '}
+          {previewFare(5, v).toFixed(2)} {market.currency}, 10 km costs{' '}
+          {previewFare(10, v).toFixed(2)} {market.currency}.
         </p>
       )}
       <label className="block">

@@ -54,7 +54,7 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen> {
   Future<void> _save() async {
     final contact = _contact.text.trim();
     if (contact.isNotEmpty &&
-        normalizeMobile(contact, allowKenya: MusrideConfig.allowKenyanPhones) == null) {
+        normalizeMobile(contact) == null) {
       showError(context, ApiException(400, 'INVALID_PHONE', MusrideConfig.phoneHint));
       return;
     }

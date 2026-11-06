@@ -1,15 +1,16 @@
-/** Display helpers. All times are shown in Ethiopian local time (EAT, UTC+3). */
+/** Display helpers. All times are shown in East Africa Time (UTC+3), used by Jijiga and Nairobi. */
+import { market } from './market';
 
 const TZ = 'Africa/Addis_Ababa';
 
-/** 12345 santim → "123.45 ETB". Works on the API's string amounts without floating point. */
+/** 12345 minor units → "123.45 ETB" (or KES): the market's currency. No floating point. */
 export function etb(santim: string | number | null | undefined): string {
   if (santim === null || santim === undefined || santim === '') return '—';
   const n = BigInt(santim);
   const neg = n < 0n;
   const abs = neg ? -n : n;
   const whole = (abs / 100n).toLocaleString('en-US');
-  return `${neg ? '-' : ''}${whole}.${String(abs % 100n).padStart(2, '0')} ETB`;
+  return `${neg ? '-' : ''}${whole}.${String(abs % 100n).padStart(2, '0')} ${market.currency}`;
 }
 
 export function dateTime(value: string | Date | null | undefined): string {
@@ -50,7 +51,11 @@ export function km(metres: number | null | undefined): string {
 /** "driver_arriving" → "Driver arriving" */
 export function humanize(value: string | null | undefined): string {
   if (!value) return '—';
-  const special: Record<string, string> = { ebirr: 'eBirr', national_id: 'National ID' };
+  const special: Record<string, string> = {
+    ebirr: 'eBirr',
+    mpesa: 'M-Pesa',
+    national_id: 'National ID',
+  };
   if (special[value]) return special[value];
   const s = value.replace(/[_.]/g, ' ');
   return s.charAt(0).toUpperCase() + s.slice(1);

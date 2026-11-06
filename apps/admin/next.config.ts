@@ -36,7 +36,10 @@ const config: NextConfig = {
   reactStrictMode: true,
   poweredByHeader: false,
   async rewrites() {
-    return [{ source: '/admin/:path*', destination: `${apiUrl}/admin/:path*` }];
+    return [
+      { source: '/admin/:path*', destination: `${apiUrl}/admin/:path*` },
+      { source: '/market', destination: `${apiUrl}/market` },
+    ];
   },
   async headers() {
     return [{ source: '/:path*', headers: securityHeaders }];

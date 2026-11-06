@@ -1,5 +1,6 @@
 import type { Metadata } from 'next';
 import { NotYetPublished, Page } from '@/components/site';
+import { market } from '@/lib/market';
 
 export const metadata: Metadata = { title: 'Drive with Musride' };
 
@@ -14,7 +15,7 @@ export default function Drive() {
           <h2 className="text-title font-extrabold">No commission on fares</h2>
           <p className="text-navy-soft">
             Musride charges drivers a monthly subscription instead of taking a share of each trip.
-            Passengers pay you in cash or eBirr.
+            Passengers pay you in {market.payBy}.
           </p>
         </div>
         <div className="rounded-card border border-line bg-white p-5">
@@ -37,7 +38,7 @@ export default function Drive() {
       </ul>
       <p className="mt-3 text-navy-soft">
         Musride staff check every document before you can take rides. The full list of legal
-        requirements for Jijiga is being confirmed and will be shown here.
+        requirements for {market.city} is being confirmed and will be shown here.
       </p>
 
       <h2 className="mt-10 text-headline font-extrabold">Subscription</h2>

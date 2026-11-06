@@ -184,10 +184,10 @@ class DriverApi {
   Future<Map<String, dynamic>> recordPayment(
     String tripId, {
     required PaymentMethod method,
-    String? ebirrReference,
+    String? reference,
   }) => _c.post('/trips/$tripId/payment/received', {
     'method': method.name,
-    if (ebirrReference != null && ebirrReference.isNotEmpty) 'ebirrReference': ebirrReference,
+    if (reference != null && reference.isNotEmpty) 'reference': reference,
   });
 
   Future<Map<String, dynamic>> receipt(String tripId) => _c.get('/trips/$tripId/receipt');

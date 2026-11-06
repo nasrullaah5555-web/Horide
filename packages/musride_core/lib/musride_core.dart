@@ -14,6 +14,7 @@ export 'src/map/map.dart';
 export 'src/map/places.dart';
 export 'src/emergency.dart';
 export 'src/models/compliments.dart';
+export 'src/market.dart';
 export 'src/models/models.dart';
 export 'src/money.dart';
 export 'src/phone.dart';

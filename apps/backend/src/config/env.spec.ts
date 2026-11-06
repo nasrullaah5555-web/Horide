@@ -145,12 +145,10 @@ describe('loadConfig', () => {
       );
     });
 
-    it('allows Kenya test mode on staging but never in production', () => {
-      expect(loadConfig({ ...staging, KENYA_TEST_MODE: 'true' }).KENYA_TEST_MODE).toBe(true);
-      expect(loadConfig(staging).KENYA_TEST_MODE).toBe(false);
-      expect(() => loadConfig({ ...productionOk, KENYA_TEST_MODE: 'true' })).toThrow(
-        /KENYA_TEST_MODE/,
-      );
+    it('Nairobi (MARKET=KE) is allowed on staging but not in production yet', () => {
+      expect(loadConfig({ ...staging, MARKET: 'KE' }).MARKET).toBe('KE');
+      expect(loadConfig(staging).MARKET).toBe('ET');
+      expect(() => loadConfig({ ...productionOk, MARKET: 'KE' })).toThrow(/MARKET/);
     });
 
     it('never allows the bootstrap admin outside staging', () => {

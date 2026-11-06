@@ -21,6 +21,7 @@ import { AdminOpsModule } from './modules/admin-ops/admin-ops.module';
 import { StorageModule } from './modules/storage/storage.module';
 import { UsersModule } from './modules/users/users.module';
 import { HealthController } from './modules/health/health.controller';
+import { MarketController } from './modules/market.controller';
 
 /** Fields that must never appear in logs. */
 export const LOG_REDACT_PATHS = [
@@ -72,7 +73,7 @@ export class AppModule {
         NotificationsModule,
         AdminOpsModule,
       ],
-      controllers: [HealthController],
+      controllers: [HealthController, MarketController],
       providers: [{ provide: APP_GUARD, useClass: RateLimitGuard }],
     };
   }

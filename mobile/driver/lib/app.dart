@@ -4,11 +4,13 @@ import 'package:go_router/go_router.dart';
 import 'package:musride_core/musride_core.dart';
 
 import 'core/providers.dart';
+import 'features/account/account_screen.dart';
 import 'features/auth/code_screen.dart';
 import 'features/auth/phone_screen.dart';
 import 'features/history/history_screen.dart';
 import 'features/home/home_screen.dart';
 import 'features/onboarding/onboarding_screen.dart';
+import 'features/shell/driver_shell.dart';
 import 'features/trip/trip_screen.dart';
 
 /// Routes. Anyone not signed in is sent to /login; a signed-in user never sees /login.
@@ -35,14 +37,32 @@ final routerProvider = Provider<GoRouter>((ref) {
         path: '/login/code',
         builder: (_, state) => CodeScreen(args: state.extra! as CodeScreenArgs),
       ),
-      GoRoute(path: '/', builder: (_, __) => const HomeScreen()),
+      // The four main tabs, with the bottom bar.
+      StatefulShellRoute.indexedStack(
+        builder: (_, __, shell) => DriverShell(shell: shell),
+        branches: [
+          StatefulShellBranch(
+            routes: [GoRoute(path: '/', builder: (_, __) => const HomeScreen())],
+          ),
+          StatefulShellBranch(
+            routes: [GoRoute(path: '/history', builder: (_, __) => const HistoryScreen())],
+          ),
+          StatefulShellBranch(
+            routes: [
+              GoRoute(
+                path: '/notifications',
+                builder: (_, __) => NotificationsScreen(api: ref.read(apiClientProvider)),
+              ),
+            ],
+          ),
+          StatefulShellBranch(
+            routes: [GoRoute(path: '/account', builder: (_, __) => const AccountScreen())],
+          ),
+        ],
+      ),
+      // Full-screen pages without the bottom bar.
       GoRoute(path: '/trip', builder: (_, __) => const TripScreen()),
       GoRoute(path: '/onboarding', builder: (_, __) => const OnboardingScreen()),
-      GoRoute(
-        path: '/notifications',
-        builder: (_, __) => NotificationsScreen(api: ref.read(apiClientProvider)),
-      ),
-      GoRoute(path: '/history', builder: (_, __) => const HistoryScreen()),
       GoRoute(
         path: '/history/:id/payment',
         builder: (_, state) => HistoryPaymentScreen(tripId: state.pathParameters['id']!),

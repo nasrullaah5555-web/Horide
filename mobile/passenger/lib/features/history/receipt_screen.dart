@@ -56,5 +56,7 @@ class ReceiptScreen extends ConsumerWidget {
   }
 
   static String _method(String m) =>
-      PaymentMethod.values.any((v) => v.name == m) ? paymentLabel(PaymentMethod.values.byName(m)) : m;
+      PaymentMethod.values.any((v) => v.name == m)
+          ? paymentLabel(PaymentMethod.values.byName(m))
+          : m;
 }

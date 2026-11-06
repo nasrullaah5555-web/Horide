@@ -26,14 +26,12 @@ class Market {
       currency: j['currency'] as String,
       paymentMethods: [
         for (final m in j['paymentMethods'] as List<dynamic>)
-          if (PaymentMethod.values.any((v) => v.name == m)) PaymentMethod.values.byName(m as String),
+          if (PaymentMethod.values.any((v) => v.name == m))
+            PaymentMethod.values.byName(m as String),
       ],
       emergency: [
         for (final e in j['emergency'] as List<dynamic>)
-          (
-            label: (e as Map<String, dynamic>)['label'] as String,
-            number: e['number'] as String,
-          ),
+          (label: (e as Map<String, dynamic>)['label'] as String, number: e['number'] as String),
       ],
       centre: LatLngPoint((c['lat'] as num).toDouble(), (c['lng'] as num).toDouble()),
       phoneExample: j['phoneExample'] as String,

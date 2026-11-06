@@ -398,8 +398,7 @@ class _PaymentScreenState extends ConsumerState<PaymentScreen> {
                         final r = await api.recordPayment(
                           trip.id,
                           method: _method,
-                          reference:
-                              _method == PaymentMethod.cash ? null : _reference.text.trim(),
+                          reference: _method == PaymentMethod.cash ? null : _reference.text.trim(),
                         );
                         if (mounted) setState(() => _receipt = r);
                       }),

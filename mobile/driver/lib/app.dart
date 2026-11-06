@@ -41,9 +41,7 @@ final routerProvider = Provider<GoRouter>((ref) {
       StatefulShellRoute.indexedStack(
         builder: (_, __, shell) => DriverShell(shell: shell),
         branches: [
-          StatefulShellBranch(
-            routes: [GoRoute(path: '/', builder: (_, __) => const HomeScreen())],
-          ),
+          StatefulShellBranch(routes: [GoRoute(path: '/', builder: (_, __) => const HomeScreen())]),
           StatefulShellBranch(
             routes: [GoRoute(path: '/history', builder: (_, __) => const HistoryScreen())],
           ),

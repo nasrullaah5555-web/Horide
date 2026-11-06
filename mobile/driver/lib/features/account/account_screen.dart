@@ -29,10 +29,11 @@ class AccountScreen extends ConsumerWidget {
           padding: const EdgeInsets.symmetric(vertical: MusrideSpace.md),
           children: [
             overview.when(
-              loading: () => const Padding(
-                padding: EdgeInsets.all(MusrideSpace.xl),
-                child: Center(child: CircularProgressIndicator()),
-              ),
+              loading:
+                  () => const Padding(
+                    padding: EdgeInsets.all(MusrideSpace.xl),
+                    child: Center(child: CircularProgressIndicator()),
+                  ),
               error:
                   (e, _) => Padding(
                     padding: const EdgeInsets.all(MusrideSpace.lg),
@@ -95,10 +96,7 @@ class AccountScreen extends ConsumerWidget {
             ),
             ListTile(
               leading: const Icon(Icons.delete_outline, color: MusrideColors.signal),
-              title: const Text(
-                'Delete my account',
-                style: TextStyle(color: MusrideColors.signal),
-              ),
+              title: const Text('Delete my account', style: TextStyle(color: MusrideColors.signal)),
               onTap: () async {
                 final ok = await confirmAccountDeletion(
                   context,
@@ -143,7 +141,7 @@ class AccountScreen extends ConsumerWidget {
                     mainAxisSize: MainAxisSize.min,
                     children: [
                       DropdownButtonFormField<String>(
-                        value: category,
+                        initialValue: category,
                         decoration: const InputDecoration(labelText: 'About'),
                         items: [
                           for (final e in categories.entries)
@@ -174,8 +172,7 @@ class AccountScreen extends ConsumerWidget {
                     MusrideButton(
                       compact: true,
                       label: 'Send',
-                      onPressed:
-                          text.text.trim().length < 10 ? null : () => Navigator.pop(d, true),
+                      onPressed: text.text.trim().length < 10 ? null : () => Navigator.pop(d, true),
                     ),
                   ],
                 ),
@@ -187,9 +184,9 @@ class AccountScreen extends ConsumerWidget {
     try {
       await ref.read(driverApiProvider).complain(category: category, description: description);
       if (context.mounted) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(content: Text('Sent. Musride staff will contact you.')),
-        );
+        ScaffoldMessenger.of(
+          context,
+        ).showSnackBar(const SnackBar(content: Text('Sent. Musride staff will contact you.')));
       }
     } catch (e) {
       if (context.mounted) showError(context, e);
@@ -228,10 +225,7 @@ class _Header extends StatelessWidget {
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                Text(
-                  name ?? 'Add your name',
-                  style: Theme.of(context).textTheme.titleLarge,
-                ),
+                Text(name ?? 'Add your name', style: Theme.of(context).textTheme.titleLarge),
                 if (p['phone'] != null) HintText(p['phone'] as String),
                 const Gap(MusrideSpace.xxs),
                 StatusText(status, ok: ok),

@@ -33,7 +33,10 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
   Future<void> _centreOnMe() async {
     if (!_mapReady) return;
     final last = ref.read(locationReporterProvider).last;
-    final p = last != null ? toLatLng(LatLngPoint(last.latitude, last.longitude)) : await currentPosition();
+    final p =
+        last != null
+            ? toLatLng(LatLngPoint(last.latitude, last.longitude))
+            : await currentPosition();
     if (p != null && mounted) {
       _map.move(p, 15);
     }

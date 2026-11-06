@@ -57,7 +57,9 @@ void main() {
       MaterialApp(
         home: Scaffold(
           appBar: AppBar(
-            actions: [NotificationsBell(api: _client([], [unreadItem]), onOpen: () async {})],
+            actions: [
+              NotificationsBell(api: _client([], [unreadItem]), onOpen: () async {}),
+            ],
           ),
         ),
       ),

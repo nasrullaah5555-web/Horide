@@ -41,7 +41,20 @@ Future<({List<InboxItem> items, int unread})> fetchInbox(ApiClient api) async {
 
 /// "6 Nov, 16:47" in the phone's own time zone.
 String formatInboxTime(DateTime d) {
-  const months = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
+  const months = [
+    'Jan',
+    'Feb',
+    'Mar',
+    'Apr',
+    'May',
+    'Jun',
+    'Jul',
+    'Aug',
+    'Sep',
+    'Oct',
+    'Nov',
+    'Dec',
+  ];
   final l = d.toLocal();
   String two(int n) => n.toString().padLeft(2, '0');
   return '${l.day} ${months[l.month - 1]}, ${two(l.hour)}:${two(l.minute)}';

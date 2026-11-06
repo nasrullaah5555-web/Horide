@@ -25,8 +25,10 @@ async function main(): Promise<void> {
     for (const r of result.results ?? []) {
       console.log(`${r.status.padEnd(8)} ${r.direction.padEnd(4)} ${r.migrationName}`);
     }
-    if (!result.results?.length) console.log('Nothing to do: database is up to date.');
+    // Check for an error first: when the connection fails there are no results either, and
+    // "up to date" would be a misleading message.
     assertMigrationSuccess(result);
+    if (!result.results?.length) console.log('Nothing to do: database is up to date.');
   } finally {
     await db.destroy();
   }

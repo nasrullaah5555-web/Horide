@@ -6,6 +6,10 @@ plugins {
     id("dev.flutter.flutter-gradle-plugin")
 }
 
+// See defaultConfig and signingConfigs below.
+val isStaging = System.getenv("MUSRIDE_STAGING") == "true"
+val stagingKeystore: String? = System.getenv("MUSRIDE_STAGING_KEYSTORE")?.takeIf { it.isNotBlank() }
+
 android {
     namespace = "et.musride.driver"
     compileSdk = flutter.compileSdkVersion
@@ -29,6 +33,11 @@ android {
         // flag during build.
         versionCode = flutter.versionCode
         versionName = flutter.versionName
+        // Staging test builds (MUSRIDE_STAGING=true, set only by the "Mobile staging apps"
+        // workflow) get their own app ID and name, so they install next to the real app and
+        // never clash with it.
+        if (isStaging) applicationIdSuffix = ".staging"
+        manifestPlaceholders["appLabel"] = if (isStaging) "Musride Driver (test)" else "Musride Driver"
     }
 
     // Release signing (T-046). The upload key never enters Git. It comes from either
@@ -46,6 +55,16 @@ android {
     val storeFilePath = secret("storeFile", "MUSRIDE_KEYSTORE_FILE")
 
     signingConfigs {
+        // One fixed TEST key for staging builds, so each new test build installs over the last
+        // one. It is not the Play upload key and can't publish anything (mobile/staging-signing).
+        if (isStaging && stagingKeystore != null) {
+            create("staging") {
+                storeFile = file(stagingKeystore)
+                storePassword = "android"
+                keyAlias = "androiddebugkey"
+                keyPassword = "android"
+            }
+        }
         if (storeFilePath != null) {
             create("release") {
                 storeFile = file(storeFilePath)
@@ -59,6 +78,7 @@ android {
     buildTypes {
         release {
             signingConfig = when {
+                isStaging && stagingKeystore != null -> signingConfigs.getByName("staging")
                 storeFilePath != null -> signingConfigs.getByName("release")
                 System.getenv("MUSRIDE_ALLOW_DEBUG_SIGNING") == "true" -> signingConfigs.getByName("debug")
                 else -> null // refused below, only when a release build is actually requested

@@ -34,15 +34,24 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
   bool _pickupTyped = false;
   Timer? _naming;
 
-  @override
-  void initState() {
-    super.initState();
-    currentPosition().then((p) {
-      if (p != null && mounted) {
-        _map.move(p, 16);
-        _namePickup();
-      }
-    });
+  /// Moves the map to the phone's position. Only once the map is on screen: moving it before
+  /// does nothing, which left the map on Jijiga for a passenger in Nairobi (2026-11-06).
+  Future<void> _goToMe() async {
+    final p = await currentPosition();
+    if (!mounted) return;
+    if (p == null) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(
+          content: Text(
+            'Your location is off, so the map can\'t find you. Turn on location, '
+            'or search for your pickup.',
+          ),
+        ),
+      );
+      return;
+    }
+    _map.move(p, 16);
+    await _namePickup();
   }
 
   /// Fills the pickup with the name of the place under the pin ("Current location" style), unless
@@ -179,6 +188,7 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
             options: MapOptions(
               initialCenter: jijiga,
               initialZoom: 15,
+              onMapReady: _goToMe,
               onPositionChanged: (_, hasGesture) {
                 if (!hasGesture) return;
                 // Moving the pickup makes the old prices wrong.
@@ -211,9 +221,9 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
                   MusrideRoundButton(
                     icon: Icons.my_location,
                     label: 'Go to my location',
-                    onPressed: () async {
-                      final p = await currentPosition();
-                      if (p != null) _map.move(p, 16);
+                    onPressed: () {
+                      _pickupTyped = false;
+                      _goToMe();
                     },
                   ),
                 ],

@@ -158,6 +158,12 @@ export default function StaffPage() {
                     <StatusBadge status={a.status} />
                     <span>{a.roles.map(humanize).join(', ') || 'No roles'}</span>
                   </p>
+                  {a.id === admin.id && (
+                    <p className="mt-2 max-w-prose text-small text-muted">
+                      You can&apos;t change your own roles. For work on drivers, payments or prices,
+                      add a separate staff account with those roles, or ask another super admin.
+                    </p>
+                  )}
                   {editing?.id === a.id && (
                     <form
                       className="mt-4 space-y-3"

@@ -200,15 +200,19 @@ describe('Admin authentication and permissions (e2e)', () => {
       expect(logs.body.entries[0].actor_id).toBe(s.id);
     });
 
-    it('a super admin cannot remove their own super role or disable themselves', async () => {
+    it('a super admin cannot change their own roles or disable themselves', async () => {
       const s = await adminLogin(t, ['super']);
-      await t
-        .http()
-        .put(`/admin/admins/${s.id}/roles`)
-        .set('Cookie', s.cookie)
-        .set('X-CSRF-Token', s.csrf)
-        .send({ roles: ['support'] })
-        .expect(400);
+      // Neither removing super nor adding powers (self-escalation) is allowed.
+      for (const roles of [['support'], ['super', 'finance', 'verification']]) {
+        const res = await t
+          .http()
+          .put(`/admin/admins/${s.id}/roles`)
+          .set('Cookie', s.cookie)
+          .set('X-CSRF-Token', s.csrf)
+          .send({ roles })
+          .expect(400);
+        expect(res.body.error.code).toBe('CANNOT_CHANGE_OWN_ROLES');
+      }
       await t
         .http()
         .post(`/admin/admins/${s.id}/disable`)

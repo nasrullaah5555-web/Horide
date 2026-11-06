@@ -139,10 +139,12 @@ class PassengerApi {
 
   Future<Receipt> receipt(String id) async => Receipt(await _c.get('/trips/$id/receipt'));
 
-  Future<void> rate(String id, int stars, String? comment) => _c.post('/trips/$id/rating', {
-    'stars': stars,
-    if (comment != null && comment.isNotEmpty) 'comment': comment,
-  });
+  Future<void> rate(String id, int stars, String? comment, {Set<String> compliments = const {}}) =>
+      _c.post('/trips/$id/rating', {
+        'stars': stars,
+        if (comment != null && comment.isNotEmpty) 'comment': comment,
+        if (stars >= 4 && compliments.isNotEmpty) 'compliments': compliments.toList(),
+      });
 
   Future<List<TripSummary>> history({DateTime? before}) async {
     final q = before == null ? '' : '?before=${Uri.encodeQueryComponent(before.toIso8601String())}';

@@ -46,12 +46,19 @@ class DriverOverview {
           (j['documents'] as List<dynamic>)
               .map((d) => DriverDocument(d as Map<String, dynamic>))
               .toList(),
+      compliments = [
+        for (final c in (j['compliments'] as List<dynamic>? ?? const []))
+          (tag: (c as Map<String, dynamic>)['tag'] as String, count: (c['count'] as num).toInt()),
+      ],
       eligibility = Eligibility.fromJson(j['eligibility'] as Map<String, dynamic>);
 
   final Map<String, dynamic> profile;
   final List<DriverVehicle> vehicles;
   final List<DriverDocument> documents;
   final Eligibility eligibility;
+
+  /// How often passengers gave each compliment, most given first.
+  final List<({String tag, int count})> compliments;
 
   String? get fullName => profile['full_name'] as String?;
   String get approvalStatus => profile['approval_status'] as String;

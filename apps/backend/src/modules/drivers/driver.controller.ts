@@ -13,7 +13,7 @@ import {
   UseInterceptors,
 } from '@nestjs/common';
 import { FileInterceptor } from '@nestjs/platform-express';
-import { Kysely } from 'kysely';
+import { Kysely, sql } from 'kysely';
 import { createHash, randomUUID } from 'node:crypto';
 import { z } from 'zod';
 import { AppError } from '../../common/errors';
@@ -134,7 +134,19 @@ export class DriverController {
       .where('driver_id', '=', user.id)
       .orderBy('created_at', 'desc')
       .execute();
-    return { profile, vehicles, documents, eligibility: await this.eligibility.evaluate(user.id) };
+    // How often passengers gave each compliment, most given first.
+    const compliments = await sql<{ tag: string; count: number }>`
+      SELECT tag, count(*)::int AS count
+      FROM ratings, unnest(compliments) AS tag
+      WHERE ratee_id = ${user.id}
+      GROUP BY tag ORDER BY count DESC, tag`.execute(this.db);
+    return {
+      profile,
+      vehicles,
+      documents,
+      compliments: compliments.rows,
+      eligibility: await this.eligibility.evaluate(user.id),
+    };
   }
 
   @Patch('profile')

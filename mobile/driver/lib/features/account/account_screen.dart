@@ -49,6 +49,23 @@ class AccountScreen extends ConsumerWidget {
                   ),
               data: (o) => _Header(overview: o),
             ),
+            if ((overview.valueOrNull?.compliments ?? const []).isNotEmpty) ...[
+              const _Heading('Compliments from passengers'),
+              Padding(
+                padding: const EdgeInsets.symmetric(horizontal: MusrideSpace.lg),
+                child: Wrap(
+                  spacing: MusrideSpace.sm,
+                  runSpacing: MusrideSpace.sm,
+                  children: [
+                    for (final c in overview.valueOrNull!.compliments)
+                      Chip(
+                        avatar: const Icon(Icons.favorite, color: MusrideColors.sign),
+                        label: Text('${complimentLabels[c.tag] ?? c.tag}  ×${c.count}'),
+                      ),
+                  ],
+                ),
+              ),
+            ],
             const _Heading('Subscription'),
             subs.when(
               loading: () => const ListTile(title: Text('Loading…')),

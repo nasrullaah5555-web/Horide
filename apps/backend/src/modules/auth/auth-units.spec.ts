@@ -18,10 +18,10 @@ describe('normalizeMobile (per market)', () => {
     expect(normalizeMobile('0712345678', 'KE')).toBe('+254712345678');
   });
 
-  it("the other country's numbers work only with their country code", () => {
+  it('Nairobi also takes Ethiopian numbers written with +251; Jijiga takes Ethiopian only', () => {
     expect(normalizeMobile('+251911234567', 'KE')).toBe('+251911234567');
-    expect(normalizeMobile('+254712345678', 'ET')).toBe('+254712345678');
     expect(normalizeMobile('0911234567', 'KE')).toBeNull();
+    expect(normalizeMobile('+254712345678', 'ET')).toBeNull();
   });
 
   it.each(['+254812345678', '+25471234567', '+2547123456789'])('rejects %s', (input) => {

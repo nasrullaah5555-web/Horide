@@ -27,10 +27,10 @@ void main() {
     test('local numbers are local: 0712… is Ethiopian in Jijiga', () {
       expect(normalizeMobile('0712345678', marketCode: 'ET'), '+251712345678');
     });
-    test("the other country's numbers need their country code", () {
+    test('Nairobi also takes +251 numbers; Jijiga takes Ethiopian only', () {
       expect(normalizeMobile('+251911234567', marketCode: 'KE'), '+251911234567');
-      expect(normalizeMobile('+254712345678', marketCode: 'ET'), '+254712345678');
       expect(normalizeMobile('0911234567', marketCode: 'KE'), isNull);
+      expect(normalizeMobile('+254712345678', marketCode: 'ET'), isNull);
     });
     test('rejects malformed numbers', () {
       expect(normalizeMobile('+254812345678', marketCode: 'KE'), isNull);

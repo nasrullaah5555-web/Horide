@@ -22,7 +22,12 @@ describe('Market (e2e)', () => {
       const m = await t.http().get('/market').expect(200);
       expect(m.body).toMatchObject({ code: 'ET', city: 'Jijiga', currency: 'ETB' });
       expect(m.body.paymentMethods).toEqual(['cash', 'ebirr']);
-      expect(m.body.emergency.map((e: { number: string }) => e.number)).toEqual(['991', '907']);
+      expect(m.body.emergency.map((e: { number: string }) => e.number)).toEqual([
+        '991',
+        '907',
+        '939',
+        '945',
+      ]);
     });
 
     it('refuses Nairobi trips and M-Pesa', async () => {

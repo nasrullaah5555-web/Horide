@@ -41,16 +41,14 @@ String? normalizeKenyanMobile(String input) {
   return RegExp(r'^[17]\d{8}$').hasMatch(national) ? '+254$national' : null;
 }
 
-/// A mobile number for the market [marketCode] ('ET' or 'KE'). Local numbers are read as local
-/// (07… exists in both countries); the other country's numbers need their country code.
+/// A mobile number for the market [marketCode] ('ET' or 'KE', default: the current market).
+/// Local numbers are read as local (07… exists in both countries). Jijiga accepts Ethiopian
+/// numbers only; Nairobi accepts Kenyan numbers and Ethiopian ones written with +251.
 /// Same rules as the backend (apps/backend/src/modules/auth/phone.ts).
 String? normalizeMobile(String input, {String? marketCode}) {
   final market = marketCode ?? Market.current.code;
+  if (market != 'KE') return normalizeEthiopianMobile(input);
   final digits = input.replaceAll(RegExp(r'[\s()-]'), '');
-  if (market == 'KE') {
-    return normalizeKenyanMobile(input) ??
-        (RegExp(r'^\+?251').hasMatch(digits) ? normalizeEthiopianMobile(input) : null);
-  }
-  return normalizeEthiopianMobile(input) ??
-      (RegExp(r'^\+?254').hasMatch(digits) ? normalizeKenyanMobile(input) : null);
+  return normalizeKenyanMobile(input) ??
+      (RegExp(r'^\+?251').hasMatch(digits) ? normalizeEthiopianMobile(input) : null);
 }

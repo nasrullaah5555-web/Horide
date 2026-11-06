@@ -234,7 +234,7 @@ describe('Migrations: fleet, pricing, trips, payments, subscriptions', () => {
   });
 
   describe('payments', () => {
-    it('only eBirr payments may carry an eBirr reference; each party confirms once', async () => {
+    it('cash payments carry no reference (eBirr and M-Pesa do); each party confirms once', async () => {
       const p = await createPassenger(db);
       const fv = await createFareVersion(db);
       const t = await createTrip(db, { passengerId: p.id, fareVersionId: fv.id });
@@ -251,7 +251,7 @@ describe('Migrations: fleet, pricing, trips, payments, subscriptions', () => {
             resolution_note: null,
           })
           .execute(),
-      ).rejects.toThrow(/payments_ebirr_reference_only_for_ebirr/);
+      ).rejects.toThrow(/payments_reference_not_for_cash/);
 
       const pay = await db
         .insertInto('payments')

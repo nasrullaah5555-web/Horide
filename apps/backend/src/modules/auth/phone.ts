@@ -32,22 +32,17 @@ export function normalizeKenyanMobile(input: string): string | null {
 }
 
 /**
- * A mobile number for this market. Numbers written without a country code are read as local
- * (07… exists in both Ethiopia and Kenya). The other country's numbers are accepted only with
- * their country code, so a visitor can still sign in with their home number.
+ * A mobile number for this market. Numbers without a country code are read as local (07… exists
+ * in both Ethiopia and Kenya). Jijiga (ET, production) accepts Ethiopian numbers only. Nairobi
+ * (KE, staging tests) accepts Kenyan numbers, and Ethiopian ones written with +251 so the Ethiopian
+ * team can test there with their own phones.
  */
 export function normalizeMobile(input: string, market: 'ET' | 'KE'): string | null {
+  if (market === 'ET') return normalizeEthiopianMobile(input);
   const digits = typeof input === 'string' ? input.replace(/[\s()-]/g, '') : '';
-  const international = /^\+?(251|254)/.test(digits);
-  if (market === 'KE') {
-    return (
-      normalizeKenyanMobile(input) ??
-      (international && /^\+?251/.test(digits) ? normalizeEthiopianMobile(input) : null)
-    );
-  }
   return (
-    normalizeEthiopianMobile(input) ??
-    (international && /^\+?254/.test(digits) ? normalizeKenyanMobile(input) : null)
+    normalizeKenyanMobile(input) ??
+    (/^\+?251/.test(digits) ? normalizeEthiopianMobile(input) : null)
   );
 }
 

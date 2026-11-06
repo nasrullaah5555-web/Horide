@@ -94,6 +94,12 @@ export class DevPlaces implements PlacesProvider {
   }
 }
 
+/** Who the server says it is when asking Photon: the app name, its website and a contact. */
+export function photonUserAgent(website: string | undefined): string {
+  return `Musride/1.0 (+${website ?? 'https://musride.com'}; Info@musride.com)`;
+}
+const PHOTON_DEFAULT_AGENT = photonUserAgent(undefined);
+
 /**
  * Photon (photon.komoot.io): free search over OpenStreetMap data. Fine for testing; for a launch
  * use Google or a self-hosted Photon (the public server asks for fair use). Tested with a fake
@@ -103,7 +109,19 @@ export class PhotonPlaces implements PlacesProvider {
   constructor(
     private readonly baseUrl = 'https://photon.komoot.io',
     private readonly fetchImpl: FetchFn = fetch,
+    /**
+     * The public Photon server answers 403 to clients that don't say who they are (Node's
+     * default agent is just "node"); its operators ask for an agent naming the app and a way to
+     * reach its makers. Found 2026-11-06: every search on staging failed with "not available".
+     */
+    private readonly userAgent = PHOTON_DEFAULT_AGENT,
   ) {}
+
+  private get(url: URL) {
+    return getJson(this.fetchImpl, url.toString(), {
+      headers: { 'User-Agent': this.userAgent, Accept: 'application/json' },
+    });
+  }
 
   async search(
     query: string,
@@ -118,7 +136,7 @@ export class PhotonPlaces implements PlacesProvider {
       u.searchParams.set('lat', String(near.lat));
       u.searchParams.set('lon', String(near.lng));
     }
-    const body = (await getJson(this.fetchImpl, u.toString())) as PhotonResponse;
+    const body = (await this.get(u)) as PhotonResponse;
     return (body?.features ?? []).flatMap((f) => {
       const c = f.geometry?.coordinates;
       if (!Array.isArray(c) || typeof c[0] !== 'number' || typeof c[1] !== 'number') return [];
@@ -142,7 +160,7 @@ export class PhotonPlaces implements PlacesProvider {
     u.searchParams.set('lat', String(point.lat));
     u.searchParams.set('lon', String(point.lng));
     u.searchParams.set('lang', 'en');
-    const body = (await getJson(this.fetchImpl, u.toString())) as PhotonResponse;
+    const body = (await this.get(u)) as PhotonResponse;
     const p = body?.features?.[0]?.properties;
     if (!p) return null;
     return p.name ?? ([p.street, p.housenumber].filter(Boolean).join(' ') || null);

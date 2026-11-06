@@ -1,4 +1,10 @@
-import { DevPlaces, GooglePlaces, PhotonPlaces, PlacesUnavailableError } from './places.provider';
+import {
+  DevPlaces,
+  GooglePlaces,
+  PhotonPlaces,
+  PlacesUnavailableError,
+  photonUserAgent,
+} from './places.provider';
 
 const NEAR = { lat: -1.2741, lng: 36.8513 };
 
@@ -50,6 +56,25 @@ describe('PhotonPlaces (request/response format, fake server)', () => {
     expect(u.searchParams.get('q')).toBe('donholm');
     expect(u.searchParams.get('lat')).toBe(String(NEAR.lat));
     expect(u.searchParams.get('lon')).toBe(String(NEAR.lng));
+    // The public server refuses anonymous clients with 403: every request names the app.
+    const agent = new Headers(f.calls[0]!.init.headers).get('User-Agent');
+    expect(agent).toMatch(/^Musride\/1\.0 \(\+https:\/\/\S+; \S+@musride\.com\)$/);
+  });
+
+  it('identifies itself with the configured website', async () => {
+    const f = fakeFetch({ status: 200, body: { features: [] } });
+    const agent = photonUserAgent('https://musride-staging-web.onrender.com');
+    await new PhotonPlaces('https://photon.test', f.fn, agent).reverse(NEAR);
+    expect(new Headers(f.calls[0]!.init.headers).get('User-Agent')).toBe(
+      'Musride/1.0 (+https://musride-staging-web.onrender.com; Info@musride.com)',
+    );
+  });
+
+  it('a refusal (403) becomes PlacesUnavailableError, not a crash', async () => {
+    const f = fakeFetch({ status: 403, body: {} });
+    await expect(
+      new PhotonPlaces('https://photon.test', f.fn).search('donholm', NEAR, null),
+    ).rejects.toBeInstanceOf(PlacesUnavailableError);
   });
 
   it('names a point on the map; a server error becomes PlacesUnavailableError', async () => {

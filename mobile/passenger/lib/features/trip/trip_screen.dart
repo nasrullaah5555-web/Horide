@@ -9,6 +9,7 @@ import 'package:musride_core/musride_core.dart';
 import 'package:url_launcher/url_launcher.dart';
 
 import '../../core/passenger_api.dart';
+import '../../core/providers.dart';
 import '../../core/ui.dart';
 import 'trip_controller.dart';
 import 'trip_finished.dart';
@@ -99,6 +100,7 @@ class _TripScreenState extends ConsumerState<TripScreen> {
       title: 'New destination',
       confirmLabel: 'Get new price',
       start: toLatLng(trip.destination.point),
+      places: ref.read(placesApiProvider),
     );
     if (place == null || !mounted) return;
     setState(() => _busy = true);

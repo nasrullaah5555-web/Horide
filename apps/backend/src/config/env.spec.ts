@@ -17,6 +17,8 @@ const productionOk = {
   AFROMESSAGE_TOKEN: 'test-token-not-real',
   ROUTING_PROVIDER: 'google',
   ROUTING_GOOGLE_API_KEY: 'AIza-test-key-not-real-000000',
+  PLACES_PROVIDER: 'google',
+  PLACES_GOOGLE_API_KEY: 'AIza-test-key-not-real-000000',
   STORAGE_PROVIDER: 's3',
   S3_BUCKET: 'musride-documents',
   S3_ACCESS_KEY_ID: 'test-access-key',
@@ -127,6 +129,19 @@ describe('loadConfig', () => {
       );
       expect(() => loadConfig({ ...staging, OTP_PEPPER: staging.JWT_ACCESS_SECRET })).toThrow(
         /different/,
+      );
+    });
+
+    it('place search: Google needs a key; the public Photon server is not for production', () => {
+      expect(() => loadConfig({ ...staging, PLACES_PROVIDER: 'google' })).toThrow(
+        /PLACES_GOOGLE_API_KEY/,
+      );
+      expect(loadConfig({ ...staging, PLACES_PROVIDER: 'photon' }).PLACES_PROVIDER).toBe('photon');
+      expect(() => loadConfig({ ...productionOk, PLACES_PROVIDER: 'photon' })).toThrow(
+        /PLACES_PHOTON_URL/,
+      );
+      expect(() => loadConfig({ ...productionOk, PLACES_PROVIDER: 'dev' })).toThrow(
+        /PLACES_PROVIDER/,
       );
     });
 

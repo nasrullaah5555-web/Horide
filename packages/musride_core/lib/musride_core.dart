@@ -11,6 +11,7 @@ export 'src/design/logo.dart';
 export 'src/design/markers.dart';
 export 'src/design/tokens.g.dart';
 export 'src/map/map.dart';
+export 'src/map/places.dart';
 export 'src/emergency.dart';
 export 'src/models/models.dart';
 export 'src/money.dart';

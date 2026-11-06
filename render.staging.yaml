@@ -61,6 +61,9 @@ services:
       # Set to "false" to go back to Jijiga only. Never set in render.yaml (production refuses it).
       - key: KENYA_TEST_MODE
         value: 'true'
+      # Place search: free OpenStreetMap search (Photon) until a Google key exists (OA-26).
+      - key: PLACES_PROVIDER
+        value: photon
       # "Share my trip" links point at the staging website.
       - key: PUBLIC_WEB_URL
         value: https://musride-staging-web.onrender.com

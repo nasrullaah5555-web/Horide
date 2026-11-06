@@ -48,3 +48,6 @@ class SessionNotifier extends AsyncNotifier<bool> {
 }
 
 final sessionProvider = AsyncNotifierProvider<SessionNotifier, bool>(SessionNotifier.new);
+
+/// Place search (suggestions while typing, names for map points) through the Musride server.
+final placesApiProvider = Provider<PlacesApi>((ref) => PlacesApi(ref.watch(apiClientProvider)));

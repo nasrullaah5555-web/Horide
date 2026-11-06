@@ -52,6 +52,12 @@ services:
         value: google
       - key: ROUTING_GOOGLE_API_KEY
         sync: false
+      - key: PLACES_PROVIDER
+        value: google
+      - key: PLACES_GOOGLE_API_KEY
+        sync: false
+      - key: PUBLIC_WEB_URL
+        sync: false # https://<your website>, for "Share my trip" links
       - key: STORAGE_PROVIDER
         value: s3
       - key: S3_BUCKET

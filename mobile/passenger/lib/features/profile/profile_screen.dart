@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:go_router/go_router.dart';
 import 'package:musride_core/musride_core.dart';
 
 import '../../core/passenger_api.dart';
@@ -107,7 +108,22 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen> {
                   ),
                   const Gap(MusrideSpace.sm),
                   MusrideButton(label: 'Save', onPressed: _busy ? null : _save),
-                  const Gap(MusrideSpace.xxl),
+                  const Gap(MusrideSpace.lg),
+                  ListTile(
+                    contentPadding: EdgeInsets.zero,
+                    leading: const Icon(Icons.history),
+                    title: const Text('Your trips and receipts'),
+                    trailing: const Icon(Icons.chevron_right),
+                    onTap: () => context.push('/history'),
+                  ),
+                  ListTile(
+                    contentPadding: EdgeInsets.zero,
+                    leading: const Icon(Icons.notifications_outlined),
+                    title: const Text('Notifications'),
+                    trailing: const Icon(Icons.chevron_right),
+                    onTap: () => context.push('/notifications'),
+                  ),
+                  const Gap(MusrideSpace.xl),
                   MusrideButton(
                     kind: MusrideButtonKind.secondary,
                     label: 'Sign out',

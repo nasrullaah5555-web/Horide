@@ -57,6 +57,10 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
       appBar: AppBar(
         title: const Text('Musride Driver'),
         actions: [
+          NotificationsBell(
+            api: ref.read(apiClientProvider),
+            onOpen: () => context.push<void>('/notifications'),
+          ),
           IconButton(
             tooltip: 'Your trips and earnings',
             onPressed: () => context.push('/history'),

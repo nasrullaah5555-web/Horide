@@ -38,6 +38,10 @@ final routerProvider = Provider<GoRouter>((ref) {
       GoRoute(path: '/', builder: (_, __) => const HomeScreen()),
       GoRoute(path: '/trip', builder: (_, __) => const TripScreen()),
       GoRoute(path: '/onboarding', builder: (_, __) => const OnboardingScreen()),
+      GoRoute(
+        path: '/notifications',
+        builder: (_, __) => NotificationsScreen(api: ref.read(apiClientProvider)),
+      ),
       GoRoute(path: '/history', builder: (_, __) => const HistoryScreen()),
       GoRoute(
         path: '/history/:id/payment',

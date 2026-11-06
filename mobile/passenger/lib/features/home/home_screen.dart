@@ -273,6 +273,14 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
                   },
                 ),
                 ListTile(
+                  leading: const Icon(Icons.notifications_outlined),
+                  title: const Text('Notifications'),
+                  onTap: () {
+                    Navigator.pop(sheet);
+                    context.push('/notifications');
+                  },
+                ),
+                ListTile(
                   leading: const Icon(Icons.support_agent),
                   title: const Text('Report a problem'),
                   onTap: () {

@@ -20,4 +20,5 @@ export 'src/widgets/config_error_app.dart';
 export 'src/widgets/connection_banner.dart';
 export 'src/widgets/delete_account.dart';
 export 'src/widgets/emergency_sheet.dart';
+export 'src/widgets/notifications.dart';
 export 'src/widgets/sign_panel.dart';

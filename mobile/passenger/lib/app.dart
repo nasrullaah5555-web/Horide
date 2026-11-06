@@ -49,6 +49,10 @@ final routerProvider = Provider<GoRouter>((ref) {
         builder: (_, state) => ComplaintScreen(tripId: state.uri.queryParameters['tripId']),
       ),
       GoRoute(path: '/profile', builder: (_, __) => const ProfileScreen()),
+      GoRoute(
+        path: '/notifications',
+        builder: (_, __) => NotificationsScreen(api: ref.read(apiClientProvider)),
+      ),
     ],
   );
 });

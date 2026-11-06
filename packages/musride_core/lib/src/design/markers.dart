@@ -80,3 +80,51 @@ class PositionDot extends StatelessWidget {
     );
   }
 }
+
+/// Where the trip starts: a green dot with a white ring. Sits exactly on the point.
+class PickupMarker extends StatelessWidget {
+  const PickupMarker({super.key});
+
+  static const size = MusrideSize.marker;
+
+  @override
+  Widget build(BuildContext context) => Semantics(
+    label: 'Pickup',
+    child: Container(
+      width: size,
+      height: size,
+      decoration: BoxDecoration(
+        color: MusrideColors.sign,
+        shape: BoxShape.circle,
+        border: Border.all(color: MusrideColors.white, width: MusrideStroke.marker),
+        boxShadow: const [BoxShadow(color: MusrideColors.shadow, blurRadius: MusrideSpace.sm)],
+      ),
+    ),
+  );
+}
+
+/// Where the trip ends: a navy square with a white centre, so it can never be mistaken for the
+/// pickup's round green dot. Sits exactly on the point.
+class DestinationMarker extends StatelessWidget {
+  const DestinationMarker({super.key});
+
+  static const size = MusrideSize.marker;
+
+  @override
+  Widget build(BuildContext context) => Semantics(
+    label: 'Destination',
+    child: Container(
+      width: size,
+      height: size,
+      decoration: BoxDecoration(
+        color: MusrideColors.navy,
+        borderRadius: BorderRadius.circular(MusrideRadius.sm),
+        border: Border.all(color: MusrideColors.white, width: MusrideStroke.marker),
+        boxShadow: const [BoxShadow(color: MusrideColors.shadow, blurRadius: MusrideSpace.sm)],
+      ),
+      child: Center(
+        child: Container(width: MusrideSpace.sm, height: MusrideSpace.sm, color: MusrideColors.white),
+      ),
+    ),
+  );
+}

@@ -56,7 +56,7 @@ export class PlacesController {
         throw new AppError(
           HttpStatus.SERVICE_UNAVAILABLE,
           'PLACES_UNAVAILABLE',
-          'Place search is not available right now. Move the map pin instead.',
+          'Place search is not available right now. Try again, or choose the place on the map.',
         );
       }
       throw err;

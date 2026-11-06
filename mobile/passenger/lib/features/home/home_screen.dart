@@ -1,5 +1,3 @@
-import 'dart:async';
-
 import 'package:flutter/material.dart';
 import 'package:flutter_map/flutter_map.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -12,8 +10,10 @@ import '../../core/providers.dart';
 import '../../core/ui.dart';
 import '../trip/trip_controller.dart';
 
-/// Map-first booking: move the map to set the pickup, choose a destination, see the server's
-/// price for each vehicle type, book.
+/// Booking, Faras/Bolt style: the pickup starts at the phone's position, the destination is
+/// searched by name, both show on the map (green dot, navy square, a dashed line between), and the
+/// server's price for each vehicle type appears. Moving the map only looks around: it never moves
+/// the pickup (it did until 2026-11-06, which made the two points easy to mix up).
 class HomeScreen extends ConsumerStatefulWidget {
   const HomeScreen({super.key});
 
@@ -21,24 +21,36 @@ class HomeScreen extends ConsumerStatefulWidget {
   ConsumerState<HomeScreen> createState() => _HomeScreenState();
 }
 
+/// The share of the screen the bottom panel can cover; the map keeps both points above it.
+const _panelShare = 0.55;
+
 class _HomeScreenState extends ConsumerState<HomeScreen> {
   final _map = MapController();
-  final _pickupText = TextEditingController();
+  final _landmark = TextEditingController();
+  Place? _pickup;
   Place? _destination;
   List<Quote>? _quotes;
   VehicleCategory _category = VehicleCategory.car;
   PaymentMethod _payment = PaymentMethod.cash;
   bool _busy = false;
+  bool _locating = false;
 
-  /// True once the passenger typed their own pickup note; then it's never overwritten.
-  bool _pickupTyped = false;
-  Timer? _naming;
+  /// The pickup words the current prices were made with (the driver sees the ones in the quote).
+  String? _quotedPickupText;
 
-  /// Moves the map to the phone's position. Only once the map is on screen: moving it before
+  @override
+  void dispose() {
+    _landmark.dispose();
+    super.dispose();
+  }
+
+  /// Sets the pickup to the phone's position. Only once the map is on screen: moving it before
   /// does nothing, which left the map on Jijiga for a passenger in Nairobi (2026-11-06).
-  Future<void> _goToMe() async {
+  Future<void> _pickupHere() async {
+    setState(() => _locating = true);
     final p = await currentPosition();
     if (!mounted) return;
+    setState(() => _locating = false);
     if (p == null) {
       ScaffoldMessenger.of(context).showSnackBar(
         const SnackBar(
@@ -50,22 +62,35 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
       );
       return;
     }
-    _map.move(p, 16);
-    await _namePickup();
+    String? name;
+    try {
+      name = await ref.read(placesApiProvider).reverse(toPoint(p));
+    } on ApiException {
+      // No name: the position is what counts; the passenger can add a landmark.
+    }
+    if (!mounted) return;
+    await _setPickup(Place(toPoint(p), name));
   }
 
-  /// Fills the pickup with the name of the place under the pin ("Current location" style), unless
-  /// the passenger wrote their own note.
-  Future<void> _namePickup() async {
-    if (_pickupTyped) return;
-    final at = toPoint(_map.camera.center);
-    try {
-      final name = await ref.read(placesApiProvider).reverse(at);
-      final now = _map.camera.center;
-      if (!mounted || _pickupTyped || now.latitude != at.lat || now.longitude != at.lng) return;
-      setState(() => _pickupText.text = name ?? '');
-    } on ApiException {
-      // No name: the pin position is what counts; the passenger can type a landmark.
+  Future<void> _setPickup(Place place) async {
+    setState(() {
+      _pickup = place;
+      _quotes = null;
+    });
+    _showOnMap();
+    if (_destination != null) await _loadQuotes();
+  }
+
+  /// Both points in view above the panel, or the one that is set.
+  void _showOnMap() {
+    final a = _pickup?.point;
+    final b = _destination?.point;
+    if (a != null && b != null) {
+      _map.fitCamera(
+        fitTrip(a, b, bottom: MediaQuery.sizeOf(context).height * _panelShare),
+      );
+    } else if (a != null || b != null) {
+      _map.move(toLatLng((a ?? b)!), 16);
     }
   }
 
@@ -74,50 +99,54 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
       context,
       title: 'Pickup',
       confirmLabel: 'Set pickup here',
-      start: _map.camera.center,
+      start: _pickup == null ? null : toLatLng(_pickup!.point),
       places: ref.read(placesApiProvider),
+      offerCurrentLocation: true,
+      other: _destination == null ? null : OtherEnd.destination(_destination!.point),
     );
     if (place == null || !mounted) return;
-    _map.move(toLatLng(place.point), 17);
-    setState(() {
-      _pickupText.text = place.text ?? '';
-      _pickupTyped = place.text != null;
-      _quotes = null;
-    });
-    if (_destination != null) await _loadQuotes();
+    await _setPickup(place);
   }
-
-  @override
-  void dispose() {
-    _naming?.cancel();
-    _pickupText.dispose();
-    super.dispose();
-  }
-
-  Place get _pickup => Place(
-    toPoint(_map.camera.center),
-    _pickupText.text.trim().isEmpty ? null : _pickupText.text.trim(),
-  );
 
   Future<void> _chooseDestination() async {
     final place = await PlacePicker.open(
       context,
       title: 'Where to?',
       confirmLabel: 'Set destination',
-      start: _map.camera.center,
+      start: _pickup == null ? null : toLatLng(_pickup!.point),
       places: ref.read(placesApiProvider),
+      other: _pickup == null ? null : OtherEnd.pickup(_pickup!.point),
     );
     if (place == null || !mounted) return;
-    setState(() => _destination = place);
+    await _setDestination(place);
+  }
+
+  Future<void> _setDestination(Place place) async {
+    setState(() {
+      _destination = place;
+      _quotes = null;
+    });
+    _showOnMap();
     await _loadQuotes();
   }
 
+  /// What the driver reads as the pickup: the place's name, plus the passenger's landmark.
+  String? get _pickupText {
+    final parts = [_pickup?.text?.trim(), _landmark.text.trim()]
+        .whereType<String>()
+        .where((t) => t.isNotEmpty);
+    final text = parts.join(' · ');
+    if (text.isEmpty) return null;
+    return text.length <= 200 ? text : text.substring(0, 200);
+  }
+
   Future<void> _loadQuotes() async {
+    final pickup = _pickup;
     final destination = _destination;
-    if (destination == null) return;
+    if (pickup == null || destination == null) return;
     final metres = const Distance().as(
       LengthUnit.Meter,
-      _map.camera.center,
+      toLatLng(pickup.point),
       toLatLng(destination.point),
     );
     if (metres < 150) {
@@ -126,8 +155,7 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
         const ApiException(
           422,
           'SAME_PLACE',
-          'Your destination is where your pickup is. Search for the destination by name, '
-              'or move its pin to the place.',
+          'Your destination is where your pickup is. Search for the destination by name.',
         ),
       );
       return;
@@ -136,18 +164,23 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
       _busy = true;
       _quotes = null;
     });
+    final pickupText = _pickupText;
     try {
-      final pickup = _pickup;
       final quotes = await ref
           .read(passengerApiProvider)
           .quotes(
             pickup: pickup.point,
             destination: destination.point,
-            pickupText: pickup.text,
+            pickupText: pickupText,
             destinationText: destination.text,
             paymentMethod: _payment,
           );
-      if (mounted) setState(() => _quotes = quotes);
+      if (mounted) {
+        setState(() {
+          _quotes = quotes;
+          _quotedPickupText = pickupText;
+        });
+      }
     } catch (e) {
       if (mounted) showError(context, e);
     } finally {
@@ -155,10 +188,16 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
     }
   }
 
-  Future<void> _book(Quote quote) async {
-    if (quote.expiresAt.isBefore(DateTime.now())) {
-      await _loadQuotes(); // prices are valid for 5 minutes; fetch fresh ones
-      return;
+  Future<void> _book(Quote chosen) async {
+    var quote = chosen;
+    // A landmark typed after the prices came, or prices older than 5 minutes: get fresh ones
+    // first, so the driver sees the landmark and the price is current.
+    if (_pickupText != _quotedPickupText || quote.expiresAt.isBefore(DateTime.now())) {
+      await _loadQuotes();
+      final fresh = _quotes?.where((q) => q.category == chosen.category).firstOrNull;
+      if (fresh == null || !mounted) return;
+      if (fresh.fare != chosen.fare) return; // the new price is on screen; let them decide
+      quote = fresh;
     }
     setState(() => _busy = true);
     try {
@@ -180,6 +219,8 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
       if (trip != null && !trip.status.isFinal) context.go('/trip');
     });
 
+    final pickup = _pickup;
+    final destination = _destination;
     return Scaffold(
       body: Stack(
         children: [
@@ -188,25 +229,21 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
             options: MapOptions(
               initialCenter: marketCentre,
               initialZoom: 15,
-              onMapReady: _goToMe,
-              onPositionChanged: (_, hasGesture) {
-                if (!hasGesture) return;
-                // Moving the pickup makes the old prices wrong.
-                if (_quotes != null) setState(() => _quotes = null);
-                _naming?.cancel();
-                _naming = Timer(const Duration(milliseconds: 700), _namePickup);
-              },
+              interactionOptions: mapInteraction,
+              onMapReady: _pickupHere,
             ),
             children: [
               ...baseMapLayers(),
-              if (_destination != null)
-                MarkerLayer(
-                  markers: [pinMarker(_destination!.point, MusrideColors.navy, 'Destination')],
-                ),
+              if (pickup != null && destination != null) tripLine(pickup.point, destination.point),
+              MarkerLayer(
+                markers: [
+                  if (pickup != null) pickupMarker(pickup.point),
+                  if (destination != null) destinationMarker(destination.point),
+                ],
+              ),
               mapAttribution(),
             ],
           ),
-          const Center(child: CentrePin(colour: MusrideColors.sign, label: 'Pickup point')),
           SafeArea(
             child: Padding(
               padding: const EdgeInsets.all(MusrideSpace.md),
@@ -220,10 +257,9 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
                   const Spacer(),
                   MusrideRoundButton(
                     icon: Icons.my_location,
-                    label: 'Go to my location',
+                    label: 'Pick me up where I am',
                     onPressed: () {
-                      _pickupTyped = false;
-                      _goToMe();
+                      if (!_locating && !_busy) _pickupHere();
                     },
                   ),
                 ],
@@ -238,39 +274,49 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
 
   Widget _bottomPanel(BuildContext context) {
     final quotes = _quotes;
+    final pickup = _pickup;
+    final destination = _destination;
     return MusrideBottomPanel(
       children: [
-        TextField(
-          controller: _pickupText,
-          maxLength: 200,
-          onChanged: (v) => _pickupTyped = v.trim().isNotEmpty,
-          decoration: InputDecoration(
-            prefixIcon: const Icon(Icons.trip_origin, color: MusrideColors.sign),
-            hintText: 'Pickup: your location, or type a landmark',
-            counterText: '',
-            suffixIcon: IconButton(
-              tooltip: 'Search for a pickup place',
-              icon: const Icon(Icons.search),
-              onPressed: _busy ? null : _choosePickup,
+        _PlaceField(
+          icon: Icons.trip_origin,
+          colour: MusrideColors.sign,
+          label: 'Pickup',
+          hint: _locating ? 'Finding your location…' : 'Where should the driver pick you up?',
+          value:
+              pickup == null ? null : (pickup.text ?? 'Pin on the map (no street name)'),
+          onTap: _busy ? null : _choosePickup,
+        ),
+        const Gap(MusrideSpace.sm),
+        _PlaceField(
+          icon: Icons.square_rounded,
+          colour: MusrideColors.navy,
+          label: 'Destination',
+          hint: 'Where to?',
+          value:
+              destination == null
+                  ? null
+                  : (destination.text ?? 'Pin on the map (no street name)'),
+          onTap: _busy ? null : _chooseDestination,
+        ),
+        if (pickup != null) ...[
+          const Gap(MusrideSpace.sm),
+          TextField(
+            controller: _landmark,
+            maxLength: 120,
+            textInputAction: TextInputAction.done,
+            onSubmitted: (_) => _loadQuotes(),
+            decoration: const InputDecoration(
+              isDense: true,
+              hintText: 'Landmark for the driver (optional), e.g. blue gate',
+              prefixIcon: Icon(Icons.edit_note),
+              counterText: '',
             ),
           ),
-        ),
-        const Gap(MusrideSpace.md),
-        MusrideButton(
-          kind: MusrideButtonKind.secondary,
-          icon: Icons.place,
-          label:
-              _destination == null
-                  ? 'Where to?'
-                  : (_destination!.text ?? 'Destination set on the map'),
-          onPressed: _busy ? null : _chooseDestination,
-        ),
+        ],
         _SavedPlacesRow(
-          onPick: (place) async {
-            setState(() => _destination = Place(place.point, place.label));
-            await _loadQuotes();
-          },
-          current: _destination,
+          onPick: (place) => _setDestination(Place(place.point, place.label)),
+          current: destination,
         ),
         if (_busy && quotes == null) ...[
           const Gap(MusrideSpace.lg),
@@ -492,6 +538,46 @@ class _SavedPlacesRow extends ConsumerWidget {
                 onPressed: () => _save(context, ref, place),
               ),
           ],
+        ),
+      ),
+    );
+  }
+}
+
+/// A pickup or destination row: looks like a text box, opens the place search when tapped.
+class _PlaceField extends StatelessWidget {
+  const _PlaceField({
+    required this.icon,
+    required this.colour,
+    required this.label,
+    required this.hint,
+    required this.value,
+    required this.onTap,
+  });
+  final IconData icon;
+  final Color colour;
+  final String label;
+  final String hint;
+  final String? value;
+  final VoidCallback? onTap;
+
+  @override
+  Widget build(BuildContext context) {
+    return Semantics(
+      button: true,
+      label: value == null ? '$label: $hint' : '$label: $value. Tap to change.',
+      excludeSemantics: true,
+      child: InkWell(
+        onTap: onTap,
+        borderRadius: BorderRadius.circular(MusrideRadius.control),
+        child: InputDecorator(
+          isEmpty: value == null,
+          decoration: InputDecoration(
+            prefixIcon: Icon(icon, color: colour),
+            hintText: hint,
+            suffixIcon: const Icon(Icons.search),
+          ),
+          child: Text(value ?? '', maxLines: 1, overflow: TextOverflow.ellipsis),
         ),
       ),
     );

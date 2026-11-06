@@ -1,5 +1,6 @@
 import type { Metadata } from 'next';
 import { NotYetPublished, Page } from '@/components/site';
+import { SUPPORT_EMAIL, SUPPORT_PHONE, SUPPORT_PHONE_DISPLAY } from '@/lib/contact';
 
 export const metadata: Metadata = { title: 'Contact' };
 
@@ -10,13 +11,17 @@ export default function Contact() {
         <div>
           <dt className="font-extrabold">Support phone</dt>
           <dd>
-            <NotYetPublished what="The support number" />
+            <a className="font-semibold underline" href={`tel:${SUPPORT_PHONE}`}>
+              {SUPPORT_PHONE_DISPLAY}
+            </a>
           </dd>
         </div>
         <div>
           <dt className="font-extrabold">Email</dt>
           <dd>
-            <NotYetPublished what="The support email address" />
+            <a className="font-semibold underline" href={`mailto:${SUPPORT_EMAIL}`}>
+              {SUPPORT_EMAIL}
+            </a>
           </dd>
         </div>
         <div>

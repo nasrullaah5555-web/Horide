@@ -112,3 +112,9 @@ Not renamed here (owner actions): the GitHub repository (`nasrullaah5555-web/Hor
 Decision by the owner, so a small team can run Musride from one account. A super admin can add or remove their own Support, Verification, Finance and Operations roles from Staff accounts; the console reloads to show the new menu. Two rules stay: nobody can remove their own Super role (so the company is never left without someone able to manage staff), and nobody can disable their own account. Every role change, including your own, is written to the audit log with who made it.
 
 Trade-off accepted by the owner: separation of duties now depends on who is given Super, not on the software. One person holding Super can reach driver documents and money records. Keep the number of Super accounts small, and review `admin.roles_changed` in the audit log regularly.
+
+## ADR-021 Kenya test mode for staging (2026-11-06)
+
+Decision by the owner: try the apps in Kenya before the Jijiga pilot. One server setting, `KENYA_TEST_MODE=true` (staging only; the API refuses to start with it in production), does two things: it accepts Kenyan mobile numbers written with the country code (+254 7… or +254 1…), and it turns on a test service area, "Nairobi (TEST only)", a rectangle around Nairobi (lng 36.65–37.10, lat −1.45 to −1.10). Setting it back to false makes that area inactive again. The staging test apps are built with `MUSRIDE_ALLOW_KENYAN_PHONES=true`; store builds never are.
+
+A number without +254 is always read as Ethiopian, because 07… numbers exist in both countries. Prices, currency (ETB), SMS wording and legal texts stay Jijiga's: this mode is for testing the app flow, not for running a Kenyan service. Real SMS to Kenyan numbers would need an SMS provider that sends to Kenya (staging uses the server log, so this doesn't matter yet).

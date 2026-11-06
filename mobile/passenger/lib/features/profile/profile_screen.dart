@@ -53,10 +53,11 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen> {
 
   Future<void> _save() async {
     final contact = _contact.text.trim();
-    if (contact.isNotEmpty && normalizeEthiopianMobile(contact) == null) {
+    if (contact.isNotEmpty &&
+        normalizeMobile(contact, allowKenya: MusrideConfig.allowKenyanPhones) == null) {
       showError(
         context,
-        const ApiException(400, 'INVALID_PHONE', 'Enter a valid Ethiopian mobile number.'),
+        ApiException(400, 'INVALID_PHONE', MusrideConfig.phoneHint),
       );
       return;
     }

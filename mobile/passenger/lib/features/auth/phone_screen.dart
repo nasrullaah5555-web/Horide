@@ -28,9 +28,9 @@ class _PhoneScreenState extends ConsumerState<PhoneScreen> {
   }
 
   Future<void> _submit() async {
-    final e164 = normalizeEthiopianMobile(_phone.text);
+    final e164 = normalizeMobile(_phone.text, allowKenya: MusrideConfig.allowKenyanPhones);
     if (e164 == null) {
-      setState(() => _error = 'Enter an Ethiopian mobile number, for example 0911 234 567.');
+      setState(() => _error = MusrideConfig.phoneHint);
       return;
     }
     setState(() {

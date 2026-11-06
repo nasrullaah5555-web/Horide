@@ -23,6 +23,18 @@ const JIJIGA_DEV_RING: [number, number][] = [
   [42.74, 9.3],
 ];
 
+export const KENYA_TEST_ZONE_NAME = 'Nairobi (TEST only)';
+
+// Test-only area covering Nairobi (CBD, Westlands, Kilimani, Karen, Eastlands, JKIA, Ruaka),
+// used when KENYA_TEST_MODE=true so the apps can be tried in Kenya before Jijiga.
+const NAIROBI_TEST_RING: [number, number][] = [
+  [36.65, -1.45],
+  [37.1, -1.45],
+  [37.1, -1.1],
+  [36.65, -1.1],
+  [36.65, -1.45],
+];
+
 const DEV_FARES: Record<
   VehicleCategory,
   { base: number; perKm: number; minimum: number; rounding: number }
@@ -76,6 +88,28 @@ export async function seedDevelopment(db: Kysely<DB>): Promise<void> {
   });
 }
 
+/**
+ * Turns the Nairobi test area on or off to match KENYA_TEST_MODE. Turning the setting off makes
+ * the area inactive (trips there are refused again); it is never deleted, so old test trips keep
+ * their zone.
+ */
+export async function syncKenyaTestZone(db: Kysely<DB>, enabled: boolean): Promise<void> {
+  if (enabled) {
+    const wkt = `POLYGON((${NAIROBI_TEST_RING.map(([lng, lat]) => `${lng} ${lat}`).join(', ')}))`;
+    await db
+      .insertInto('service_zones')
+      .values({ name: KENYA_TEST_ZONE_NAME, area: sql`ST_GeogFromText(${wkt})` })
+      .onConflict((oc) => oc.column('name').doUpdateSet({ active: true }))
+      .execute();
+  } else {
+    await db
+      .updateTable('service_zones')
+      .set({ active: false })
+      .where('name', '=', KENYA_TEST_ZONE_NAME)
+      .execute();
+  }
+}
+
 async function main(): Promise<void> {
   const config = loadConfig();
   if (config.NODE_ENV === 'production') {
@@ -88,7 +122,12 @@ async function main(): Promise<void> {
   });
   try {
     await seedDevelopment(db);
-    console.log('Development seed loaded (zone, illustrative fares, DEV plan).');
+    await syncKenyaTestZone(db, config.KENYA_TEST_MODE);
+    console.log(
+      `Development seed loaded (zone, illustrative fares, DEV plan). Nairobi test area: ${
+        config.KENYA_TEST_MODE ? 'on' : 'off'
+      }.`,
+    );
   } finally {
     await db.destroy();
   }

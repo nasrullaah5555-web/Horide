@@ -6,7 +6,7 @@ import { APP_CONFIG } from '../../config/config.module';
 import type { AppConfig } from '../../config/env';
 import { DATABASE } from '../../database/database.module';
 import type { DB } from '../../database/types';
-import { maskPhone, normalizeEthiopianMobile } from './phone';
+import { maskPhone, normalizeMobile } from './phone';
 import { SMS_PROVIDER, type SmsProvider } from './sms/sms.provider';
 import { hashOtp, safeEqualHex } from './tokens';
 
@@ -35,12 +35,14 @@ export class OtpService {
   ) {}
 
   async request(rawPhone: string, ip: string | null): Promise<OtpRequestResult> {
-    const phone = normalizeEthiopianMobile(rawPhone);
+    const phone = normalizeMobile(rawPhone, this.config.KENYA_TEST_MODE);
     if (!phone) {
       throw new AppError(
         HttpStatus.BAD_REQUEST,
         'INVALID_PHONE',
-        'Enter a valid Ethiopian mobile number.',
+        this.config.KENYA_TEST_MODE
+          ? 'Enter a valid Ethiopian mobile number, or a Kenyan one starting +254.'
+          : 'Enter a valid Ethiopian mobile number.',
       );
     }
 

@@ -18,6 +18,21 @@ void main() {
     });
   });
 
+  group('normalizeMobile with Kenyan test numbers (same cases as the backend)', () {
+    test('+254 numbers only when allowed', () {
+      expect(normalizeMobile('+254 712 345 678', allowKenya: true), '+254712345678');
+      expect(normalizeMobile('254110123456', allowKenya: true), '+254110123456');
+      expect(normalizeMobile('+254712345678', allowKenya: false), isNull);
+    });
+    test('without +254 a number stays Ethiopian', () {
+      expect(normalizeMobile('0712345678', allowKenya: true), '+251712345678');
+    });
+    test('rejects malformed Kenyan numbers', () {
+      expect(normalizeMobile('+254812345678', allowKenya: true), isNull);
+      expect(normalizeMobile('+25471234567', allowKenya: true), isNull);
+    });
+  });
+
   group('normalizeEthiopianMobile (same cases as the backend)', () {
     const valid = {
       '0911234567': '+251911234567',

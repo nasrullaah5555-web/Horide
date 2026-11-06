@@ -41,6 +41,9 @@ export const envSchema = z
     // Staging only: creates this super admin at startup when there are no admins yet, and prints
     // its one-time sign-in details to the server log (hosts without a shell, e.g. Render free).
     STAGING_BOOTSTRAP_ADMIN_EMAIL: z.string().email().optional(),
+    // Test-only: accept Kenyan numbers (+254 written in full) and add a Nairobi test service
+    // area, so the apps can be tried in Kenya before Jijiga. Refused in production.
+    KENYA_TEST_MODE: boolFromString,
     // Connections per API instance. Keep (instances × this) under the database plan's limit.
     DATABASE_POOL_MAX: z.coerce.number().int().min(2).max(100).default(10),
     CORS_ORIGINS: z
@@ -141,6 +144,13 @@ export const envSchema = z
           });
         }
       }
+    }
+    if (env.KENYA_TEST_MODE && env.NODE_ENV === 'production') {
+      ctx.addIssue({
+        code: 'custom',
+        path: ['KENYA_TEST_MODE'],
+        message: 'not allowed in production (test deployments only)',
+      });
     }
     if (env.STAGING_BOOTSTRAP_ADMIN_EMAIL && env.NODE_ENV !== 'staging') {
       ctx.addIssue({

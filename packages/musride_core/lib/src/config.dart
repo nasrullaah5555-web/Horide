@@ -29,6 +29,16 @@ class MusrideConfig {
     return null;
   }
 
+  /// Test builds only (the staging workflow sets it): also accept Kenyan numbers written with +254.
+  /// The server must have KENYA_TEST_MODE on as well; release builds for the stores never set this.
+  static const bool allowKenyanPhones = bool.fromEnvironment('MUSRIDE_ALLOW_KENYAN_PHONES');
+
+  /// What to tell someone whose number was refused.
+  static String get phoneHint =>
+      allowKenyanPhones
+          ? 'Enter an Ethiopian number (0911 234 567) or a Kenyan one starting +254.'
+          : 'Enter an Ethiopian mobile number, for example 0911 234 567.';
+
   /// Jijiga city centre, used to centre maps before the phone has a GPS fix.
   static const double jijigaLat = 9.3505;
   static const double jijigaLng = 42.7979;

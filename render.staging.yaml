@@ -57,6 +57,10 @@ services:
         value: /tmp/musride-documents
       - key: PUSH_PROVIDER
         value: log
+      # Test only: Kenyan +254 numbers and a Nairobi test area, so the apps can be tried in Kenya.
+      # Set to "false" to go back to Jijiga only. Never set in render.yaml (production refuses it).
+      - key: KENYA_TEST_MODE
+        value: 'true'
 
   - type: web
     name: musride-staging-admin

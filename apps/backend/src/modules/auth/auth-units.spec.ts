@@ -1,7 +1,27 @@
-import { maskPhone, normalizeEthiopianMobile } from './phone';
+import { maskPhone, normalizeEthiopianMobile, normalizeMobile } from './phone';
 import { hashOtp, safeEqualHex, signAccessToken, verifyAccessToken } from './tokens';
 
 const SECRET = 'unit-test-secret-0123456789abcdef0123456789';
+
+describe('normalizeMobile (KENYA_TEST_MODE)', () => {
+  it.each([
+    ['+254712345678', '+254712345678'],
+    ['254 712 345 678', '+254712345678'],
+    ['+254110123456', '+254110123456'],
+  ])('Kenyan %s is accepted only when allowed', (input, expected) => {
+    expect(normalizeMobile(input, true)).toBe(expected);
+    expect(normalizeMobile(input, false)).toBeNull();
+  });
+
+  it('a number without a country code stays Ethiopian even in Kenya test mode', () => {
+    // 07… is valid in both countries; without +254 it is Safaricom Ethiopia.
+    expect(normalizeMobile('0712345678', true)).toBe('+251712345678');
+  });
+
+  it.each(['+254812345678', '+25471234567', '+2547123456789'])('rejects %s', (input) => {
+    expect(normalizeMobile(input, true)).toBeNull();
+  });
+});
 
 describe('normalizeEthiopianMobile', () => {
   it.each([

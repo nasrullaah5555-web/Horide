@@ -20,7 +20,9 @@ import { ZodValidationPipe } from '../../common/zod-validation.pipe';
 import { DATABASE } from '../../database/database.module';
 import type { DB } from '../../database/types';
 import { type AuthUser, CurrentUser, Roles, UserAuthGuard } from '../auth/auth.guard';
-import { normalizeEthiopianMobile } from '../auth/phone';
+import { normalizeMobile } from '../auth/phone';
+import { APP_CONFIG } from '../../config/config.module';
+import type { AppConfig } from '../../config/env';
 import { AccountService } from './account.service';
 
 export const MAX_SAVED_LOCATIONS = 10;
@@ -42,6 +44,7 @@ export class PassengerController {
   constructor(
     @Inject(DATABASE) private readonly db: Kysely<DB>,
     private readonly accounts: AccountService,
+    @Inject(APP_CONFIG) private readonly config: AppConfig,
   ) {}
 
   @Get('profile')
@@ -65,12 +68,14 @@ export class PassengerController {
       emergency =
         body.emergencyContactPhone === null
           ? null
-          : normalizeEthiopianMobile(body.emergencyContactPhone);
+          : normalizeMobile(body.emergencyContactPhone, this.config.KENYA_TEST_MODE);
       if (emergency === null && body.emergencyContactPhone !== null) {
         throw new AppError(
           HttpStatus.BAD_REQUEST,
           'INVALID_PHONE',
-          'Enter a valid Ethiopian mobile number.',
+          this.config.KENYA_TEST_MODE
+            ? 'Enter a valid Ethiopian mobile number, or a Kenyan one starting +254.'
+            : 'Enter a valid Ethiopian mobile number.',
         );
       }
     }

@@ -212,3 +212,21 @@ class DriverApi {
 }
 
 final driverApiProvider = Provider<DriverApi>((ref) => DriverApi(ref.watch(apiClientProvider)));
+
+/// The driver's recent trips (Trips tab, and today's total on the Drive tab).
+final driverHistoryProvider = FutureProvider.autoDispose<List<DriverTripSummary>>(
+  (ref) => ref.watch(driverApiProvider).history(),
+);
+
+/// Completed trips since midnight (phone time) and what passengers paid for them, in santim.
+({int trips, BigInt santim}) todaysEarnings(List<DriverTripSummary> trips, {DateTime? now}) {
+  final n = now ?? DateTime.now();
+  final midnight = DateTime(n.year, n.month, n.day);
+  final done = trips.where(
+    (t) => t.status == TripStatus.completed && !t.requestedAt.toLocal().isBefore(midnight),
+  );
+  return (
+    trips: done.length,
+    santim: done.fold(BigInt.zero, (sum, t) => sum + BigInt.parse(t.finalFare ?? '0')),
+  );
+}

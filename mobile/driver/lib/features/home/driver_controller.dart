@@ -158,6 +158,7 @@ class DriverController extends Notifier<DriverState> {
   }
 
   void closeTrip() {
+    ref.invalidate(driverHistoryProvider); // today's total on the Drive tab includes this trip
     state = state.copyWith(clearTrip: true);
     _syncReporter();
     unawaited(refresh());

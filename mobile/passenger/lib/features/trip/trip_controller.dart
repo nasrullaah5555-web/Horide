@@ -81,9 +81,7 @@ class ActiveTripController extends AsyncNotifier<Trip?> {
       final lat = (e.data['lat'] as num).toDouble();
       final lng = (e.data['lng'] as num).toDouble();
       state = AsyncData(
-        current.withDriverLocation(
-          DriverLocation(point: LatLngPoint(lat, lng), ageSeconds: 0),
-        ),
+        current.withDriverLocation(DriverLocation(point: LatLngPoint(lat, lng), ageSeconds: 0)),
       );
     }
   }

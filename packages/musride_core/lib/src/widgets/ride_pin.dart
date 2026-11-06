@@ -14,10 +14,7 @@ class RidePinCard extends StatelessWidget {
       label: 'Ride PIN ${pin.split('').join(' ')}. Tell your driver when you get in.',
       excludeSemantics: true,
       child: Container(
-        padding: const EdgeInsets.symmetric(
-          horizontal: MusrideSpace.lg,
-          vertical: MusrideSpace.md,
-        ),
+        padding: const EdgeInsets.symmetric(horizontal: MusrideSpace.lg, vertical: MusrideSpace.md),
         decoration: BoxDecoration(
           color: MusrideColors.signSoft,
           border: Border.all(color: MusrideColors.sign, width: MusrideStroke.control),
@@ -33,10 +30,7 @@ class RidePinCard extends StatelessWidget {
                 children: [
                   Text(
                     'Ride PIN',
-                    style: TextStyle(
-                      color: MusrideColors.navy,
-                      fontWeight: MusrideFontWeight.bold,
-                    ),
+                    style: TextStyle(color: MusrideColors.navy, fontWeight: MusrideFontWeight.bold),
                   ),
                   Text(
                     'Tell your driver when you get in',

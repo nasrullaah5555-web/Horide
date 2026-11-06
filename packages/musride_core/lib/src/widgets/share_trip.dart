@@ -42,7 +42,12 @@ Future<void> showShareTripSheet(BuildContext context, String url) {
                 title: const Text('Telegram'),
                 onTap: () {
                   Navigator.pop(sheet);
-                  open(Uri.https('t.me', '/share/url', {'url': url, 'text': 'Follow my Musride trip live'}));
+                  open(
+                    Uri.https('t.me', '/share/url', {
+                      'url': url,
+                      'text': 'Follow my Musride trip live',
+                    }),
+                  );
                 },
               ),
               ListTile(

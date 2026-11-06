@@ -61,7 +61,9 @@ export function SessionProvider({ children }: { children: ReactNode }) {
     return (
       <div className="grid min-h-screen place-items-center px-4">
         <div role="alert" className="max-w-md text-center">
-          <p className="text-body font-semibold text-navy">The Musride server could not be reached.</p>
+          <p className="text-body font-semibold text-navy">
+            The Musride server could not be reached.
+          </p>
           <p className="mt-2 text-muted">
             It may be starting up (this can take up to a minute) or your connection dropped.
           </p>

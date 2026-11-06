@@ -106,3 +106,9 @@ Consequences: a look change is one edit plus `pnpm tokens`. Some spacing values 
 Decision by the owner. Everything in the repository now uses Musride: app names ("Musride", "Musride Driver"), website, staff console, SMS and notification texts, app IDs (`et.musride.passenger`, `et.musride.driver` — not yet published, so still changeable), code names (`musride_core`, `MusrideButton`, `@musride/*`), environment variables (`MUSRIDE_API_URL`, `MUSRIDE_KEYSTORE_*`), local database names, and docs. Earlier commit messages keep the old name.
 
 Not renamed here (owner actions): the GitHub repository (`nasrullaah5555-web/Horide`; GitHub redirects after a rename), the Claude project name, and anything already created outside the repository. The launcher icons use a temporary "M" sign until the owner's logo arrives.
+
+## ADR-020 A super admin may give themselves other staff roles (2026-11-06)
+
+Decision by the owner, so a small team can run Musride from one account. A super admin can add or remove their own Support, Verification, Finance and Operations roles from Staff accounts; the console reloads to show the new menu. Two rules stay: nobody can remove their own Super role (so the company is never left without someone able to manage staff), and nobody can disable their own account. Every role change, including your own, is written to the audit log with who made it.
+
+Trade-off accepted by the owner: separation of duties now depends on who is given Super, not on the software. One person holding Super can reach driver documents and money records. Keep the number of Super accounts small, and review `admin.roles_changed` in the audit log regularly.

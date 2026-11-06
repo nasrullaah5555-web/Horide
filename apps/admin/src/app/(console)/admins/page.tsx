@@ -43,7 +43,16 @@ interface Created {
   otpauthUrl: string;
 }
 
-function RolePicker({ value, onChange }: { value: Role[]; onChange: (r: Role[]) => void }) {
+function RolePicker({
+  value,
+  onChange,
+  locked = [],
+}: {
+  value: Role[];
+  onChange: (r: Role[]) => void;
+  /** Roles shown ticked that can't be removed here (your own Super role). */
+  locked?: Role[];
+}) {
   return (
     <fieldset className="space-y-2">
       <legend className="mb-1 font-semibold">Roles</legend>
@@ -53,6 +62,7 @@ function RolePicker({ value, onChange }: { value: Role[]; onChange: (r: Role[]) 
             type="checkbox"
             className="mt-1 h-4 w-4 accent-navy"
             checked={value.includes(r)}
+            disabled={locked.includes(r)}
             onChange={(e) =>
               onChange(e.target.checked ? [...value, r] : value.filter((x) => x !== r))
             }
@@ -158,12 +168,6 @@ export default function StaffPage() {
                     <StatusBadge status={a.status} />
                     <span>{a.roles.map(humanize).join(', ') || 'No roles'}</span>
                   </p>
-                  {a.id === admin.id && (
-                    <p className="mt-2 max-w-prose text-small text-muted">
-                      You can&apos;t change your own roles. For work on drivers, payments or prices,
-                      add a separate staff account with those roles, or ask another super admin.
-                    </p>
-                  )}
                   {editing?.id === a.id && (
                     <form
                       className="mt-4 space-y-3"
@@ -175,7 +179,9 @@ export default function StaffPage() {
                             body: { roles: editing.roles },
                           });
                           setEditing(null);
-                          await reload();
+                          // Your own new roles change the menu, which is loaded once per page.
+                          if (a.id === admin.id) window.location.reload();
+                          else await reload();
                         } catch (err) {
                           setFormError(err instanceof ApiError ? err : new Error('Failed.'));
                         }
@@ -184,6 +190,7 @@ export default function StaffPage() {
                       <RolePicker
                         value={editing.roles}
                         onChange={(roles) => setEditing({ id: a.id, roles })}
+                        locked={a.id === admin.id ? ['super'] : []}
                       />
                       <div className="flex gap-2">
                         <Button type="submit" disabled={!editing.roles.length}>
@@ -194,12 +201,14 @@ export default function StaffPage() {
                         </Button>
                       </div>
                       <p className="text-small text-muted">
-                        The person is signed out and gets the new roles when they sign in again.
+                        {a.id === admin.id
+                          ? 'The page reloads to show your new menu. The change is recorded in the audit log.'
+                          : 'The new roles apply to their next action. The change is recorded in the audit log.'}
                       </p>
                     </form>
                   )}
                 </div>
-                {write && a.id !== admin.id && !editing && (
+                {write && !editing && (
                   <div className="flex gap-2">
                     <Button
                       variant="secondary"
@@ -207,7 +216,7 @@ export default function StaffPage() {
                     >
                       Change roles
                     </Button>
-                    {a.status === 'active' ? (
+                    {a.id === admin.id ? null : a.status === 'active' ? (
                       <ConfirmAction
                         label="Disable"
                         title={`Disable ${a.full_name}?`}

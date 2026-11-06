@@ -3,8 +3,8 @@ import type { AdminRole } from '../../database/types';
 /**
  * What each admin role may do. Deny by default: a permission not listed is not granted.
  * Roles combine (an admin with support + finance gets both sets), but no role implies another.
- * Note: super admins manage admin accounts and read the audit log, but do NOT automatically
- * see driver identity documents — that needs the verification role (least privilege).
+ * Note: the super role itself manages staff and reads the audit log; it does not include driver
+ * documents or money. A super admin who needs those adds the role to themselves (ADR-020).
  */
 export const PERMISSIONS = [
   'users.read',

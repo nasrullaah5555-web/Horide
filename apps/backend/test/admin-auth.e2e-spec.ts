@@ -200,19 +200,37 @@ describe('Admin authentication and permissions (e2e)', () => {
       expect(logs.body.entries[0].actor_id).toBe(s.id);
     });
 
-    it('a super admin cannot change their own roles or disable themselves', async () => {
+    it('a super admin can add roles to themselves but not remove their own super role', async () => {
       const s = await adminLogin(t, ['super']);
-      // Neither removing super nor adding powers (self-escalation) is allowed.
-      for (const roles of [['support'], ['super', 'finance', 'verification']]) {
-        const res = await t
-          .http()
-          .put(`/admin/admins/${s.id}/roles`)
-          .set('Cookie', s.cookie)
-          .set('X-CSRF-Token', s.csrf)
-          .send({ roles })
-          .expect(400);
-        expect(res.body.error.code).toBe('CANNOT_CHANGE_OWN_ROLES');
-      }
+      const res = await t
+        .http()
+        .put(`/admin/admins/${s.id}/roles`)
+        .set('Cookie', s.cookie)
+        .set('X-CSRF-Token', s.csrf)
+        .send({ roles: ['support'] })
+        .expect(400);
+      expect(res.body.error.code).toBe('CANNOT_REMOVE_OWN_SUPER');
+      await t
+        .http()
+        .put(`/admin/admins/${s.id}/roles`)
+        .set('Cookie', s.cookie)
+        .set('X-CSRF-Token', s.csrf)
+        .send({ roles: ['super', 'verification', 'finance'] })
+        .expect(204);
+      // The new roles apply on the next request (roles are read for every request) and are audited.
+      const me = await t.http().get('/admin/auth/me').set('Cookie', s.cookie).expect(200);
+      expect(me.body.roles.sort()).toEqual(['finance', 'super', 'verification']);
+      const audit = await t.db
+        .selectFrom('audit_logs')
+        .select(['actor_id', 'entity_id'])
+        .where('action', '=', 'admin.roles_changed')
+        .where('entity_id', '=', s.id)
+        .execute();
+      expect(audit).toEqual([{ actor_id: s.id, entity_id: s.id }]);
+    });
+
+    it('a super admin cannot disable themselves', async () => {
+      const s = await adminLogin(t, ['super']);
       await t
         .http()
         .post(`/admin/admins/${s.id}/disable`)

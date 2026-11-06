@@ -90,14 +90,14 @@ export class AdminAccountsService {
   }
 
   async setRoles(adminId: string, roles: AdminRole[], actor: { id: string; ip: string | null }) {
-    // Nobody changes their own roles: a super admin giving themselves finance or verification
-    // would defeat the separation of duties, and removing their own super role could leave no
-    // one able to manage staff. Another super admin makes the change.
-    if (adminId === actor.id) {
+    // Owner decision (2026-11-06): a super admin may give themselves other roles, so a small team
+    // can work from one account. Every change is in the audit log. Removing your own super role
+    // is still refused, so the company can't be left with nobody able to manage staff.
+    if (adminId === actor.id && !roles.includes('super')) {
       throw new AppError(
         HttpStatus.BAD_REQUEST,
-        'CANNOT_CHANGE_OWN_ROLES',
-        'You cannot change your own roles. Ask another super admin.',
+        'CANNOT_REMOVE_OWN_SUPER',
+        'You cannot remove your own super admin role.',
       );
     }
     await this.db.transaction().execute(async (trx) => {

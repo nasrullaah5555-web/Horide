@@ -39,10 +39,25 @@ export const EMERGENCY_NUMBERS = [
   { service: 'Traffic police', number: '945' },
 ] as const;
 
-const ratingSchema = z.strictObject({
-  stars: z.number().int().min(1).max(5),
-  comment: z.string().trim().max(500).optional(),
-});
+export const COMPLIMENTS = [
+  'clean_car',
+  'safe_driving',
+  'on_time',
+  'friendly',
+  'knows_the_way',
+] as const;
+
+const ratingSchema = z
+  .strictObject({
+    stars: z.number().int().min(1).max(5),
+    comment: z.string().trim().max(500).optional(),
+    // Passengers only, and only with 4 or 5 stars (migration 0009).
+    compliments: z.array(z.enum(COMPLIMENTS)).max(5).optional(),
+  })
+  .refine((b) => !b.compliments?.length || b.stars >= 4, {
+    path: ['compliments'],
+    message: 'Compliments go with 4 or 5 stars.',
+  });
 const complaintSchema = z.strictObject({
   tripId: z.string().uuid().optional(),
   category: z.enum(['safety', 'payment', 'behaviour', 'vehicle', 'app', 'other']),
@@ -102,6 +117,13 @@ export class FeedbackController {
         );
       }
       const rateeId = user.role === 'passenger' ? trip.driver_id : trip.passenger_id;
+      if (user.role === 'driver' && body.compliments?.length) {
+        throw new AppError(
+          HttpStatus.BAD_REQUEST,
+          'COMPLIMENTS_FOR_DRIVERS_ONLY',
+          'Compliments are for drivers.',
+        );
+      }
       const inserted = await trx
         .insertInto('ratings')
         .values({
@@ -110,6 +132,7 @@ export class FeedbackController {
           ratee_id: rateeId,
           stars: body.stars,
           comment: body.comment ?? null,
+          compliments: [...new Set(body.compliments ?? [])],
         })
         .onConflict((oc) => oc.columns(['trip_id', 'rater_id']).doNothing())
         .returning('id')

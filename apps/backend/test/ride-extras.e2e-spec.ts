@@ -314,6 +314,27 @@ describe('Destination change, payments, ratings, complaints, emergencies (e2e)',
       expect(profile).toEqual({ rating_avg: '5.00', rating_count: 1 });
     });
 
+    it('passengers can add compliments with 4 or 5 stars; the driver sees the counts', async () => {
+      const a = await trip('completed');
+      const rate = (body: object, token = a.p.accessToken) =>
+        t.http().post(`/trips/${a.id}/rating`).set(bearer(token)).send(body);
+      await rate({ stars: 3, compliments: ['on_time'] }).expect(400); // only with 4–5 stars
+      await rate({ stars: 5, compliments: ['free_ride'] }).expect(400); // only listed ones
+      await rate({ stars: 2, compliments: ['friendly'] }, a.d.token).expect(400);
+      await rate({ stars: 5, compliments: ['clean_car', 'safe_driving', 'clean_car'] }).expect(201);
+      await rate({ stars: 4 }, a.d.token).expect(201); // drivers rate passengers without compliments
+
+      const b = await trip('completed');
+      // Each trip has its own driver: b's driver has no compliments.
+      const profileA = await t.http().get('/driver/profile').set(bearer(a.d.token)).expect(200);
+      expect(profileA.body.compliments).toEqual([
+        { tag: 'clean_car', count: 1 },
+        { tag: 'safe_driving', count: 1 },
+      ]);
+      const profileB = await t.http().get('/driver/profile').set(bearer(b.d.token)).expect(200);
+      expect(profileB.body.compliments).toEqual([]);
+    });
+
     it('cannot rate an unfinished trip or a stranger’s trip', async () => {
       const { id, p } = await trip('in_progress');
       await t

@@ -19,6 +19,7 @@ class TripFinishedScreen extends ConsumerStatefulWidget {
 class _TripFinishedScreenState extends ConsumerState<TripFinishedScreen> {
   Receipt? _receipt;
   int _stars = 0;
+  final _compliments = <String>{};
   final _comment = TextEditingController();
   bool _rated = false;
   bool _confirmed = false; // the receipt status stays 'pending' until the driver also records
@@ -175,20 +176,46 @@ class _TripFinishedScreenState extends ConsumerState<TripFinishedScreen> {
             )
           else ...[
             StarRating(value: _stars, onChanged: (i) => setState(() => _stars = i)),
+            if (_stars >= 4) ...[
+              const Gap(MusrideSpace.sm),
+              const HintText('What did you like? (optional)'),
+              const Gap(MusrideSpace.xs),
+              Wrap(
+                spacing: MusrideSpace.sm,
+                runSpacing: MusrideSpace.sm,
+                children: [
+                  for (final e in complimentLabels.entries)
+                    FilterChip(
+                      label: Text(e.value),
+                      selected: _compliments.contains(e.key),
+                      onSelected:
+                          (on) => setState(
+                            () => on ? _compliments.add(e.key) : _compliments.remove(e.key),
+                          ),
+                    ),
+                ],
+              ),
+            ],
             TextField(
               controller: _comment,
               maxLength: 500,
               decoration: const InputDecoration(hintText: 'Comment (optional)'),
             ),
-            FilledButton.tonal(
+            MusrideButton(
+              kind: MusrideButtonKind.secondary,
+              label: 'Send rating',
               onPressed:
                   _busy || _stars == 0
                       ? null
                       : () => _do((api) async {
-                        await api.rate(trip.id, _stars, _comment.text.trim());
+                        await api.rate(
+                          trip.id,
+                          _stars,
+                          _comment.text.trim(),
+                          compliments: _compliments,
+                        );
                         if (mounted) setState(() => _rated = true);
                       }),
-              child: const Text('Send rating'),
             ),
           ],
           const Gap(MusrideSpace.xl),

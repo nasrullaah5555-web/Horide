@@ -381,6 +381,7 @@ export interface RatingsTable {
   ratee_id: string;
   stars: number;
   comment: string | null;
+  compliments: Generated<string[]>;
   created_at: CreatedAt;
 }
 

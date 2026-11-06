@@ -1,3 +1,6 @@
+import { MARKETS } from '../../common/market';
+import { APP_CONFIG } from '../../config/config.module';
+import type { AppConfig } from '../../config/env';
 import { RateLimit } from '../../common/rate-limit';
 import {
   Body,
@@ -32,12 +35,6 @@ import { type AuthUser, CurrentUser, Roles, UserAuthGuard } from '../auth/auth.g
  * Source: Wikipedia "List of emergency telephone numbers" (checked 2026-11-05). Confirm locally
  * in Jijiga before launch (OWNER_ACTION_REGISTER OA-19).
  */
-export const EMERGENCY_NUMBERS = [
-  { service: 'Police', number: '991' },
-  { service: 'Ambulance', number: '907' },
-  { service: 'Fire', number: '939' },
-  { service: 'Traffic police', number: '945' },
-] as const;
 
 export const COMPLIMENTS = [
   'clean_car',
@@ -89,6 +86,7 @@ export class FeedbackController {
   constructor(
     @Inject(DATABASE) private readonly db: Kysely<DB>,
     private readonly audit: AuditService,
+    @Inject(APP_CONFIG) private readonly config: AppConfig,
   ) {}
 
   /** Passenger rates the driver, or driver rates the passenger, once per completed trip. */
@@ -264,7 +262,14 @@ export class FeedbackController {
       .returning(['id', 'created_at'])
       .executeTakeFirstOrThrow();
     this.logger.error({ emergencyId: event.id, tripId, role: user.role }, 'EMERGENCY ALERT raised');
-    return { id: event.id, createdAt: event.created_at, emergencyNumbers: EMERGENCY_NUMBERS };
+    return {
+      id: event.id,
+      createdAt: event.created_at,
+      emergencyNumbers: MARKETS[this.config.MARKET].emergency.map((e) => ({
+        service: e.label,
+        number: e.number,
+      })),
+    };
   }
 
   @Get('admin/complaints')

@@ -1,5 +1,6 @@
 import Link from 'next/link';
 import { Footer, Header } from '@/components/site';
+import { market } from '@/lib/market';
 
 const points = [
   {
@@ -8,7 +9,7 @@ const points = [
   },
   {
     title: 'Pay the driver directly',
-    text: 'Pay in cash or by eBirr, straight to the driver. Musride does not hold your money and there is no wallet to top up.',
+    text: `Pay in ${market.payBy}, straight to the driver. Musride does not hold your money and there is no wallet to top up.`,
   },
   {
     title: 'Know who is coming',
@@ -28,7 +29,7 @@ export default function Home() {
         <section className="bg-navy text-white">
           <div className="mx-auto grid max-w-5xl gap-10 px-4 py-16 md:grid-cols-[1.3fr_1fr] md:items-center">
             <div>
-              <p className="font-bold uppercase tracking-widest text-sign">Jijiga</p>
+              <p className="font-bold uppercase tracking-widest text-sign">{market.city}</p>
               <h1 className="mt-2 text-hero font-extrabold leading-tight tracking-tight">
                 A car or Bajaj,
                 <br />

@@ -1,5 +1,6 @@
 import type { Metadata } from 'next';
 import { Page } from '@/components/site';
+import { market } from '@/lib/market';
 
 export const metadata: Metadata = { title: 'How it works' };
 
@@ -14,7 +15,7 @@ const steps = [
     'Musride shows the fare for a car and for a Bajaj, worked out from the road distance.',
   ],
   [
-    'Choose cash or eBirr',
+    `Choose ${market.payBy}`,
     'This tells the driver how you will pay. You pay the driver, not Musride.',
   ],
   [
@@ -56,7 +57,7 @@ export default function HowItWorks() {
       <h2 className="mt-8 text-headline font-extrabold">Prices</h2>
       <p className="mt-2 text-navy-soft">
         Each fare is a starting amount plus a price per kilometre of road, different for cars and
-        Bajaj. The prices for Jijiga will be published here before launch.
+        Bajaj. The prices for {market.city} will be published here before launch.
       </p>
     </Page>
   );

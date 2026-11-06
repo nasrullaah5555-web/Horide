@@ -4,6 +4,7 @@ import 'leaflet/dist/leaflet.css';
 import L from 'leaflet';
 import { useEffect, useRef } from 'react';
 import { colors } from '@/lib/tokens.g';
+import { market } from '@/lib/market';
 
 export interface MapDriver {
   driver_id: string;
@@ -22,8 +23,6 @@ export interface MapZone {
   active: boolean;
   geojson: GeoJSON.Polygon;
 }
-
-const JIJIGA: L.LatLngExpression = [9.35, 42.8];
 
 /** Colours: sign green = free and live, navy = on a ride, grey = position is stale. */
 function style(d: MapDriver): L.CircleMarkerOptions {
@@ -51,7 +50,11 @@ export default function LiveMap({
 
   useEffect(() => {
     if (!el.current || map.current) return;
-    map.current = L.map(el.current, { center: JIJIGA, zoom: 14, scrollWheelZoom: true });
+    map.current = L.map(el.current, {
+      center: [market.centre.lat, market.centre.lng],
+      zoom: 14,
+      scrollWheelZoom: true,
+    });
     L.tileLayer('https://tile.openstreetmap.org/{z}/{x}/{y}.png', {
       maxZoom: 19,
       attribution:
@@ -103,7 +106,7 @@ export default function LiveMap({
       style={{ height }}
       className="w-full overflow-hidden rounded-control ring-1 ring-line"
       role="application"
-      aria-label="Map of Jijiga"
+      aria-label={`Map of ${market.city}`}
     />
   );
 }

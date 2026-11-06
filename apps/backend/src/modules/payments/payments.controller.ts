@@ -24,14 +24,20 @@ import { AdminGuard, CurrentAdmin, RequirePermission } from '../admin-auth/admin
 import { AuditService } from '../audit/audit.service';
 import { type AuthUser, CurrentUser, Roles, UserAuthGuard } from '../auth/auth.guard';
 import { formatEtb } from '../pricing/fare-engine';
+import { APP_CONFIG } from '../../config/config.module';
+import type { AppConfig } from '../../config/env';
+import { assertPaymentMethod, assertReference, MARKETS } from '../../common/market';
 
+const reference = z
+  .string()
+  .trim()
+  .regex(/^[A-Za-z0-9-]{4,40}$/, 'letters, numbers and dashes only')
+  .optional();
 const recordSchema = z.strictObject({
-  method: z.enum(['cash', 'ebirr']),
-  ebirrReference: z
-    .string()
-    .trim()
-    .regex(/^[A-Za-z0-9-]{4,40}$/, 'letters, numbers and dashes only')
-    .optional(),
+  method: z.enum(['cash', 'ebirr', 'mpesa']),
+  // `reference` for any method; `ebirrReference` kept for older app versions.
+  reference,
+  ebirrReference: reference,
 });
 const disputeSchema = z.strictObject({ note: z.string().trim().min(5).max(500) });
 const resolveSchema = z.strictObject({ note: z.string().trim().min(5).max(500) });
@@ -51,6 +57,7 @@ export class PaymentsController {
   constructor(
     @Inject(DATABASE) private readonly db: Kysely<DB>,
     private readonly audit: AuditService,
+    @Inject(APP_CONFIG) private readonly config: AppConfig,
   ) {}
 
   /** Driver: "I received the payment" (and how). */
@@ -63,20 +70,9 @@ export class PaymentsController {
     @Param('id', ParseUUIDPipe) tripId: string,
     @Body(new ZodValidationPipe(recordSchema)) body: z.infer<typeof recordSchema>,
   ) {
-    if (body.method === 'ebirr' && !body.ebirrReference) {
-      throw new AppError(
-        HttpStatus.BAD_REQUEST,
-        'REFERENCE_REQUIRED',
-        'Enter the eBirr transaction reference.',
-      );
-    }
-    if (body.method === 'cash' && body.ebirrReference) {
-      throw new AppError(
-        HttpStatus.BAD_REQUEST,
-        'REFERENCE_NOT_ALLOWED',
-        'Cash payments have no reference.',
-      );
-    }
+    const ref = body.reference ?? body.ebirrReference;
+    assertPaymentMethod(MARKETS[this.config.MARKET], body.method);
+    assertReference(body.method, ref);
     await this.db.transaction().execute(async (trx) => {
       const payment = await this.paymentForParty(trx, tripId, 'driver', user.id);
       this.assertNotResolved(payment.status);
@@ -85,7 +81,7 @@ export class PaymentsController {
         .updateTable('payments')
         .set({
           method: body.method,
-          ebirr_reference: body.ebirrReference ?? null,
+          ebirr_reference: ref ?? null,
           driver_recorded_at: sql`now()`,
           status: await this.nextStatus(trx, payment.id),
         })

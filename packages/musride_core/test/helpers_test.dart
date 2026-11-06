@@ -18,18 +18,47 @@ void main() {
     });
   });
 
-  group('normalizeMobile with Kenyan test numbers (same cases as the backend)', () {
-    test('+254 numbers only when allowed', () {
-      expect(normalizeMobile('+254 712 345 678', allowKenya: true), '+254712345678');
-      expect(normalizeMobile('254110123456', allowKenya: true), '+254110123456');
-      expect(normalizeMobile('+254712345678', allowKenya: false), isNull);
+  group('normalizeMobile per market (same cases as the backend)', () {
+    test('Nairobi reads local numbers as Kenyan', () {
+      expect(normalizeMobile('0712345678', marketCode: 'KE'), '+254712345678');
+      expect(normalizeMobile('0110 123 456', marketCode: 'KE'), '+254110123456');
+      expect(normalizeMobile('+254 712 345 678', marketCode: 'KE'), '+254712345678');
     });
-    test('without +254 a number stays Ethiopian', () {
-      expect(normalizeMobile('0712345678', allowKenya: true), '+251712345678');
+    test('local numbers are local: 0712… is Ethiopian in Jijiga', () {
+      expect(normalizeMobile('0712345678', marketCode: 'ET'), '+251712345678');
     });
-    test('rejects malformed Kenyan numbers', () {
-      expect(normalizeMobile('+254812345678', allowKenya: true), isNull);
-      expect(normalizeMobile('+25471234567', allowKenya: true), isNull);
+    test("the other country's numbers need their country code", () {
+      expect(normalizeMobile('+251911234567', marketCode: 'KE'), '+251911234567');
+      expect(normalizeMobile('+254712345678', marketCode: 'ET'), '+254712345678');
+      expect(normalizeMobile('0911234567', marketCode: 'KE'), isNull);
+    });
+    test('rejects malformed numbers', () {
+      expect(normalizeMobile('+254812345678', marketCode: 'KE'), isNull);
+      expect(normalizeMobile('+25471234567', marketCode: 'KE'), isNull);
+    });
+  });
+
+  group('Market', () {
+    test('reads the server market and formats money in its currency', () {
+      final before = Market.current;
+      addTearDown(() => Market.current = before);
+      Market.current = Market.fromJson({
+        'code': 'KE',
+        'city': 'Nairobi',
+        'currency': 'KES',
+        'paymentMethods': ['cash', 'mpesa', 'something-new'],
+        'emergency': [
+          {'label': 'Police and emergency', 'number': '999'},
+        ],
+        'centre': {'lat': -1.2864, 'lng': 36.8172},
+        'phoneExample': '0712 345 678',
+      });
+      expect(Market.current.paymentMethods, [PaymentMethod.cash, PaymentMethod.mpesa]);
+      expect(formatEtb('35000'), '350.00 KES');
+      expect(formatEtbShort('35000'), '350 KES');
+      expect(emergencyNumbers.single.number, '999');
+      expect(paymentLabel(PaymentMethod.mpesa), 'M-Pesa');
+      expect(paymentReferenceLabel(PaymentMethod.cash), isNull);
     });
   });
 

@@ -1,4 +1,5 @@
 import { Kysely, sql } from 'kysely';
+import { MARKETS, type MarketCode } from '../common/market';
 import { loadConfig } from '../config/env';
 import { createDatabase } from './database';
 import type { DB, VehicleCategory } from './types';
@@ -26,7 +27,7 @@ const JIJIGA_DEV_RING: [number, number][] = [
 export const KENYA_TEST_ZONE_NAME = 'Nairobi (TEST only)';
 
 // Test-only area covering Nairobi (CBD, Westlands, Kilimani, Karen, Eastlands, JKIA, Ruaka),
-// used when KENYA_TEST_MODE=true so the apps can be tried in Kenya before Jijiga.
+// active when MARKET=KE so the apps can be tried in Nairobi before Jijiga.
 const NAIROBI_TEST_RING: [number, number][] = [
   [36.65, -1.45],
   [37.1, -1.45],
@@ -34,6 +35,11 @@ const NAIROBI_TEST_RING: [number, number][] = [
   [36.65, -1.1],
   [36.65, -1.45],
 ];
+
+const DEV_NOTE_ETB = 'DEV seed — illustrative, not market prices';
+const DEV_NOTE_KES = 'DEV KES seed — illustrative Nairobi test prices';
+const DEV_PLAN_ETB = 'DEV Monthly';
+const DEV_PLAN_KES = 'DEV Monthly (KES)';
 
 const DEV_FARES: Record<
   VehicleCategory,
@@ -69,7 +75,7 @@ export async function seedDevelopment(db: Kysely<DB>): Promise<void> {
           per_km: f.perKm,
           minimum_fare: f.minimum,
           rounding_unit: f.rounding,
-          note: 'DEV seed — illustrative, not market prices',
+          note: DEV_NOTE_ETB,
           created_by: null,
         })
         .returning('id')
@@ -82,32 +88,87 @@ export async function seedDevelopment(db: Kysely<DB>): Promise<void> {
 
     await trx
       .insertInto('subscription_plans')
-      .values({ name: 'DEV Monthly', category: null, price: 50000, duration_days: 30 })
+      .values({ name: DEV_PLAN_ETB, category: null, price: 50000, duration_days: 30 })
       .onConflict((oc) => oc.column('name').doNothing())
       .execute();
   });
 }
 
+// Illustrative Nairobi prices in cents (KES × 100), for testing only: NOT researched market
+// prices. Car 150 KES + 40 KES/km, tuk-tuk (Bajaj) 70 + 25/km.
+const DEV_FARES_KES: typeof DEV_FARES = {
+  car: { base: 15000, perKm: 4000, minimum: 25000, rounding: 1000 },
+  bajaj: { base: 7000, perKm: 2500, minimum: 12000, rounding: 1000 },
+};
+
 /**
- * Turns the Nairobi test area on or off to match KENYA_TEST_MODE. Turning the setting off makes
- * the area inactive (trips there are refused again); it is never deleted, so old test trips keep
- * their zone.
+ * Makes a development/staging database match its market (ADR-025): the market's service area is
+ * active and the other one isn't; the illustrative DEV prices and DEV subscription plan are in
+ * the market's currency. Prices an admin has set are never touched: only versions whose note
+ * starts with "DEV" are replaced. Nothing is deleted.
  */
-export async function syncKenyaTestZone(db: Kysely<DB>, enabled: boolean): Promise<void> {
-  if (enabled) {
+export async function syncMarket(db: Kysely<DB>, market: MarketCode): Promise<void> {
+  const kenya = market === 'KE';
+  await db.transaction().execute(async (trx) => {
     const wkt = `POLYGON((${NAIROBI_TEST_RING.map(([lng, lat]) => `${lng} ${lat}`).join(', ')}))`;
-    await db
+    await trx
       .insertInto('service_zones')
-      .values({ name: KENYA_TEST_ZONE_NAME, area: sql`ST_GeogFromText(${wkt})` })
-      .onConflict((oc) => oc.column('name').doUpdateSet({ active: true }))
+      .values({ name: KENYA_TEST_ZONE_NAME, area: sql`ST_GeogFromText(${wkt})`, active: kenya })
+      .onConflict((oc) => oc.column('name').doUpdateSet({ active: kenya }))
       .execute();
-  } else {
-    await db
+    await trx
       .updateTable('service_zones')
-      .set({ active: false })
-      .where('name', '=', KENYA_TEST_ZONE_NAME)
+      .set({ active: !kenya })
+      .where('name', '=', DEV_ZONE_NAME)
       .execute();
-  }
+
+    const wanted = kenya ? DEV_NOTE_KES : DEV_NOTE_ETB;
+    for (const category of ['car', 'bajaj'] as const) {
+      const current = await trx
+        .selectFrom('fare_settings as s')
+        .innerJoin('fare_versions as v', 'v.id', 's.current_version_id')
+        .select('v.note')
+        .where('s.category', '=', category)
+        .executeTakeFirst();
+      if (!current?.note?.startsWith('DEV') || current.note === wanted) continue;
+      const f = (kenya ? DEV_FARES_KES : DEV_FARES)[category];
+      const version = await trx
+        .insertInto('fare_versions')
+        .values({
+          category,
+          base_fare: f.base,
+          per_km: f.perKm,
+          minimum_fare: f.minimum,
+          rounding_unit: f.rounding,
+          note: wanted,
+          created_by: null,
+        })
+        .returning('id')
+        .executeTakeFirstOrThrow();
+      await trx
+        .updateTable('fare_settings')
+        .set({ current_version_id: version.id })
+        .where('category', '=', category)
+        .execute();
+    }
+
+    await trx
+      .insertInto('subscription_plans')
+      .values({
+        name: DEV_PLAN_KES,
+        category: null,
+        price: 150000,
+        duration_days: 30,
+        active: kenya,
+      })
+      .onConflict((oc) => oc.column('name').doUpdateSet({ active: kenya }))
+      .execute();
+    await trx
+      .updateTable('subscription_plans')
+      .set({ active: !kenya })
+      .where('name', '=', DEV_PLAN_ETB)
+      .execute();
+  });
 }
 
 async function main(): Promise<void> {
@@ -122,11 +183,11 @@ async function main(): Promise<void> {
   });
   try {
     await seedDevelopment(db);
-    await syncKenyaTestZone(db, config.KENYA_TEST_MODE);
+    await syncMarket(db, config.MARKET);
     console.log(
-      `Development seed loaded (zone, illustrative fares, DEV plan). Nairobi test area: ${
-        config.KENYA_TEST_MODE ? 'on' : 'off'
-      }.`,
+      `Development seed loaded for ${MARKETS[config.MARKET].city} (service area, illustrative ${
+        MARKETS[config.MARKET].currency
+      } prices, DEV plan).`,
     );
   } finally {
     await db.destroy();

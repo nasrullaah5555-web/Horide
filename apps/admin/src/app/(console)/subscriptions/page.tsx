@@ -18,6 +18,7 @@ import { api, ApiError, qs } from '@/lib/api';
 import { date, dateTime, etb, humanize } from '@/lib/format';
 import { useSession } from '@/lib/session';
 import { useApi } from '@/lib/use-api';
+import { market, PAYMENT_LABEL } from '@/lib/market';
 
 interface Sub {
   id: string;
@@ -78,7 +79,7 @@ function RecordPayment({
         body: {
           driverId: form.driverId,
           planId: plan.id,
-          amount: Number(plan.price) / 100, // the API takes ETB and checks it equals the plan price
+          amount: Number(plan.price) / 100, // the API takes whole currency units and checks it equals the plan price
           method: form.method,
           reference: form.reference || undefined,
           receivedAt: new Date(`${form.receivedAt}T12:00:00+03:00`).toISOString(),
@@ -146,16 +147,21 @@ function RecordPayment({
           value={form.method}
           onChange={(e) => setForm({ ...form, method: e.target.value })}
         >
-          <option value="cash">Cash</option>
-          <option value="ebirr">eBirr</option>
+          {market.paymentMethods.map((m) => (
+            <option key={m} value={m}>
+              {PAYMENT_LABEL[m]}
+            </option>
+          ))}
         </select>
       </label>
       <label className="block">
         <span className="mb-1 block font-semibold">
-          {form.method === 'ebirr' ? 'eBirr transaction reference' : 'Receipt number (optional)'}
+          {form.method === 'cash'
+            ? 'Receipt number (optional)'
+            : `${PAYMENT_LABEL[form.method]} transaction reference`}
         </span>
         <input
-          required={form.method === 'ebirr'}
+          required={form.method !== 'cash'}
           maxLength={60}
           className={`${inputClass} w-full`}
           value={form.reference}
@@ -215,7 +221,7 @@ function NewPlan({ onDone }: { onDone: () => void }) {
         />
       </label>
       <label>
-        <span className="mb-1 block font-semibold">Price (ETB)</span>
+        <span className="mb-1 block font-semibold">Price ({market.currency})</span>
         <input
           required
           type="number"

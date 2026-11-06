@@ -57,10 +57,11 @@ services:
         value: /tmp/musride-documents
       - key: PUSH_PROVIDER
         value: log
-      # Test only: Kenyan +254 numbers and a Nairobi test area, so the apps can be tried in Kenya.
-      # Set to "false" to go back to Jijiga only. Never set in render.yaml (production refuses it).
-      - key: KENYA_TEST_MODE
-        value: 'true'
+      # Which city staging serves (ADR-025): KE = Nairobi (KES, cash + M-Pesa, Kenyan numbers,
+      # 999/112, Nairobi service area). ET = Jijiga. Production refuses KE for now.
+      # Change it together with NEXT_PUBLIC_MUSRIDE_MARKET on the website and redeploy both.
+      - key: MARKET
+        value: KE
       # Place search: free OpenStreetMap search (Photon) until a Google key exists (OA-26).
       - key: PLACES_PROVIDER
         value: photon
@@ -96,6 +97,9 @@ services:
       # Read at build time by the "follow a trip" page (/share).
       - key: NEXT_PUBLIC_MUSRIDE_API_URL
         value: https://musride-staging-api.onrender.com
+      # The city the website describes; must match MARKET on the API.
+      - key: NEXT_PUBLIC_MUSRIDE_MARKET
+        value: KE
     headers:
       - path: /*
         name: X-Frame-Options

@@ -4,7 +4,7 @@ library;
 
 enum VehicleCategory { car, bajaj }
 
-enum PaymentMethod { cash, ebirr }
+enum PaymentMethod { cash, ebirr, mpesa }
 
 enum TripStatus {
   requested,
@@ -36,7 +36,18 @@ enum TripStatus {
 }
 
 String vehicleLabel(VehicleCategory c) => c == VehicleCategory.car ? 'Car' : 'Bajaj';
-String paymentLabel(PaymentMethod m) => m == PaymentMethod.cash ? 'Cash' : 'eBirr';
+String paymentLabel(PaymentMethod m) => switch (m) {
+  PaymentMethod.cash => 'Cash',
+  PaymentMethod.ebirr => 'eBirr',
+  PaymentMethod.mpesa => 'M-Pesa',
+};
+
+/// What the driver types after a non-cash payment, or null for cash.
+String? paymentReferenceLabel(PaymentMethod m) => switch (m) {
+  PaymentMethod.cash => null,
+  PaymentMethod.ebirr => 'eBirr transaction reference',
+  PaymentMethod.mpesa => 'M-Pesa confirmation code (e.g. SGH3K2L9QX)',
+};
 
 class LatLngPoint {
   const LatLngPoint(this.lat, this.lng);

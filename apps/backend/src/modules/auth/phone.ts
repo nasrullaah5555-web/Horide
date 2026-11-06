@@ -16,20 +16,39 @@ export function normalizeEthiopianMobile(input: string): string | null {
 }
 
 /**
- * Kenyan mobile numbers (07… and 01…), for test deployments only (KENYA_TEST_MODE).
- * The country code is required: "0712 345 678" is also a valid Safaricom Ethiopia number, so a
- * number without +254/254 is always read as Ethiopian.
+ * Kenyan mobile numbers (Safaricom/Airtel/Telkom 07… and 01…).
+ * Accepts 0712345678, 712345678, 254712345678, +254712345678, "+254 712 345 678".
  */
 export function normalizeKenyanMobile(input: string): string | null {
   if (typeof input !== 'string' || input.length > 25) return null;
   const digits = input.replace(/[\s()-]/g, '');
-  const m = /^\+?254([17]\d{8})$/.exec(digits);
-  return m ? `+254${m[1]}` : null;
+  let national: string;
+  if (/^\+254\d{9}$/.test(digits)) national = digits.slice(4);
+  else if (/^254\d{9}$/.test(digits)) national = digits.slice(3);
+  else if (/^0\d{9}$/.test(digits)) national = digits.slice(1);
+  else if (/^\d{9}$/.test(digits)) national = digits;
+  else return null;
+  return /^[17]\d{8}$/.test(national) ? `+254${national}` : null;
 }
 
-/** Ethiopian always; Kenyan too when the deployment allows Kenyan test numbers. */
-export function normalizeMobile(input: string, allowKenya: boolean): string | null {
-  return normalizeEthiopianMobile(input) ?? (allowKenya ? normalizeKenyanMobile(input) : null);
+/**
+ * A mobile number for this market. Numbers written without a country code are read as local
+ * (07… exists in both Ethiopia and Kenya). The other country's numbers are accepted only with
+ * their country code, so a visitor can still sign in with their home number.
+ */
+export function normalizeMobile(input: string, market: 'ET' | 'KE'): string | null {
+  const digits = typeof input === 'string' ? input.replace(/[\s()-]/g, '') : '';
+  const international = /^\+?(251|254)/.test(digits);
+  if (market === 'KE') {
+    return (
+      normalizeKenyanMobile(input) ??
+      (international && /^\+?251/.test(digits) ? normalizeEthiopianMobile(input) : null)
+    );
+  }
+  return (
+    normalizeEthiopianMobile(input) ??
+    (international && /^\+?254/.test(digits) ? normalizeKenyanMobile(input) : null)
+  );
 }
 
 /** Shows only the last 3 digits, for logs and support screens: +2519*****567 */

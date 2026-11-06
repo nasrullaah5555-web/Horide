@@ -2,6 +2,7 @@ import { HttpStatus, Inject, Injectable, Logger } from '@nestjs/common';
 import { Kysely, sql } from 'kysely';
 import { randomInt, randomUUID } from 'node:crypto';
 import { AppError } from '../../common/errors';
+import { MARKETS } from '../../common/market';
 import { APP_CONFIG } from '../../config/config.module';
 import type { AppConfig } from '../../config/env';
 import { DATABASE } from '../../database/database.module';
@@ -35,14 +36,12 @@ export class OtpService {
   ) {}
 
   async request(rawPhone: string, ip: string | null): Promise<OtpRequestResult> {
-    const phone = normalizeMobile(rawPhone, this.config.KENYA_TEST_MODE);
+    const phone = normalizeMobile(rawPhone, this.config.MARKET);
     if (!phone) {
       throw new AppError(
         HttpStatus.BAD_REQUEST,
         'INVALID_PHONE',
-        this.config.KENYA_TEST_MODE
-          ? 'Enter a valid Ethiopian mobile number, or a Kenyan one starting +254.'
-          : 'Enter a valid Ethiopian mobile number.',
+        `Enter a valid mobile number, for example ${MARKETS[this.config.MARKET].phoneExample}.`,
       );
     }
 

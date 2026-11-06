@@ -5,6 +5,7 @@ import { ErrorNotice, Loading, PageHeader, Panel } from '@/components/ui';
 import { dateTime } from '@/lib/format';
 import { useSession } from '@/lib/session';
 import { useApi } from '@/lib/use-api';
+import { market } from '@/lib/market';
 
 interface Dashboard {
   generatedAt: string;
@@ -97,7 +98,7 @@ export default function OverviewPage() {
   return (
     <>
       <PageHeader
-        title="Right now in Jijiga"
+        title={`Right now in ${market.city}`}
         description={
           dash.data
             ? `Updated ${dateTime(dash.data.generatedAt)}. Refreshes every 15 seconds.`

@@ -186,7 +186,7 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
           FlutterMap(
             mapController: _map,
             options: MapOptions(
-              initialCenter: jijiga,
+              initialCenter: marketCentre,
               initialZoom: 15,
               onMapReady: _goToMe,
               onPositionChanged: (_, hasGesture) {
@@ -297,17 +297,16 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
             ),
           const Gap(MusrideSpace.sm),
           SegmentedButton<PaymentMethod>(
-            segments: const [
-              ButtonSegment(
-                value: PaymentMethod.cash,
-                label: Text('Cash'),
-                icon: Icon(Icons.payments_outlined),
-              ),
-              ButtonSegment(
-                value: PaymentMethod.ebirr,
-                label: Text('eBirr'),
-                icon: Icon(Icons.phone_android),
-              ),
+            // The methods used in this city: cash and eBirr in Jijiga, cash and M-Pesa in Nairobi.
+            segments: [
+              for (final m in Market.current.paymentMethods)
+                ButtonSegment(
+                  value: m,
+                  label: Text(paymentLabel(m)),
+                  icon: Icon(
+                    m == PaymentMethod.cash ? Icons.payments_outlined : Icons.phone_android,
+                  ),
+                ),
             ],
             selected: {_payment},
             onSelectionChanged: (s) {

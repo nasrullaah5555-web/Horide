@@ -5,6 +5,7 @@ import { usePathname } from 'next/navigation';
 import type { ReactNode } from 'react';
 import { useSession } from '@/lib/session';
 import { MusrideLogo } from '@/lib/logo.g';
+import { market } from '@/lib/market';
 
 interface NavItem {
   href: string;
@@ -61,7 +62,7 @@ export function Shell({ children }: { children: ReactNode }) {
           <Link href="/" className="text-title-large font-extrabold tracking-tight">
             <MusrideLogo onDark />
             <span className="ml-2 align-middle text-caption font-semibold text-white/60">
-              Jijiga console
+              {market.city} console
             </span>
           </Link>
         </div>

@@ -1,5 +1,6 @@
 import type { Metadata } from 'next';
 import { DraftNotice, NotYetPublished, Page } from '@/components/site';
+import { market } from '@/lib/market';
 
 export const metadata: Metadata = { title: 'Terms of use' };
 
@@ -11,8 +12,9 @@ export default function Terms() {
 
         <h2>The service</h2>
         <p>
-          Musride is an app that connects passengers with independent drivers in Jijiga. Drivers use
-          their own vehicles. Musride is not a transport operator and does not carry passengers.
+          Musride is an app that connects passengers with independent drivers in {market.city}.
+          Drivers use their own vehicles. Musride is not a transport operator and does not carry
+          passengers.
         </p>
 
         <h2>Fares and payment</h2>
@@ -26,7 +28,7 @@ export default function Terms() {
             and approve the new price in the app.
           </li>
           <li>
-            Passengers pay the driver directly in cash or by eBirr. Musride does not collect or hold
+            Passengers pay the driver directly in {market.payBy}. Musride does not collect or hold
             ride payments.
           </li>
           <li>
@@ -69,7 +71,9 @@ export default function Terms() {
 
         <h2>Liability</h2>
         <p>
-          <NotYetPublished what="Liability, insurance and dispute-resolution terms reviewed under Ethiopian law" />
+          <NotYetPublished
+            what={`Liability, insurance and dispute-resolution terms reviewed under ${market.law}`}
+          />
         </p>
 
         <h2>Contact</h2>

@@ -8,5 +8,6 @@ export 'package:musride_core/musride_core.dart'
         PlacePicker,
         currentPosition,
         jijiga,
+        marketCentre,
         toLatLng,
         toPoint;

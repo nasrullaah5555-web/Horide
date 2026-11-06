@@ -28,7 +28,7 @@ class _PhoneScreenState extends ConsumerState<PhoneScreen> {
   }
 
   Future<void> _submit() async {
-    final e164 = normalizeMobile(_phone.text, allowKenya: MusrideConfig.allowKenyanPhones);
+    final e164 = normalizeMobile(_phone.text);
     if (e164 == null) {
       setState(() => _error = MusrideConfig.phoneHint);
       return;
@@ -63,7 +63,7 @@ class _PhoneScreenState extends ConsumerState<PhoneScreen> {
           children: [
             const MusrideLogo(),
             const Gap(MusrideSpace.sm),
-            const HintText('Driver app · Drive in Jijiga'),
+            HintText('Driver app · Drive in ${Market.current.city}'),
             const Gap(MusrideSpace.xxxl),
             Text('Your phone number', style: theme.textTheme.headlineMedium),
             const Gap(MusrideSpace.sm),
@@ -82,7 +82,7 @@ class _PhoneScreenState extends ConsumerState<PhoneScreen> {
                 fontWeight: MusrideFontWeight.bold,
                 letterSpacing: MusrideLetterSpacing.phone,
               ),
-              decoration: InputDecoration(hintText: '09XX XXX XXX', errorText: _error),
+              decoration: InputDecoration(hintText: Market.current.phoneExample, errorText: _error),
               onSubmitted: (_) => _submit(),
             ),
             const Gap(MusrideSpace.xl),

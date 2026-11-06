@@ -45,9 +45,9 @@ export const envSchema = z
     // The public website, used to build "Share my trip" links (https://<site>/share/#<secret>).
     // Without it, sharing is switched off.
     PUBLIC_WEB_URL: z.string().url().optional(),
-    // Test-only: accept Kenyan numbers (+254 written in full) and add a Nairobi test service
-    // area, so the apps can be tried in Kenya before Jijiga. Refused in production.
-    KENYA_TEST_MODE: boolFromString,
+    // Which city this deployment serves (common/market.ts, ADR-025): currency, payment methods,
+    // phone numbers, emergency numbers, service area. KE (Nairobi) is for staging tests only.
+    MARKET: z.enum(['ET', 'KE']).default('ET'),
     // Connections per API instance. Keep (instances × this) under the database plan's limit.
     DATABASE_POOL_MAX: z.coerce.number().int().min(2).max(100).default(10),
     CORS_ORIGINS: z
@@ -179,11 +179,11 @@ export const envSchema = z
     ) {
       ctx.addIssue({ code: 'custom', path: ['PUBLIC_WEB_URL'], message: 'must use https' });
     }
-    if (env.KENYA_TEST_MODE && env.NODE_ENV === 'production') {
+    if (env.MARKET === 'KE' && env.NODE_ENV === 'production') {
       ctx.addIssue({
         code: 'custom',
-        path: ['KENYA_TEST_MODE'],
-        message: 'not allowed in production (test deployments only)',
+        path: ['MARKET'],
+        message: 'Nairobi is for test deployments only until Kenyan licensing is done',
       });
     }
     if (env.STAGING_BOOTSTRAP_ADMIN_EMAIL && env.NODE_ENV !== 'staging') {

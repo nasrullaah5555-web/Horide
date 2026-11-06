@@ -1,14 +1,10 @@
 import type { Metadata } from 'next';
 import { Page } from '@/components/site';
+import { market } from '@/lib/market';
 
 export const metadata: Metadata = { title: 'Safety' };
 
-const numbers = [
-  ['Police', '991'],
-  ['Ambulance', '907'],
-  ['Fire', '939'],
-  ['Traffic police', '945'],
-] as const;
+const numbers = market.emergency.map((e) => [e.label, e.number] as const);
 
 export default function Safety() {
   return (

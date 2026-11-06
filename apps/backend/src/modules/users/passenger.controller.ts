@@ -15,6 +15,7 @@ import {
 import { Kysely } from 'kysely';
 import { z } from 'zod';
 import { AppError } from '../../common/errors';
+import { MARKETS } from '../../common/market';
 import { geoPoint, latLngSchema, latOf, lngOf } from '../../common/geo';
 import { ZodValidationPipe } from '../../common/zod-validation.pipe';
 import { DATABASE } from '../../database/database.module';
@@ -68,14 +69,12 @@ export class PassengerController {
       emergency =
         body.emergencyContactPhone === null
           ? null
-          : normalizeMobile(body.emergencyContactPhone, this.config.KENYA_TEST_MODE);
+          : normalizeMobile(body.emergencyContactPhone, this.config.MARKET);
       if (emergency === null && body.emergencyContactPhone !== null) {
         throw new AppError(
           HttpStatus.BAD_REQUEST,
           'INVALID_PHONE',
-          this.config.KENYA_TEST_MODE
-            ? 'Enter a valid Ethiopian mobile number, or a Kenyan one starting +254.'
-            : 'Enter a valid Ethiopian mobile number.',
+          `Enter a valid mobile number, for example ${MARKETS[this.config.MARKET].phoneExample}.`,
         );
       }
     }

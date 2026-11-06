@@ -140,7 +140,7 @@ class _TripFinishedScreenState extends ConsumerState<TripFinishedScreen> {
                   ? 'You confirmed. Waiting for the driver to record it.'
                   : _statusText(receipt.paymentStatus),
             ),
-            if (receipt.ebirrReference != null) InfoRow('eBirr reference', receipt.ebirrReference!),
+            if (receipt.ebirrReference != null) InfoRow('Payment reference', receipt.ebirrReference!),
             const Gap(MusrideSpace.sm),
             if (!passengerAnswered) ...[
               MusrideButton(

@@ -1,5 +1,6 @@
 import type { Metadata } from 'next';
 import { DraftNotice, NotYetPublished, Page } from '@/components/site';
+import { market } from '@/lib/market';
 
 export const metadata: Metadata = { title: 'Privacy policy' };
 
@@ -18,7 +19,7 @@ export default function Privacy() {
 
         <h2>Who we are</h2>
         <p>
-          Musride operates a ride-hailing service in Jijiga, Ethiopia.{' '}
+          Musride operates a ride-hailing service in {market.city}, {market.country}.{' '}
           <NotYetPublished what="The registered company name and address" />
         </p>
 
@@ -38,8 +39,9 @@ export default function Privacy() {
             are online or on a trip.
           </li>
           <li>
-            <strong>Trips:</strong> times, route distance, price, payment method (cash or eBirr),
-            the eBirr transaction reference a driver types in, ratings, comments and complaints.
+            <strong>Trips:</strong> times, route distance, price, payment method ({market.payBy}),
+            the {market.wallet} transaction reference a driver types in, ratings, comments and
+            complaints.
           </li>
           <li>
             <strong>Emergencies:</strong> if you press the emergency button, your trip and your
@@ -53,7 +55,7 @@ export default function Privacy() {
         </ul>
         <p>
           We do not collect passengers’ email addresses, and we do not take or store any payment
-          card or eBirr account details.
+          card or {market.wallet} account details.
         </p>
 
         <h2>Why we use it</h2>
@@ -82,7 +84,7 @@ export default function Privacy() {
             and directions.{' '}
             <NotYetPublished what="The list of providers and the countries where data is stored" />
           </li>
-          <li>Authorities, when Ethiopian law requires it.</li>
+          <li>Authorities, when {market.law} requires it.</li>
         </ul>
         <p>We do not sell personal data.</p>
 

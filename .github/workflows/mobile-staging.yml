@@ -21,10 +21,11 @@ on:
         description: Staging API address (https only)
         type: string
         default: https://musride-staging-api.onrender.com
-      kenyan_phones:
-        description: Accept Kenyan +254 numbers (the API needs KENYA_TEST_MODE=true too)
-        type: boolean
-        default: true
+      market:
+        description: City the test apps are built for (must match MARKET on the staging API)
+        type: choice
+        options: [KE, ET]
+        default: KE
 
 permissions:
   contents: read
@@ -48,7 +49,7 @@ jobs:
         working-directory: mobile/${{ matrix.app }}
     env:
       API_URL: ${{ inputs.api_url || 'https://musride-staging-api.onrender.com' }}
-      KENYAN_PHONES: ${{ github.event_name == 'workflow_run' || inputs.kenyan_phones }}
+      MARKET: ${{ inputs.market || 'KE' }}
     steps:
       - name: Refuse anything but an https address
         working-directory: . # runs before checkout, so the app folder doesn't exist yet
@@ -81,7 +82,7 @@ jobs:
           flutter build apk --release \
             --obfuscate --split-debug-info=build/symbols \
             --dart-define=MUSRIDE_API_URL="$API_URL" \
-            --dart-define=MUSRIDE_ALLOW_KENYAN_PHONES="$KENYAN_PHONES"
+            --dart-define=MUSRIDE_MARKET="$MARKET"
           cp build/app/outputs/flutter-apk/app-release.apk "musride-${{ matrix.app }}-staging.apk"
           ls -la musride-*.apk
           sha256sum musride-*.apk

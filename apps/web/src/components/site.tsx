@@ -1,5 +1,6 @@
 import Link from 'next/link';
 import { MusrideLogo } from '@/lib/logo.g';
+import { market } from '@/lib/market';
 
 const nav = [
   { href: '/how-it-works/', label: 'How it works' },
@@ -37,7 +38,9 @@ export function Footer() {
       <div className="mx-auto grid max-w-5xl gap-6 px-4 py-10 sm:grid-cols-3">
         <div>
           <MusrideLogo onDark className="text-title" />
-          <p className="text-white/75">Rides by car and Bajaj in Jijiga.</p>
+          <p className="text-white/75">
+            Rides by car and {market.bajaj} in {market.city}.
+          </p>
         </div>
         <ul className="space-y-1 text-white/85">
           <li>
@@ -51,8 +54,14 @@ export function Footer() {
           </li>
         </ul>
         <p className="text-white/75">
-          In an emergency call Police <strong className="text-white">991</strong> or Ambulance{' '}
-          <strong className="text-white">907</strong>.
+          In an emergency call{' '}
+          {market.emergency.slice(0, 2).map((e, i) => (
+            <span key={e.number}>
+              {i > 0 && ' or '}
+              {e.label} <strong className="text-white">{e.number}</strong>
+            </span>
+          ))}
+          .
         </p>
       </div>
     </footer>

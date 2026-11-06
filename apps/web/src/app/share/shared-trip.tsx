@@ -1,6 +1,7 @@
 'use client';
 
 import { useEffect, useState } from 'react';
+import { emergencyLine } from '@/lib/market';
 
 /** Where the API is; set when the site is built (render.staging.yaml / render.yaml). */
 const API = process.env.NEXT_PUBLIC_MUSRIDE_API_URL ?? '';
@@ -156,7 +157,7 @@ export function SharedTrip() {
 
       <p className="text-small text-muted">
         Shared by the passenger. This page updates every 10 seconds and stops working when the trip
-        ends. In an emergency call Police 991 or Ambulance 907.
+        ends. In an emergency call {emergencyLine}.
       </p>
     </div>
   );

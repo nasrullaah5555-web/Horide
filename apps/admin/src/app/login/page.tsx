@@ -1,9 +1,10 @@
 'use client';
 
 import { useRouter } from 'next/navigation';
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import { api, ApiError, setCsrfToken } from '@/lib/api';
 import { MusrideLogo } from '@/lib/logo.g';
+import { loadMarket, market } from '@/lib/market';
 
 export default function LoginPage() {
   const router = useRouter();
@@ -12,6 +13,10 @@ export default function LoginPage() {
   const [totpCode, setTotpCode] = useState('');
   const [error, setError] = useState<string | null>(null);
   const [busy, setBusy] = useState(false);
+  const [city, setCity] = useState(market.city);
+  useEffect(() => {
+    void loadMarket().then((m) => setCity(m.city));
+  }, []);
 
   const submit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -41,7 +46,7 @@ export default function LoginPage() {
         <MusrideLogo onDark className="text-headline" />
         <div className="max-w-md">
           <div className="inline-block rounded-card border-4 border-white bg-sign px-6 py-4">
-            <p className="text-small font-semibold text-white/85">Jijiga</p>
+            <p className="text-small font-semibold text-white/85">{city}</p>
             <p className="text-display font-extrabold leading-none">Operations console</p>
           </div>
           <p className="mt-6 text-white/75">

@@ -374,18 +374,19 @@ class _PaymentScreenState extends ConsumerState<PaymentScreen> {
             Text('How did the passenger pay?', style: Theme.of(context).textTheme.titleMedium),
             const Gap(MusrideSpace.sm),
             SegmentedButton<PaymentMethod>(
-              segments: const [
-                ButtonSegment(value: PaymentMethod.cash, label: Text('Cash')),
-                ButtonSegment(value: PaymentMethod.ebirr, label: Text('eBirr')),
+              segments: [
+                for (final m in Market.current.paymentMethods)
+                  ButtonSegment(value: m, label: Text(paymentLabel(m))),
               ],
               selected: {_method},
               onSelectionChanged: (s) => setState(() => _method = s.first),
             ),
-            if (_method == PaymentMethod.ebirr)
+            if (paymentReferenceLabel(_method) != null)
               TextField(
                 controller: _reference,
                 maxLength: 40,
-                decoration: const InputDecoration(labelText: 'eBirr transaction reference'),
+                textCapitalization: TextCapitalization.characters,
+                decoration: InputDecoration(labelText: paymentReferenceLabel(_method)),
               ),
             const Gap(MusrideSpace.sm),
             MusrideButton(
@@ -397,8 +398,8 @@ class _PaymentScreenState extends ConsumerState<PaymentScreen> {
                         final r = await api.recordPayment(
                           trip.id,
                           method: _method,
-                          ebirrReference:
-                              _method == PaymentMethod.ebirr ? _reference.text.trim() : null,
+                          reference:
+                              _method == PaymentMethod.cash ? null : _reference.text.trim(),
                         );
                         if (mounted) setState(() => _receipt = r);
                       }),

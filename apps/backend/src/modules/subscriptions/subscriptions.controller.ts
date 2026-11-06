@@ -1,3 +1,6 @@
+import { APP_CONFIG } from '../../config/config.module';
+import type { AppConfig } from '../../config/env';
+import { assertPaymentMethod, MARKETS } from '../../common/market';
 import {
   Body,
   Controller,
@@ -45,7 +48,7 @@ const recordPaymentSchema = z.strictObject({
   driverId: z.string().uuid(),
   planId: z.string().uuid(),
   amount: etbToSantim,
-  method: z.enum(['cash', 'ebirr']),
+  method: z.enum(['cash', 'ebirr', 'mpesa']),
   reference: z.string().trim().max(60).optional(),
   receivedAt: z.coerce.date(),
   note: z.string().trim().max(300).optional(),
@@ -64,6 +67,7 @@ export class SubscriptionsController {
   constructor(
     @Inject(DATABASE) private readonly db: Kysely<DB>,
     private readonly audit: AuditService,
+    @Inject(APP_CONFIG) private readonly config: AppConfig,
   ) {}
 
   @Get('subscription-plans')
@@ -161,11 +165,12 @@ export class SubscriptionsController {
     @Body(new ZodValidationPipe(recordPaymentSchema)) body: z.infer<typeof recordPaymentSchema>,
     @Req() req: Request,
   ) {
-    if (body.method === 'ebirr' && !body.reference) {
+    assertPaymentMethod(MARKETS[this.config.MARKET], body.method);
+    if (body.method !== 'cash' && !body.reference) {
       throw new AppError(
         HttpStatus.BAD_REQUEST,
         'REFERENCE_REQUIRED',
-        'Enter the eBirr transaction reference.',
+        'Enter the transaction reference.',
       );
     }
     if (body.receivedAt.getTime() > Date.now() + 5 * 60_000) {

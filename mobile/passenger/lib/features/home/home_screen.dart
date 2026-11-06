@@ -86,9 +86,7 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
     final a = _pickup?.point;
     final b = _destination?.point;
     if (a != null && b != null) {
-      _map.fitCamera(
-        fitTrip(a, b, bottom: MediaQuery.sizeOf(context).height * _panelShare),
-      );
+      _map.fitCamera(fitTrip(a, b, bottom: MediaQuery.sizeOf(context).height * _panelShare));
     } else if (a != null || b != null) {
       _map.move(toLatLng((a ?? b)!), 16);
     }
@@ -132,9 +130,10 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
 
   /// What the driver reads as the pickup: the place's name, plus the passenger's landmark.
   String? get _pickupText {
-    final parts = [_pickup?.text?.trim(), _landmark.text.trim()]
-        .whereType<String>()
-        .where((t) => t.isNotEmpty);
+    final parts = [
+      _pickup?.text?.trim(),
+      _landmark.text.trim(),
+    ].whereType<String>().where((t) => t.isNotEmpty);
     final text = parts.join(' · ');
     if (text.isEmpty) return null;
     return text.length <= 200 ? text : text.substring(0, 200);
@@ -283,8 +282,7 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
           colour: MusrideColors.sign,
           label: 'Pickup',
           hint: _locating ? 'Finding your location…' : 'Where should the driver pick you up?',
-          value:
-              pickup == null ? null : (pickup.text ?? 'Pin on the map (no street name)'),
+          value: pickup == null ? null : (pickup.text ?? 'Pin on the map (no street name)'),
           onTap: _busy ? null : _choosePickup,
         ),
         const Gap(MusrideSpace.sm),
@@ -294,9 +292,7 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
           label: 'Destination',
           hint: 'Where to?',
           value:
-              destination == null
-                  ? null
-                  : (destination.text ?? 'Pin on the map (no street name)'),
+              destination == null ? null : (destination.text ?? 'Pin on the map (no street name)'),
           onTap: _busy ? null : _chooseDestination,
         ),
         if (pickup != null) ...[

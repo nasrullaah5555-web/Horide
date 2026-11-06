@@ -246,7 +246,8 @@ class _PlacePickerState extends State<PlacePicker> {
         if (!mounted || _query.text.trim() != q) return;
         setState(() {
           _results = found;
-          _searchError = found.isEmpty ? 'Nothing found. Try another name, or choose on the map.' : null;
+          _searchError =
+              found.isEmpty ? 'Nothing found. Try another name, or choose on the map.' : null;
         });
       } on ApiException catch (e) {
         if (mounted) setState(() => _searchError = e.message);
@@ -391,10 +392,7 @@ class _PlacePickerState extends State<PlacePicker> {
                   onTap: _locating ? null : _useCurrentLocation,
                 ),
               if (_searchError != null)
-                ListTile(
-                  leading: const Icon(Icons.info_outline),
-                  title: Text(_searchError!),
-                ),
+                ListTile(leading: const Icon(Icons.info_outline), title: Text(_searchError!)),
               for (final r in _results)
                 ListTile(
                   leading: const Icon(Icons.place_outlined),

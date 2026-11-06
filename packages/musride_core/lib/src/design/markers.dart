@@ -123,7 +123,11 @@ class DestinationMarker extends StatelessWidget {
         boxShadow: const [BoxShadow(color: MusrideColors.shadow, blurRadius: MusrideSpace.sm)],
       ),
       child: Center(
-        child: Container(width: MusrideSpace.sm, height: MusrideSpace.sm, color: MusrideColors.white),
+        child: Container(
+          width: MusrideSpace.sm,
+          height: MusrideSpace.sm,
+          color: MusrideColors.white,
+        ),
       ),
     ),
   );

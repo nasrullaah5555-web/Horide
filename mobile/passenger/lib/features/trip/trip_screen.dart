@@ -64,12 +64,17 @@ class _TripScreenState extends ConsumerState<TripScreen> {
                   : 'We will stop looking for a driver.',
             ),
             actions: [
-              MusrideButton(compact: true, 
+              MusrideButton(
+                compact: true,
                 kind: MusrideButtonKind.quiet,
                 label: 'Keep ride',
                 onPressed: () => Navigator.pop(d, false),
               ),
-              MusrideButton(compact: true, label: 'Cancel ride', onPressed: () => Navigator.pop(d, true)),
+              MusrideButton(
+                compact: true,
+                label: 'Cancel ride',
+                onPressed: () => Navigator.pop(d, true),
+              ),
             ],
           ),
     );
@@ -102,12 +107,17 @@ class _TripScreenState extends ConsumerState<TripScreen> {
                 'Your driver continues to the old destination unless you approve.',
               ),
               actions: [
-                MusrideButton(compact: true, 
+                MusrideButton(
+                  compact: true,
                   kind: MusrideButtonKind.quiet,
                   label: 'Keep old',
                   onPressed: () => Navigator.pop(d, false),
                 ),
-                MusrideButton(compact: true, label: 'Approve', onPressed: () => Navigator.pop(d, true)),
+                MusrideButton(
+                  compact: true,
+                  label: 'Approve',
+                  onPressed: () => Navigator.pop(d, true),
+                ),
               ],
             ),
       );

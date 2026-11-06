@@ -48,12 +48,14 @@ class _TripScreenState extends ConsumerState<TripScreen> {
               ),
             ),
             actions: [
-              MusrideButton(compact: true, 
+              MusrideButton(
+                compact: true,
                 kind: MusrideButtonKind.quiet,
                 label: 'Keep trip',
                 onPressed: () => Navigator.pop(d),
               ),
-              MusrideButton(compact: true, 
+              MusrideButton(
+                compact: true,
                 label: 'Cancel trip',
                 onPressed: () => Navigator.pop(d, reason.text.trim()),
               ),

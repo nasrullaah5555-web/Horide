@@ -39,6 +39,7 @@ void main() {
 
   testWidgets('a picked reason is sent as its words', (tester) async {
     final results = await _open(tester);
+    await tester.ensureVisible(find.text('I changed my plans'));
     await tester.tap(find.text('I changed my plans'));
     await tester.pump();
     await tester.ensureVisible(find.text('Cancel ride'));

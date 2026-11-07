@@ -147,3 +147,14 @@ The owner's phone video showed three faults: every place search failed on stagin
 - Place search on staging failed because Photon's public server blocks requests with generic agents such as Node's default `node`; fixed separately in PR #22 (Photon requests now name Musride and a contact). Not verified against Photon from the development workspace (the site is not reachable from it).
 
 Not done: drawing the actual road route (needs a routing provider's geometry, OA-09) and showing nearby available cars before booking.
+
+## ADR-027 Driver and car photos for the passenger (2026-11-07)
+
+The owner asked to see the driver's photo and the car before getting in, as Uber and Bolt show. The driver's profile photo already existed, but only as a private document for verification staff, and there was no car photo.
+
+- New document type `vehicle_photo` (migration 0011), linked to a vehicle, recommended but not required, so drivers already approved keep working. Profile and car photos must be JPEG or PNG; PDF is refused for these two.
+- `GET /trips/:id/photos` (passenger only) returns the newest staff-APPROVED profile photo of the trip's driver and car photo of the trip's vehicle, only for the passenger of that trip (ownership in the query), only from acceptance until the trip is completed. Not for searching, cancelled or expired trips, so a passenger can't collect driver photos by booking and cancelling.
+- What is sent is a re-encoded copy: 240×240 for the face, 480×320 for the car, JPEG, a few tens of kilobytes, for weak connections. Re-encoding with sharp removes the camera's metadata (including where the photo was taken). The original stays in private storage; there is still no public URL for any document. Copies are kept in a small in-memory cache keyed by document id (approved documents don't change).
+- Passenger opens to this through the API as base64 JSON, so the app's existing sign-in and token refresh handle it. Unlike staff opening documents, these views are not written to the audit log: they are routine and limited to the trip's own passenger.
+- The driver app and the website's driver and privacy pages now say that the profile and car photos are shown to passengers once approved.
+- When a photo is missing the app shows the driver's initial on green and a drawing of the vehicle type; a failed download shows the same rather than an error.

@@ -34,9 +34,9 @@ export default function Privacy() {
             optional emergency contact number.
           </li>
           <li>
-            <strong>Drivers:</strong> your National ID, driving licence, vehicle registration, photo
-            and any permits or insurance you upload; vehicle details; and your location while you
-            are online or on a trip.
+            <strong>Drivers:</strong> your National ID, driving licence, vehicle registration, a
+            photo of yourself, an optional photo of your vehicle, and any permits or insurance you
+            upload; vehicle details; and your location while you are online or on a trip.
           </li>
           <li>
             <strong>Trips:</strong> times, route distance, price, payment method ({market.payBy}),
@@ -73,11 +73,13 @@ export default function Privacy() {
         <ul>
           <li>
             Your driver or passenger sees your name and, only while the trip is open, your phone
-            number. Drivers’ vehicle and plate are shown to their passengers.
+            number. Drivers’ vehicle and plate are shown to their passengers, and so are the
+            driver’s photo and the vehicle photo once Musride staff have approved them (a small
+            copy, without the camera’s location data).
           </li>
           <li>
-            Musride staff see only what their role needs. Driver documents can be opened only by
-            verification staff, and every opening is recorded.
+            Musride staff see only what their role needs. Driver documents (ID, licence, vehicle
+            papers) can be opened only by verification staff, and every opening is recorded.
           </li>
           <li>
             Service providers that run parts of Musride for us: hosting, sign-in text messages, maps

@@ -13,7 +13,17 @@ export const REQUIRED_DRIVER_DOCUMENTS: readonly DocumentType[] = [
 ];
 
 /** Documents that describe a vehicle and must be linked to one. */
-export const VEHICLE_DOCUMENTS: readonly DocumentType[] = ['vehicle_registration', 'insurance'];
+export const VEHICLE_DOCUMENTS: readonly DocumentType[] = [
+  'vehicle_registration',
+  'insurance',
+  'vehicle_photo',
+];
+
+/**
+ * Photos a passenger may see once staff have approved them (ADR-027). Everything else (ID,
+ * licence, registration, insurance, permits) is only ever shown to authorised staff.
+ */
+export const PASSENGER_VISIBLE_PHOTOS: readonly DocumentType[] = ['profile_photo', 'vehicle_photo'];
 
 /** Plates are compared in one canonical form: upper case, no spaces or dots. */
 export function normalizePlate(input: string): string {

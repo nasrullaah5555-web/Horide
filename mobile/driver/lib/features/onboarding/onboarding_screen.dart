@@ -381,7 +381,9 @@ class _DocumentsState extends ConsumerState<_Documents> {
           ),
         const Gap(MusrideSpace.sm),
         Text(
-          'Your documents are stored privately and only Musride verification staff can see them.',
+          'Your ID, licence and vehicle papers are stored privately; only Musride verification '
+          'staff can see them. Once approved, your profile photo and the photo of your vehicle '
+          'are shown to your passenger during a trip, so they get into the right car.',
           style: TextStyle(color: Theme.of(context).colorScheme.onSurfaceVariant),
         ),
       ],

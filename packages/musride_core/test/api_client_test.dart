@@ -114,6 +114,34 @@ void main() {
       expect(await store.read(), isNull);
     });
 
+    for (final (label, refreshAnswer) in [
+      ('restarts (502)', () async => http.Response('<html>Bad Gateway</html>', 502)),
+      ('cannot be reached', () async => throw http.ClientException('connection reset')),
+    ]) {
+      test('when the server $label during a refresh, the person stays signed in', () async {
+        final store = MemoryTokenStore(const Tokens(accessToken: 'old', refreshToken: 'r-old'));
+        final client = ApiClient(
+          baseUrl: 'https://api.test',
+          tokens: store,
+          httpClient: MockClient((req) async {
+            if (req.url.path == '/auth/refresh') return refreshAnswer();
+            return json(401, {
+              'error': {'code': 'UNAUTHENTICATED', 'message': 'x'},
+            });
+          }),
+        );
+        var signedOut = false;
+        client.onSignedOut.listen((_) => signedOut = true);
+        await expectLater(
+          client.get('/auth/me'),
+          throwsA(isA<ApiException>().having((e) => e.isNetwork, 'isNetwork', true)),
+        );
+        await Future<void>.delayed(Duration.zero);
+        expect(signedOut, isFalse);
+        expect((await store.read())?.refreshToken, 'r-old');
+      });
+    }
+
     test('network failure becomes a friendly ApiException', () async {
       final client = ApiClient(
         baseUrl: 'https://api.test',

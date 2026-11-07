@@ -225,17 +225,84 @@ describe('Phone OTP authentication (e2e)', () => {
       await t.http().post('/auth/refresh').send({ refreshToken: r1.body.refreshToken }).expect(200);
     });
 
-    it('reusing an old refresh token revokes the whole session family', async () => {
+    it('reusing an old refresh token after its replacement was used revokes the family', async () => {
       const login = await loginAs(t, 'passenger');
       const r1 = await t
         .http()
         .post('/auth/refresh')
         .send({ refreshToken: login.refreshToken })
         .expect(200);
+      // The real phone keeps going: r1 is used.
+      const r2 = await t
+        .http()
+        .post('/auth/refresh')
+        .send({ refreshToken: r1.body.refreshToken })
+        .expect(200);
       // Attacker replays the original (already rotated) token:
       await t.http().post('/auth/refresh').send({ refreshToken: login.refreshToken }).expect(401);
       // The legitimate newest token is now dead too, forcing a fresh login.
+      await t.http().post('/auth/refresh').send({ refreshToken: r2.body.refreshToken }).expect(401);
+    });
+
+    it('a lost refresh answer: retrying with the same token soon after still works', async () => {
+      const login = await loginAs(t, 'passenger');
+      // The phone sends a refresh, the server rotates, but the answer never arrives.
+      const lost = await t
+        .http()
+        .post('/auth/refresh')
+        .send({ refreshToken: login.refreshToken })
+        .expect(200);
+      // The phone retries with the token it still has:
+      const retry = await t
+        .http()
+        .post('/auth/refresh')
+        .send({ refreshToken: login.refreshToken })
+        .expect(200);
+      // It carries on with the new token; the one that was lost is no longer valid on its own.
+      await t
+        .http()
+        .post('/auth/refresh')
+        .send({ refreshToken: retry.body.refreshToken })
+        .expect(200);
+      await t
+        .http()
+        .post('/auth/refresh')
+        .send({ refreshToken: lost.body.refreshToken })
+        .expect(401);
+    });
+
+    it('the retry window is short: a rotated token replayed later revokes the family', async () => {
+      const login = await loginAs(t, 'passenger');
+      const r1 = await t
+        .http()
+        .post('/auth/refresh')
+        .send({ refreshToken: login.refreshToken })
+        .expect(200);
+      await sql`UPDATE auth_sessions SET revoked_at = now() - interval '2 minutes'
+                WHERE user_id = ${login.user.id} AND replaced_by IS NOT NULL`.execute(t.db);
+      await t.http().post('/auth/refresh').send({ refreshToken: login.refreshToken }).expect(401);
       await t.http().post('/auth/refresh').send({ refreshToken: r1.body.refreshToken }).expect(401);
+    });
+
+    it('a signed-out token is never revived by the retry window', async () => {
+      const login = await loginAs(t, 'passenger');
+      await t.http().post('/auth/logout').send({ refreshToken: login.refreshToken }).expect(204);
+      await t.http().post('/auth/refresh').send({ refreshToken: login.refreshToken }).expect(401);
+    });
+
+    it('every refresh restarts the inactivity limit', async () => {
+      const login = await loginAs(t, 'passenger');
+      await sql`UPDATE auth_sessions SET expires_at = now() + interval '1 day'
+                WHERE user_id = ${login.user.id}`.execute(t.db);
+      await t.http().post('/auth/refresh').send({ refreshToken: login.refreshToken }).expect(200);
+      const newest = await t.db
+        .selectFrom('auth_sessions')
+        .select('expires_at')
+        .where('user_id', '=', login.user.id)
+        .where('revoked_at', 'is', null)
+        .executeTakeFirstOrThrow();
+      const days = (new Date(newest.expires_at).getTime() - Date.now()) / 86_400_000;
+      expect(days).toBeGreaterThan(179);
     });
 
     it('logout revokes the session', async () => {

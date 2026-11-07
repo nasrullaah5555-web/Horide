@@ -158,3 +158,13 @@ The owner asked to see the driver's photo and the car before getting in, as Uber
 - The photos travel as base64 inside JSON, so the app's existing sign-in and token refresh handle it. Unlike staff opening documents, these views are not written to the audit log: they are routine and limited to the trip's own passenger.
 - The driver app and the website's driver and privacy pages now say that the profile and car photos are shown to passengers once approved.
 - When a photo is missing the app shows the driver's initial on green and a drawing of the vehicle type; a failed download shows the same rather than an error.
+
+## ADR-028 Stay signed in until signing out (2026-11-07)
+
+The owner asked that passengers and drivers stay signed in until they sign out themselves.
+
+- Every refresh already restarted the refresh token's lifetime. The limit is now the time a phone may go **without opening the app**: `REFRESH_TOKEN_TTL_DAYS` 180 by default (was 30), up to 365. Someone who uses the app at least every six months never has to sign in again. There is still a limit so that a lost, unused phone doesn't stay signed in forever.
+- Two causes of unwanted sign-outs found and fixed:
+  1. The app signed out when it could not reach the server while refreshing (weak signal, server restarting). It now signs out only when the API itself answers 401/403 to the refresh; otherwise it keeps the tokens and shows "Could not reach Musride".
+  2. On a weak connection the answer to a refresh can be lost. The phone then retries with the old token, which looked like theft and signed out every device. For 60 seconds after rotation, while the replacement token has never been used, that retry now gets a fresh pair. A copied token used after the real phone has moved on still revokes the whole session family.
+- Unchanged: access tokens last 15 minutes, refresh tokens are stored only as hashes, signing out (or deleting the account) ends the session on the server, staff sessions have their own rules.

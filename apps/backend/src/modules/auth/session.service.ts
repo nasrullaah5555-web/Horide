@@ -25,7 +25,14 @@ export interface LoginResult extends IssuedTokens {
  * - Refresh token: long-lived, stored only as a hash, replaced on every use ("rotation").
  * - If an already-used refresh token is presented again, someone has copied it: the whole
  *   session family is revoked, logging out both the thief and the real user.
+ * - Except one honest case (REFRESH_REUSE_GRACE_SECONDS): on a weak connection the phone can
+ *   lose the answer to a refresh and retry with the same token. Within a short window, and only
+ *   while the token that replaced it has never been used, that retry gets a fresh pair instead
+ *   of a sign-out. A thief racing the phone would still be caught on the next use.
+ * - Each refresh restarts REFRESH_TOKEN_TTL_DAYS, so someone who opens the app now and then
+ *   stays signed in until they sign out (ADR-028).
  */
+const REFRESH_REUSE_GRACE_SECONDS = 60;
 @Injectable()
 export class SessionService {
   private readonly logger = new Logger(SessionService.name);
@@ -97,6 +104,7 @@ export class SessionService {
           's.family_id',
           's.expires_at',
           's.revoked_at',
+          's.replaced_by',
           's.device_info',
           'u.role',
           'u.status',
@@ -107,6 +115,30 @@ export class SessionService {
 
       if (!session) return { ok: false as const };
 
+      if (session.revoked_at !== null && session.replaced_by !== null) {
+        const rotatedAgo = Date.now() - new Date(session.revoked_at).getTime();
+        const replacement =
+          rotatedAgo < REFRESH_REUSE_GRACE_SECONDS * 1000
+            ? await trx
+                .selectFrom('auth_sessions')
+                .select(['id', 'revoked_at'])
+                .where('id', '=', session.replaced_by)
+                .forUpdate()
+                .executeTakeFirst()
+            : undefined;
+        if (replacement && replacement.revoked_at === null && session.status !== 'deleted') {
+          // The answer to the last refresh was lost: replace its never-used token with a new one.
+          const tokens = await this.openSession(
+            trx,
+            session.user_id,
+            session.role,
+            session.family_id,
+            session.device_info,
+            replacement.id,
+          );
+          return { ok: true as const, tokens };
+        }
+      }
       if (session.revoked_at !== null) {
         // Reuse of a rotated token: revoke the whole family. Committed, then reported as 401.
         await this.revokeFamily(trx, session.family_id);

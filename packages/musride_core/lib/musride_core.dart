@@ -27,5 +27,6 @@ export 'src/widgets/delete_account.dart';
 export 'src/widgets/emergency_sheet.dart';
 export 'src/widgets/notifications.dart';
 export 'src/widgets/ride_pin.dart';
+export 'src/widgets/trip_photos.dart';
 export 'src/widgets/share_trip.dart';
 export 'src/widgets/sign_panel.dart';

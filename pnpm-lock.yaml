@@ -7,6 +7,7 @@ settings:
 overrides:
   multer: '>=2.5.0'
   postcss: '>=8.5.23'
+  sharp: '>=0.35.5'
 
 importers:
 
@@ -121,6 +122,9 @@ importers:
       rxjs:
         specifier: ^7.8.2
         version: 7.8.2
+      sharp:
+        specifier: '>=0.35.5'
+        version: 0.35.5(@types/node@22.20.5)
       socket.io:
         specifier: ^4.8.4
         version: 4.8.4
@@ -4590,8 +4594,7 @@ snapshots:
 
   '@humanwhocodes/retry@0.4.3': {}
 
-  '@img/colour@1.1.0':
-    optional: true
+  '@img/colour@1.1.0': {}
 
   '@img/sharp-darwin-arm64@0.35.5':
     optionalDependencies:
@@ -8168,7 +8171,6 @@ snapshots:
       '@img/sharp-win32-ia32': 0.35.5
       '@img/sharp-win32-x64': 0.35.5
       '@types/node': 22.20.5
-    optional: true
 
   shebang-command@2.0.0:
     dependencies:

@@ -115,7 +115,8 @@ export type DocumentType =
   | 'vehicle_registration'
   | 'permit'
   | 'insurance'
-  | 'profile_photo';
+  | 'profile_photo'
+  | 'vehicle_photo';
 export type TripStatus =
   | 'requested'
   | 'searching'

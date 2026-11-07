@@ -10,10 +10,11 @@ const documentLabels = <String, String>{
   'national_id': 'National ID',
   'driving_licence': 'Driving licence',
   'vehicle_registration': 'Vehicle registration',
+  'vehicle_photo': 'Photo of your vehicle (recommended)',
   'insurance': 'Insurance (if you have it)',
   'permit': 'Transport permit (if you have it)',
 };
-const vehicleDocuments = {'vehicle_registration', 'insurance'};
+const vehicleDocuments = {'vehicle_registration', 'insurance', 'vehicle_photo'};
 
 class DriverVehicle {
   const DriverVehicle(this.data);

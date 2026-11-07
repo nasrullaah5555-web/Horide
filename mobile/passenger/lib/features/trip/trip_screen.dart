@@ -17,6 +17,18 @@ import 'trip_finished.dart';
 /// The share of the screen the trip panel can cover; the map keeps both ends above it.
 const _panelShare = 0.5;
 
+/// The driver's and car's photos for a trip: fetched once, then kept while the app runs.
+/// A failed fetch (weak connection) shows the plain placeholders instead of an error.
+final tripPhotosProvider = FutureProvider.autoDispose.family<TripPhotos, String>((ref, id) async {
+  try {
+    final photos = await ref.read(passengerApiProvider).photos(id);
+    ref.keepAlive();
+    return photos;
+  } on ApiException {
+    return TripPhotos.none;
+  }
+});
+
 /// The open trip, from searching to finished. Every status shown here comes from the server.
 class TripScreen extends ConsumerStatefulWidget {
   const TripScreen({super.key});
@@ -278,7 +290,7 @@ class _TripScreenState extends ConsumerState<TripScreen> {
         ),
         if (driver != null && trip.status.hasDriver) ...[
           const Gap(MusrideSpace.md),
-          _DriverCard(driver: driver),
+          _DriverCard(tripId: trip.id, driver: driver),
           const Gap(MusrideSpace.sm),
           StatusText(
             loc == null
@@ -348,39 +360,75 @@ class _TripScreenState extends ConsumerState<TripScreen> {
       seconds < 120 ? '$seconds seconds' : '${seconds ~/ 60} minutes';
 }
 
-class _DriverCard extends StatelessWidget {
-  const _DriverCard({required this.driver});
+class _DriverCard extends ConsumerWidget {
+  const _DriverCard({required this.tripId, required this.driver});
+  final String tripId;
   final TripDriver driver;
 
   @override
-  Widget build(BuildContext context) {
+  Widget build(BuildContext context, WidgetRef ref) {
     final theme = Theme.of(context);
+    final photos = ref.watch(tripPhotosProvider(tripId)).valueOrNull ?? TripPhotos.none;
     final phone = driver.phone;
-    return Row(
+    final rating = double.tryParse(driver.rating);
+    final firstName = driver.name?.trim().split(RegExp(r'\s+')).first;
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.stretch,
       children: [
-        InitialAvatar(driver.name),
-        const Gap(MusrideSpace.md),
-        Expanded(
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              Text(driver.name ?? 'Your driver', style: theme.textTheme.titleMedium),
-              Text(
-                '${driver.vehicle.description}  •  ${driver.ratingCount == 0 ? 'New driver' : '${driver.rating} ★ (${driver.ratingCount})'}',
-                style: TextStyle(color: theme.colorScheme.onSurfaceVariant),
+        Row(
+          children: [
+            Column(
+              children: [
+                DriverPhoto(name: driver.name, photo: photos.driver),
+                const Gap(MusrideSpace.xxs),
+                Text(
+                  driver.ratingCount == 0 || rating == null
+                      ? 'New'
+                      : '★ ${rating.toStringAsFixed(1)}',
+                  style: theme.textTheme.labelLarge,
+                ),
+              ],
+            ),
+            const Gap(MusrideSpace.md),
+            Expanded(
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text(
+                    driver.name ?? 'Your driver',
+                    style: theme.textTheme.titleMedium,
+                    maxLines: 1,
+                    overflow: TextOverflow.ellipsis,
+                  ),
+                  Text(
+                    driver.vehicle.description,
+                    style: TextStyle(color: theme.colorScheme.onSurfaceVariant),
+                    maxLines: 2,
+                    overflow: TextOverflow.ellipsis,
+                  ),
+                  const Gap(MusrideSpace.xs),
+                  // The plate is the passenger's check that this is the right car.
+                  PlateBadge(driver.vehicle.plate),
+                ],
               ),
-              const Gap(MusrideSpace.xs),
-              // The plate is the passenger's check that this is the right car.
-              PlateBadge(driver.vehicle.plate),
-            ],
-          ),
+            ),
+            const Gap(MusrideSpace.sm),
+            VehiclePhoto(
+              category: driver.vehicle.category,
+              photo: photos.vehicle,
+              description: driver.vehicle.description,
+            ),
+          ],
         ),
-        if (phone != null)
-          MusrideRoundButton(
+        if (phone != null) ...[
+          const Gap(MusrideSpace.md),
+          MusrideButton(
+            kind: MusrideButtonKind.secondary,
             icon: Icons.call,
-            label: 'Call driver',
+            label: firstName == null || firstName.isEmpty ? 'Call driver' : 'Call $firstName',
             onPressed: () => launchUrl(Uri(scheme: 'tel', path: phone)),
           ),
+        ],
       ],
     );
   }

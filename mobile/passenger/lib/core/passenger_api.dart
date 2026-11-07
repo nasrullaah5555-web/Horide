@@ -105,6 +105,10 @@ class PassengerApi {
   /// A link family can open to follow this trip; it stops working when the trip ends.
   Future<String> shareLink(String id) async => (await _c.post('/trips/$id/share'))['url'] as String;
 
+  /// Small approved photos of the driver and the car, once a driver has accepted (ADR-027).
+  Future<TripPhotos> photos(String id) async =>
+      TripPhotos.fromJson(await _c.get('/trips/$id/photos'));
+
   Future<Trip> cancel(String id, {String? reason}) async =>
       Trip.fromJson(await _c.post('/trips/$id/cancel', {if (reason != null) 'reason': reason}));
 

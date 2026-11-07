@@ -28,7 +28,7 @@ import {
   type StorageProvider,
 } from '../storage/storage.provider';
 import { AccountService } from '../users/account.service';
-import { normalizePlate, VEHICLE_DOCUMENTS } from './driver-requirements';
+import { normalizePlate, PASSENGER_VISIBLE_PHOTOS, VEHICLE_DOCUMENTS } from './driver-requirements';
 import { DriverEligibilityService } from './driver-eligibility.service';
 
 const DOC_TYPES = [
@@ -38,6 +38,7 @@ const DOC_TYPES = [
   'permit',
   'insurance',
   'profile_photo',
+  'vehicle_photo',
 ] as const;
 
 const profileSchema = z.strictObject({ fullName: z.string().trim().min(1).max(120) });
@@ -260,6 +261,13 @@ export class DriverController {
         HttpStatus.UNSUPPORTED_MEDIA_TYPE,
         'UNSUPPORTED_FILE',
         'Only JPEG, PNG or PDF files are accepted.',
+      );
+    }
+    if (PASSENGER_VISIBLE_PHOTOS.includes(body.type) && mime === 'application/pdf') {
+      throw new AppError(
+        HttpStatus.UNSUPPORTED_MEDIA_TYPE,
+        'PHOTO_REQUIRED',
+        'This needs a photo (JPEG or PNG), not a PDF.',
       );
     }
     if (VEHICLE_DOCUMENTS.includes(body.type) && !body.vehicleId) {

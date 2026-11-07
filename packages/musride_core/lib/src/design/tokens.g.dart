@@ -101,6 +101,9 @@ abstract final class MusrideSize {
   static const marker = 30.0;
   static const spinner = 24.0;
   static const star = 38.0;
+  static const driverPhoto = 64.0;
+  static const vehiclePhotoWidth = 120.0;
+  static const vehiclePhotoHeight = 80.0;
 }
 
 /// Line and border widths.

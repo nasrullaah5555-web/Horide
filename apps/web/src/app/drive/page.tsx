@@ -33,7 +33,7 @@ export default function Drive() {
         <li>Your National ID</li>
         <li>A valid driving licence</li>
         <li>Your vehicle’s registration document</li>
-        <li>A clear photo of yourself</li>
+        <li>A clear photo of yourself, and one of your vehicle (shown to your passengers)</li>
         <li>Any insurance or permit that applies to your vehicle</li>
       </ul>
       <p className="mt-3 text-navy-soft">

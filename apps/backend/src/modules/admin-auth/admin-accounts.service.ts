@@ -17,7 +17,29 @@ export interface NewAdminCredentials {
   otpauthUrl: string;
 }
 
-export const MIN_ADMIN_PASSWORD_LENGTH = 12;
+/**
+ * Staff passwords (owner's choice, 2026-11-07): at least 8 characters with a capital letter, a
+ * number and a symbol, and none of the patterns guessed first. Short is acceptable here only
+ * because every staff sign-in also needs the authenticator code and repeated failures lock the
+ * account (NIST SP 800-63B allows 8 with a second factor).
+ */
+export const MIN_ADMIN_PASSWORD_LENGTH = 8;
+const GUESSED_FIRST = ['password', 'passw0rd', 'musride', 'horide', 'qwerty', 'abc123', '12345'];
+
+/** What is wrong with a new staff password, in plain words, or null when it is acceptable. */
+export function adminPasswordProblem(password: string): string | null {
+  if (password.length < MIN_ADMIN_PASSWORD_LENGTH) {
+    return `Use at least ${MIN_ADMIN_PASSWORD_LENGTH} characters.`;
+  }
+  if (!/[A-Z]/.test(password)) return 'Add at least one capital letter.';
+  if (!/[0-9]/.test(password)) return 'Add at least one number.';
+  if (!/[^A-Za-z0-9]/.test(password)) return 'Add at least one symbol, such as ! # or @.';
+  const lower = password.toLowerCase();
+  if (GUESSED_FIRST.some((w) => lower.includes(w))) {
+    return 'That password is too easy to guess. Avoid words like "password" or "musride".';
+  }
+  return null;
+}
 
 /** Creating and managing admin accounts. Used by the API and by the create-admin CLI. */
 @Injectable()

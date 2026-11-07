@@ -77,8 +77,10 @@ class ApiClient {
   }
 
   /// Unauthenticated calls (OTP request/verify, refresh) skip the token logic.
+  /// Sign-in requests (no token). Network failures get the same plain messages as every other
+  /// call; before, they surfaced as "Something went wrong" on the code screen.
   Future<Map<String, dynamic>> postPublic(String path, Object body) async {
-    final res = await _raw('POST', path, body: body, accessToken: null);
+    final res = await _guard(() => _raw('POST', path, body: body, accessToken: null));
     return _decode(res);
   }
 
@@ -183,6 +185,15 @@ class ApiClient {
         error['code'] as String? ?? 'ERROR',
         error['message'] as String? ?? 'Something went wrong. Please try again.',
         error['details'],
+      );
+    }
+    // No JSON error: the hosting in front of the API answered (502/503/504 while the server
+    // restarts after an update, or wakes up on the free plan). Say that, not "something went wrong".
+    if (res.statusCode == 502 || res.statusCode == 503 || res.statusCode == 504) {
+      throw ApiException(
+        res.statusCode,
+        'UNAVAILABLE',
+        'Musride is restarting or busy. Wait a minute and try again.',
       );
     }
     throw ApiException(res.statusCode, 'ERROR', 'Something went wrong. Please try again.');

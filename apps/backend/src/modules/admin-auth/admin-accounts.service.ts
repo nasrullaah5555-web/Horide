@@ -1,6 +1,6 @@
 import { HttpStatus, Inject, Injectable } from '@nestjs/common';
-import { Kysely, Transaction } from 'kysely';
-import { randomBytes } from 'node:crypto';
+import { Kysely, sql, Transaction } from 'kysely';
+import { createHash, randomBytes } from 'node:crypto';
 import { AppError } from '../../common/errors';
 import { APP_CONFIG } from '../../config/config.module';
 import type { AppConfig } from '../../config/env';
@@ -87,6 +87,53 @@ export class AdminAccountsService {
     });
 
     return { id, email, temporaryPassword, totpSecret, otpauthUrl: otpauthUrl(totpSecret, email) };
+  }
+
+  /**
+   * STAGING ONLY (see staging-admin.ts): gives an existing admin a new random temporary password,
+   * unlocks the account and signs out every session. One-shot per `key`: a key already used is
+   * ignored, so leaving the setting in place can't reset the password again on every restart.
+   * Returns the new password ONCE, or null when the key was used before or there is no such admin.
+   */
+  async resetPasswordForStaging(email: string, key: string): Promise<string | null> {
+    const keyHash = createHash('sha256').update(key).digest('hex');
+    const temporaryPassword = randomBytes(15).toString('base64url'); // 20 characters
+    return this.db.transaction().execute(async (trx) => {
+      const used = await trx
+        .selectFrom('audit_logs')
+        .select('id')
+        .where('action', '=', 'admin.password_reset_staging')
+        .where(sql<string>`after->>'key'`, '=', keyHash)
+        .executeTakeFirst();
+      if (used) return null;
+      const admin = await trx
+        .updateTable('admin_users')
+        .set({
+          password_hash: await hashPassword(temporaryPassword),
+          failed_login_count: 0,
+          locked_until: null,
+        })
+        .where('email', '=', email.toLowerCase())
+        .returning('id')
+        .executeTakeFirst();
+      if (!admin) return null;
+      await trx
+        .updateTable('admin_sessions')
+        .set({ revoked_at: sql`now()` })
+        .where('admin_user_id', '=', admin.id)
+        .where('revoked_at', 'is', null)
+        .execute();
+      await this.audit.record(trx, {
+        actorType: 'system',
+        actorId: null,
+        action: 'admin.password_reset_staging',
+        entityType: 'admin_user',
+        entityId: admin.id,
+        after: { key: keyHash },
+        ip: null,
+      });
+      return temporaryPassword;
+    });
   }
 
   async setRoles(adminId: string, roles: AdminRole[], actor: { id: string; ip: string | null }) {

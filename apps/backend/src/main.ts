@@ -11,6 +11,7 @@ async function main(): Promise<void> {
   const config = loadConfig();
   const app = await createApp(config);
   await bootstrapStagingAdmin(app, config);
+  await resetStagingAdminPassword(app, config);
   await app.listen(config.PORT, '0.0.0.0');
 }
 
@@ -39,6 +40,39 @@ async function bootstrapStagingAdmin(
       `  Temporary password: ${creds.temporaryPassword}`,
       `  Authenticator key:  ${creds.totpSecret}`,
       `  Authenticator link: ${creds.otpauthUrl}`,
+      '',
+    ].join('\n'),
+  );
+}
+
+/**
+ * Staging only (config refuses it elsewhere): a forgotten staff password on a host without a
+ * shell. Each STAGING_ADMIN_PASSWORD_RESET word works once (it is recorded in the audit log), so
+ * a restart with the same word changes nothing. The authenticator stays the same.
+ */
+async function resetStagingAdminPassword(
+  app: Awaited<ReturnType<typeof createApp>>,
+  config: AppConfig,
+): Promise<void> {
+  const word = config.STAGING_ADMIN_PASSWORD_RESET;
+  const email = config.STAGING_BOOTSTRAP_ADMIN_EMAIL;
+  if (config.NODE_ENV !== 'staging' || !word || !email) return;
+  const password = await app.get(AdminAccountsService).resetPasswordForStaging(email, word);
+  if (!password) {
+    console.log(
+      '=== STAGING: password reset skipped (this reset word was already used, or no such staff ' +
+        'account). Remove STAGING_ADMIN_PASSWORD_RESET, or set a new word to reset again. ===',
+    );
+    return;
+  }
+  console.log(
+    [
+      '',
+      '=== STAGING: staff password reset. Shown ONCE. Change it after sign-in, then remove ' +
+        'STAGING_ADMIN_PASSWORD_RESET. ===',
+      `  Email:              ${email}`,
+      `  Temporary password: ${password}`,
+      '  Authenticator:      unchanged (keep using the same app entry)',
       '',
     ].join('\n'),
   );

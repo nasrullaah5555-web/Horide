@@ -178,6 +178,7 @@ Cost: free. Supabase pauses a free project after a week without use (resume it i
    - Console → Environment → `MUSRIDE_API_URL` = `https://<api address>`, then **Manual Deploy → Clear build cache & deploy** (the address is read when the console is built).
 4. Check `https://<api address>/health` shows `{"status":"ok","database":"up"}`.
 5. API → Logs: find the block "STAGING: first staff account created". It shows the email, a temporary password and an authenticator key, **once**. Add the key to an authenticator app, sign in to the console, and change the password under Account.
+   Forgot the staging staff password: API → Environment → add `STAGING_ADMIN_PASSWORD_RESET` with any new word (6+ characters) → Save (the API restarts) → Logs: find "STAGING: staff password reset" for a new temporary password, shown once. The authenticator stays the same. Sign in, change the password under Account, then delete the setting. A word works only once; to reset again, use a different word. Production refuses this setting.
 6. Open the website address and click through every page.
 
 The API refuses to start with a clear list in its log if anything is missing or wrong. The certificate check is real: without the right certificate, or with the wrong host, the database connection is refused (tested locally, TEST_REPORT).

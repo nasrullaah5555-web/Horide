@@ -20,6 +20,7 @@ export 'src/money.dart';
 export 'src/phone.dart';
 export 'src/realtime.dart';
 export 'src/theme.dart';
+export 'src/widgets/cancel_ride.dart';
 export 'src/widgets/config_error_app.dart';
 export 'src/widgets/connection_banner.dart';
 export 'src/widgets/delete_account.dart';

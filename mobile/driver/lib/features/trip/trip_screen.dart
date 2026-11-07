@@ -97,41 +97,20 @@ class _TripScreenState extends ConsumerState<TripScreen> {
   }
 
   Future<void> _cancel(Trip trip) async {
-    final reason = TextEditingController();
-    final text = await showDialog<String>(
-      context: context,
-      builder:
-          (d) => AlertDialog(
-            title: const Text('Cancel this trip?'),
-            content: TextField(
-              controller: reason,
-              maxLength: 300,
-              decoration: const InputDecoration(
-                hintText: 'Reason (for example: passenger not found)',
-              ),
-            ),
-            actions: [
-              MusrideButton(
-                compact: true,
-                kind: MusrideButtonKind.quiet,
-                label: 'Keep trip',
-                onPressed: () => Navigator.pop(d),
-              ),
-              MusrideButton(
-                compact: true,
-                label: 'Cancel trip',
-                onPressed: () => Navigator.pop(d, reason.text.trim()),
-              ),
-            ],
-          ),
+    final choice = await showCancelRideSheet(
+      context,
+      reasons: driverCancelReasons,
+      title: 'Cancel this trip?',
+      warning: 'The passenger will be told and can book another ride.',
+      keepLabel: 'Keep trip',
+      cancelLabel: 'Cancel trip',
     );
-    reason.dispose();
-    if (text == null) return;
+    if (choice == null || !mounted) return;
     setState(() => _busy = true);
     try {
       final t = await ref
           .read(driverApiProvider)
-          .cancel(trip.id, text.isEmpty ? 'Cancelled by driver' : text);
+          .cancel(trip.id, choice.reason ?? 'Cancelled by driver');
       ref.read(driverControllerProvider.notifier).showTrip(t);
     } catch (e) {
       if (mounted) showError(context, e);

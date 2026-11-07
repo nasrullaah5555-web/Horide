@@ -57,32 +57,15 @@ class _TripScreenState extends ConsumerState<TripScreen> {
   }
 
   Future<void> _cancel(Trip trip) async {
-    final ok = await showDialog<bool>(
-      context: context,
-      builder:
-          (d) => AlertDialog(
-            title: const Text('Cancel this ride?'),
-            content: Text(
-              trip.status.hasDriver
-                  ? 'Your driver is already on the way. A cancellation fee may apply.'
-                  : 'We will stop looking for a driver.',
-            ),
-            actions: [
-              MusrideButton(
-                compact: true,
-                kind: MusrideButtonKind.quiet,
-                label: 'Keep ride',
-                onPressed: () => Navigator.pop(d, false),
-              ),
-              MusrideButton(
-                compact: true,
-                label: 'Cancel ride',
-                onPressed: () => Navigator.pop(d, true),
-              ),
-            ],
-          ),
+    final choice = await showCancelRideSheet(
+      context,
+      reasons: passengerCancelReasons,
+      warning:
+          trip.status.hasDriver
+              ? 'Your driver is already on the way. A cancellation fee may apply.'
+              : 'We will stop looking for a driver.',
     );
-    if (ok == true) await _run((api) => api.cancel(trip.id));
+    if (choice != null) await _run((api) => api.cancel(trip.id, reason: choice.reason));
   }
 
   Future<void> _share(Trip trip) async {

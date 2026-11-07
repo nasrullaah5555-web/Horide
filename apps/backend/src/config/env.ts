@@ -42,6 +42,10 @@ export const envSchema = z
     // Staging only: creates this super admin at startup when there are no admins yet, and prints
     // its one-time sign-in details to the server log (hosts without a shell, e.g. Render free).
     STAGING_BOOTSTRAP_ADMIN_EMAIL: z.string().email().optional(),
+    // Staging only: a one-time word. At startup the staff account STAGING_BOOTSTRAP_ADMIN_EMAIL
+    // gets a new temporary password, printed once to the log. Each word works once; to reset
+    // again, use a different word. Remove it afterwards.
+    STAGING_ADMIN_PASSWORD_RESET: z.string().min(6).max(100).optional(),
     // The public website, used to build "Share my trip" links (https://<site>/share/#<secret>).
     // Without it, sharing is switched off.
     PUBLIC_WEB_URL: z.string().url().optional(),
@@ -184,6 +188,20 @@ export const envSchema = z
         code: 'custom',
         path: ['MARKET'],
         message: 'Nairobi is for test deployments only until Kenyan licensing is done',
+      });
+    }
+    if (env.STAGING_ADMIN_PASSWORD_RESET && env.NODE_ENV !== 'staging') {
+      ctx.addIssue({
+        code: 'custom',
+        path: ['STAGING_ADMIN_PASSWORD_RESET'],
+        message: 'only allowed when NODE_ENV=staging',
+      });
+    }
+    if (env.STAGING_ADMIN_PASSWORD_RESET && !env.STAGING_BOOTSTRAP_ADMIN_EMAIL) {
+      ctx.addIssue({
+        code: 'custom',
+        path: ['STAGING_ADMIN_PASSWORD_RESET'],
+        message: 'needs STAGING_BOOTSTRAP_ADMIN_EMAIL (whose password it resets)',
       });
     }
     if (env.STAGING_BOOTSTRAP_ADMIN_EMAIL && env.NODE_ENV !== 'staging') {

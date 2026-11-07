@@ -1,6 +1,7 @@
 import { sql } from 'kysely';
 import { totpCode, totpStep } from '../src/modules/admin-auth/crypto';
 import { MAX_FAILED_LOGINS } from '../src/modules/admin-auth/admin-auth.service';
+import { AdminAccountsService } from '../src/modules/admin-auth/admin-accounts.service';
 import { adminLogin, createTestAdmin, resetTotpReplay } from './helpers/admin';
 import { startTestApp, type TestApp } from './helpers/app';
 
@@ -274,5 +275,60 @@ describe('Admin authentication and permissions (e2e)', () => {
     it('a user (passenger) token cannot reach admin endpoints', async () => {
       await t.http().get('/admin/auth/me').set('Authorization', 'Bearer something').expect(401);
     });
+  });
+});
+
+describe('Staging staff password reset (e2e)', () => {
+  let t: TestApp;
+  beforeAll(async () => {
+    t = await startTestApp();
+  });
+  afterAll(() => t.close());
+
+  const login = (email: string, password: string, code: string) =>
+    t.http().post('/admin/auth/login').send({ email, password, totpCode: code });
+
+  it('gives a new password once per word, unlocks, signs out, keeps the authenticator', async () => {
+    const accounts = t.app.get(AdminAccountsService);
+    const c = await createTestAdmin(t, ['super']);
+    // A session that must end, and a lock from failed tries that must lift.
+    await login(c.email, c.temporaryPassword, totpCode(c.totpSecret, totpStep())).expect(200);
+    await t.db
+      .updateTable('admin_users')
+      .set({ failed_login_count: 9, locked_until: new Date(Date.now() + 3_600_000) })
+      .where('email', '=', c.email)
+      .execute();
+
+    const word = `reset-${Date.now()}`;
+    const fresh = await accounts.resetPasswordForStaging(c.email.toUpperCase(), word);
+    expect(fresh).toMatch(/^[\w-]{20}$/);
+    // Same word again (a restart with the setting still there): nothing changes.
+    expect(await accounts.resetPasswordForStaging(c.email, word)).toBeNull();
+    // Unknown account: nothing happens.
+    expect(await accounts.resetPasswordForStaging('nobody@test.local', `${word}-x`)).toBeNull();
+
+    const open = await t.db
+      .selectFrom('admin_sessions as s')
+      .innerJoin('admin_users as u', 'u.id', 's.admin_user_id')
+      .select('s.id')
+      .where('u.email', '=', c.email)
+      .where('s.revoked_at', 'is', null)
+      .execute();
+    expect(open).toHaveLength(0);
+
+    await resetTotpReplay(t, c.id);
+    await login(c.email, c.temporaryPassword, totpCode(c.totpSecret, totpStep())).expect(401);
+    await resetTotpReplay(t, c.id);
+    await login(c.email, fresh!, totpCode(c.totpSecret, totpStep())).expect(200);
+
+    const audit = await t.db
+      .selectFrom('audit_logs')
+      .select(['actor_type', 'after'])
+      .where('action', '=', 'admin.password_reset_staging')
+      .where('entity_id', '=', c.id)
+      .execute();
+    expect(audit).toHaveLength(1);
+    // The word itself is never stored, only its hash.
+    expect(JSON.stringify(audit)).not.toContain(word);
   });
 });

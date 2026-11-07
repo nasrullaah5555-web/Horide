@@ -156,5 +156,19 @@ describe('loadConfig', () => {
         loadConfig({ ...productionOk, STAGING_BOOTSTRAP_ADMIN_EMAIL: 'owner@example.com' }),
       ).toThrow(/STAGING_BOOTSTRAP_ADMIN_EMAIL/);
     });
+
+    it('never allows the staff password reset outside staging, nor without its account', () => {
+      expect(() =>
+        loadConfig({ ...productionOk, STAGING_ADMIN_PASSWORD_RESET: 'reset-once' }),
+      ).toThrow(/STAGING_ADMIN_PASSWORD_RESET/);
+      const { STAGING_BOOTSTRAP_ADMIN_EMAIL: _email, ...noAccount } = staging;
+      expect(() =>
+        loadConfig({ ...noAccount, STAGING_ADMIN_PASSWORD_RESET: 'reset-once' }),
+      ).toThrow(/STAGING_ADMIN_PASSWORD_RESET/);
+      expect(
+        loadConfig({ ...staging, STAGING_ADMIN_PASSWORD_RESET: 'reset-once' })
+          .STAGING_ADMIN_PASSWORD_RESET,
+      ).toBe('reset-once');
+    });
   });
 });

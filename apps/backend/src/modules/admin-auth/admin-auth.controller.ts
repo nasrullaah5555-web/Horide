@@ -25,7 +25,7 @@ import type { AppConfig } from '../../config/env';
 import { DATABASE } from '../../database/database.module';
 import type { DB } from '../../database/types';
 import { AuditService } from '../audit/audit.service';
-import { AdminAccountsService, MIN_ADMIN_PASSWORD_LENGTH } from './admin-accounts.service';
+import { AdminAccountsService, adminPasswordProblem } from './admin-accounts.service';
 import { AdminAuthService, type AdminPrincipal } from './admin-auth.service';
 import {
   ADMIN_COOKIE,
@@ -45,7 +45,13 @@ const loginSchema = z.strictObject({
 });
 const passwordSchema = z.strictObject({
   currentPassword: z.string().min(1).max(200),
-  newPassword: z.string().min(MIN_ADMIN_PASSWORD_LENGTH).max(200),
+  newPassword: z
+    .string()
+    .max(200)
+    .superRefine((v, ctx) => {
+      const problem = adminPasswordProblem(v);
+      if (problem) ctx.addIssue({ code: 'custom', message: problem });
+    }),
 });
 const createAdminSchema = z.strictObject({
   email: z.string().email().max(200),

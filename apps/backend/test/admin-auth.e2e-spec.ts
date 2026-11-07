@@ -155,7 +155,7 @@ describe('Admin authentication and permissions (e2e)', () => {
         .post('/admin/auth/password')
         .set('Cookie', first.cookie)
         .set('X-CSRF-Token', first.csrf)
-        .send({ currentPassword: first.password, newPassword: 'a-new-long-password-123' })
+        .send({ currentPassword: first.password, newPassword: 'Sunrise#2026' })
         .expect(204);
       await t.http().get('/admin/auth/me').set('Cookie', first.cookie).expect(200);
       await t.http().get('/admin/auth/me').set('Cookie', second).expect(401);

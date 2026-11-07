@@ -5,6 +5,23 @@ import { Button, ErrorNotice, inputClass, PageHeader, Panel } from '@/components
 import { api, ApiError } from '@/lib/api';
 import { useSession } from '@/lib/session';
 
+/** The same rules the server applies (admin-accounts.service.ts), checked here first. */
+function passwordProblem(p: string): string | null {
+  if (p.length < 8) return 'Use at least 8 characters.';
+  if (!/[A-Z]/.test(p)) return 'Add at least one capital letter.';
+  if (!/[0-9]/.test(p)) return 'Add at least one number.';
+  if (!/[^A-Za-z0-9]/.test(p)) return 'Add at least one symbol, such as ! # or @.';
+  const lower = p.toLowerCase();
+  if (
+    ['password', 'passw0rd', 'musride', 'horide', 'qwerty', 'abc123', '12345'].some((w) =>
+      lower.includes(w),
+    )
+  ) {
+    return 'That password is too easy to guess. Avoid words like "password" or "musride".';
+  }
+  return null;
+}
+
 export default function AccountPage() {
   const { admin } = useSession();
   const [current, setCurrent] = useState('');
@@ -24,6 +41,11 @@ export default function AccountPage() {
               e.preventDefault();
               setError(null);
               setDone(false);
+              const problem = passwordProblem(next);
+              if (problem) {
+                setError(new Error(problem));
+                return;
+              }
               if (next !== repeat) {
                 setError(new Error('The two new passwords are different.'));
                 return;
@@ -59,7 +81,7 @@ export default function AccountPage() {
               <span className="mb-1 block font-semibold">New password</span>
               <input
                 required
-                minLength={12}
+                minLength={8}
                 type="password"
                 autoComplete="new-password"
                 className={`${inputClass} w-full`}
@@ -67,14 +89,14 @@ export default function AccountPage() {
                 onChange={(e) => setNext(e.target.value)}
               />
               <span className="text-small text-muted">
-                At least 12 characters. A short sentence you can remember works well.
+                At least 8 characters, with a capital letter, a number and a symbol.
               </span>
             </label>
             <label className="block">
               <span className="mb-1 block font-semibold">New password again</span>
               <input
                 required
-                minLength={12}
+                minLength={8}
                 type="password"
                 autoComplete="new-password"
                 className={`${inputClass} w-full`}

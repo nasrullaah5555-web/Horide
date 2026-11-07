@@ -102,12 +102,7 @@ class _CancelSheetState extends State<_CancelSheet> {
         // Keeps the "something else" box above the keyboard.
         padding: EdgeInsets.only(bottom: MediaQuery.viewInsetsOf(context).bottom),
         child: SingleChildScrollView(
-          padding: const EdgeInsets.fromLTRB(
-            MusrideSpace.lg,
-            0,
-            MusrideSpace.lg,
-            MusrideSpace.lg,
-          ),
+          padding: const EdgeInsets.fromLTRB(MusrideSpace.lg, 0, MusrideSpace.lg, MusrideSpace.lg),
           child: Column(
             mainAxisSize: MainAxisSize.min,
             crossAxisAlignment: CrossAxisAlignment.stretch,

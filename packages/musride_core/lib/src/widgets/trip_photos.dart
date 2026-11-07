@@ -98,7 +98,9 @@ class VehiclePhoto extends StatelessWidget {
         child:
             photo == null
                 ? Icon(
-                  category == VehicleCategory.bajaj ? Icons.electric_rickshaw : Icons.directions_car,
+                  category == VehicleCategory.bajaj
+                      ? Icons.electric_rickshaw
+                      : Icons.directions_car,
                   size: MusrideSize.iconLarge * 2,
                   color: MusrideColors.navy,
                 )

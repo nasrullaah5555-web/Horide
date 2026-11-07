@@ -110,7 +110,9 @@ export const envSchema = z
     ADMIN_IDLE_MINUTES: z.coerce.number().int().min(5).max(240).default(30),
 
     ACCESS_TOKEN_TTL_SECONDS: z.coerce.number().int().min(60).max(3600).default(900),
-    REFRESH_TOKEN_TTL_DAYS: z.coerce.number().int().min(1).max(90).default(30),
+    // Days a phone may go WITHOUT opening the app before it must sign in again; every use restarts
+    // the count (ADR-028).
+    REFRESH_TOKEN_TTL_DAYS: z.coerce.number().int().min(1).max(365).default(180),
     OTP_TTL_SECONDS: z.coerce.number().int().min(60).max(900).default(300),
     OTP_MAX_ATTEMPTS: z.coerce.number().int().min(1).max(10).default(5),
     OTP_PER_PHONE_PER_15_MIN: z.coerce.number().int().min(1).max(20).default(3),

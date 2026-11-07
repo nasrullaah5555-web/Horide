@@ -43,7 +43,7 @@ class ApiClient {
   final http.Client _http;
 
   final _signedOut = StreamController<void>.broadcast();
-  Future<bool>? _refreshing;
+  Future<_Refresh>? _refreshing;
 
   /// Fires when the session ended and the user must log in again.
   Stream<void> get onSignedOut => _signedOut.stream;
@@ -96,11 +96,22 @@ class ApiClient {
     required bool authenticated,
   }) async {
     var res = await _guard(request);
-    if (res.statusCode == 401 && authenticated && await _refresh()) {
-      res = await _guard(request);
-    }
     if (res.statusCode == 401 && authenticated) {
-      await _endSession();
+      switch (await _refresh()) {
+        case _Refresh.renewed:
+          res = await _guard(request);
+          if (res.statusCode == 401) await _endSession();
+        case _Refresh.rejected:
+          // The server refused the sign-in itself (signed out elsewhere, deleted, stolen token).
+          await _endSession();
+        case _Refresh.unreachable:
+          // No answer (weak signal, server restarting): stay signed in and say so.
+          throw const ApiException(
+            0,
+            'NETWORK',
+            'Could not reach Musride. Check your internet and try again.',
+          );
+      }
     }
     return _decode(res);
   }
@@ -132,13 +143,13 @@ class ApiClient {
   }
 
   /// One refresh at a time; everyone waiting gets the same result.
-  Future<bool> _refresh() {
+  Future<_Refresh> _refresh() {
     return _refreshing ??= _doRefresh().whenComplete(() => _refreshing = null);
   }
 
-  Future<bool> _doRefresh() async {
+  Future<_Refresh> _doRefresh() async {
     final current = await tokens.read();
-    if (current == null) return false;
+    if (current == null) return _Refresh.rejected;
     try {
       final res = await _raw(
         'POST',
@@ -146,7 +157,10 @@ class ApiClient {
         body: {'refreshToken': current.refreshToken},
         accessToken: null,
       );
-      if (res.statusCode != 200) return false;
+      // Only a clear "no" from the API ends the session. Anything else (502 while the server
+      // restarts, a cut connection) keeps the tokens so the next request can try again.
+      if (res.statusCode == 401 || res.statusCode == 403) return _Refresh.rejected;
+      if (res.statusCode != 200) return _Refresh.unreachable;
       final data = jsonDecode(res.body) as Map<String, dynamic>;
       await tokens.write(
         Tokens(
@@ -154,10 +168,9 @@ class ApiClient {
           refreshToken: data['refreshToken'] as String,
         ),
       );
-      return true;
+      return _Refresh.renewed;
     } on Exception {
-      // Network trouble while refreshing: keep the tokens, the next request will try again.
-      return false;
+      return _Refresh.unreachable;
     }
   }
 
@@ -204,3 +217,6 @@ class ApiClient {
     _signedOut.close();
   }
 }
+
+/// How renewing the sign-in went.
+enum _Refresh { renewed, rejected, unreachable }

@@ -148,5 +148,33 @@ void main() {
       expect(user.isNew, isTrue);
       expect((await store.read())?.refreshToken, 'r');
     });
+
+    test('sign-in requests turn a lost connection into a plain message', () async {
+      final client = ApiClient(
+        baseUrl: 'https://api.test',
+        tokens: MemoryTokenStore(null),
+        httpClient: MockClient((_) async => throw http.ClientException('connection reset')),
+      );
+      await expectLater(
+        client.postPublic('/auth/otp/verify', {}),
+        throwsA(isA<ApiException>().having((e) => e.code, 'code', 'NETWORK')),
+      );
+    });
+
+    test('a restarting server (502 without JSON) says so', () async {
+      final client = ApiClient(
+        baseUrl: 'https://api.test',
+        tokens: MemoryTokenStore(null),
+        httpClient: MockClient((_) async => http.Response('<html>Bad Gateway</html>', 502)),
+      );
+      await expectLater(
+        client.postPublic('/auth/otp/verify', {}),
+        throwsA(
+          isA<ApiException>()
+              .having((e) => e.code, 'code', 'UNAVAILABLE')
+              .having((e) => e.message, 'message', contains('restarting')),
+        ),
+      );
+    });
   });
 }
